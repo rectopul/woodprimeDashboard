@@ -1,3 +1,5 @@
+const URL = `http://warm-cliffs-28968.herokuapp.com`
+
 function update(callback, theme) {
    var element = document.querySelector('.barload')
 

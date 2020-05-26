@@ -85,7 +85,7 @@ const tabTypeRemove = id => {
 const insertType = input => {
    if (!input.value) return alert('Informe o nome do tipo de customização')
    update(1, `dark`)
-   fetch(`http://localhost/api/${typeResource}`, {
+   fetch(`${URL}/api/${typeResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',
@@ -154,7 +154,7 @@ btnInsertType.addEventListener('click', e => {
 const deleteType = input => {
    const id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
    update(1, `dark`)
-   fetch(`http://localhost/api/${typeResource}/${id}`, {
+   fetch(`${URL}/api/${typeResource}/${id}`, {
       method: 'DELETE',
    })
       .then(response => {

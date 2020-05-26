@@ -1,3 +1,5 @@
+const URL = `http://warm-cliffs-28968.herokuapp.com`
+
 function update(callback, theme) {
    var element = document.querySelector('.barload')
 
@@ -151,7 +153,7 @@ btnInsertCustom.addEventListener('click', e => {
 
    //Request
    update(1, `dark`)
-   fetch(`http://localhost/api/${custonResource}`, {
+   fetch(`${URL}/api/${custonResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',
@@ -307,7 +309,7 @@ const updateOption = () => {
 
    update(1)
 
-   fetch(`http://localhost/api/${optionResource}/${id}`, {
+   fetch(`${URL}/api/${optionResource}/${id}`, {
       method: 'PUT',
       headers: {
          'content-type': 'application/json',
@@ -384,7 +386,7 @@ const deleteOption = element => {
    const id = element.dataset.id
    //return console.log(element.closest('.option'))
    update(1)
-   fetch(`http://localhost/api/${optionResource}/${id}`, {
+   fetch(`${URL}/api/${optionResource}/${id}`, {
       method: 'DELETE',
       headers: {
          'content-type': 'application/json',
@@ -408,7 +410,7 @@ const clickRemoveOption = element => {
 const showOptions = id => {
    //Request
    update(1, `dark`)
-   fetch(`http://localhost/api/${optionResource}?custom=${id}`)
+   fetch(`${URL}/api/${optionResource}?custom=${id}`)
       .then(response => response.json())
       .then(res => {
          update(() => {
@@ -513,7 +515,7 @@ const InsertOption = id => {
 
    //Request
    update(1)
-   fetch(`http://localhost/api/${optionResource}`, {
+   fetch(`${URL}/api/${optionResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',
@@ -705,7 +707,7 @@ const tabTypeRemove = id => {
 const insertType = input => {
    if (!input.value) return alert('Informe o nome do tipo de customização')
    update(1, `dark`)
-   fetch(`http://localhost/api/${typeResource}`, {
+   fetch(`${URL}/api/${typeResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',
@@ -774,7 +776,7 @@ btnInsertType.addEventListener('click', e => {
 const deleteType = input => {
    const id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
    update(1, `dark`)
-   fetch(`http://localhost/api/${typeResource}/${id}`, {
+   fetch(`${URL}/api/${typeResource}/${id}`, {
       method: 'DELETE',
    })
       .then(response => {

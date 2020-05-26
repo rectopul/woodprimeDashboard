@@ -1,5 +1,5 @@
-//const URL = `http://warm-cliffs-28968.herokuapp.com`
-const URL = `http://localhost`
+const URL = `http://warm-cliffs-28968.herokuapp.com`
+//const URL = `http://localhost`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')

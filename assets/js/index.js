@@ -1,4 +1,4 @@
-const URL = `http://http://woodprime.herokuapp.com/`
+const URL = `http://woodprime.herokuapp.com/`
 //const URL = `http://localhost`
 
 function update(callback, theme) {

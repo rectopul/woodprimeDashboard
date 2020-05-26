@@ -86,6 +86,8 @@ btnInsertCustom.addEventListener('click', e => {
       return inputTypeCustom.reportValidity()
    }
 
+   console.log('cliquei no custom')
+
    document.querySelector('.loaderInsertCustom').classList.add('show')
 
    //Request

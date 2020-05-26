@@ -150,6 +150,8 @@ btnInsertCustom.addEventListener('click', e => {
       return inputTypeCustom.reportValidity()
    }
 
+   console.log('cliquei no custom')
+
    document.querySelector('.loaderInsertCustom').classList.add('show')
 
    //Request
@@ -770,8 +772,10 @@ const insertType = input => {
                return update(() => {
                   document.querySelector('.typesContainer').prepend(newType)
 
-                  newType.addEventListener('click', function(e) {
-                     selectType(newType)
+                  newType.querySelector('.select-type').addEventListener('click', e => {
+                     e.preventDefault()
+                     console.log('selecionei')
+                     selectType(newType.querySelector('.select-type'))
                   })
 
                   //insert tab

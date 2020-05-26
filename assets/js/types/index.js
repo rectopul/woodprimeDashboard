@@ -122,8 +122,10 @@ const insertType = input => {
                return update(() => {
                   document.querySelector('.typesContainer').prepend(newType)
 
-                  newType.addEventListener('click', function(e) {
-                     selectType(newType)
+                  newType.querySelector('.select-type').addEventListener('click', e => {
+                     e.preventDefault()
+                     console.log('selecionei')
+                     selectType(newType.querySelector('.select-type'))
                   })
 
                   //insert tab

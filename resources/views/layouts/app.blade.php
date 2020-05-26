@@ -34,6 +34,6 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script><!--Sweet Alert // -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script> <!-- Cleave.JS // -->
-    <script src="{{ asset('js/scripts.min.js') }}"></script>
+    <script src="{{ asset('js/scripts.js') }}"></script>
 </body>
 </html>

@@ -173,6 +173,13 @@ const deleteType = input => {
       })
       .catch(err => {
          console.log(err)
+         update(() => {
+            Swal.fire({
+               title: `Tivemos um erro de sistema`,
+               icon: 'error',
+               showCloseButton: true,
+            })
+         }, `dark`)
       })
 }
 

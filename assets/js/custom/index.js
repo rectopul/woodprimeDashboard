@@ -129,13 +129,14 @@ btnInsertCustom.addEventListener('click', e => {
          }, `dark`)
       })
       .catch(err => {
-         Swal.fire({
-            title: `Tivemos um erro de sistema`,
-            icon: 'error',
-            showCloseButton: true,
+         console.log(err)
+         return update(() => {
+            Swal.fire({
+               title: `Tivemos um erro de sistema`,
+               icon: 'error',
+               showCloseButton: true,
+            })
          })
-
-         return console.log(err)
       })
 })
 

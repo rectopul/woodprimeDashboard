@@ -305,12 +305,12 @@ const InsertOption = id => {
                                     ${res.name} 
                                 </div>
                                 <div class="col-6 ml-auto">
-                                    <button class="btn btn-primary btn-sm editOption" data-id="${res.id}" type="submit">
+                                    <button class="btn btn-primary btn-sm editOption" data-dismiss="modal" data-id="${res.id}" type="submit">
                                        <i class="fas fa-edit"></i>
                                     </button>
-
+                                 
                                     <button class="btn btn-danger btn-sm" data-id="${res.id}" type="submit">
-                                        <i class="far fa-trash-alt"></i>
+                                          <i class="far fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </div>

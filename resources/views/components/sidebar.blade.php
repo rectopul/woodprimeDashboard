@@ -1,19 +1,27 @@
-<div class="col-3 rounded border py-2">
-    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-        <a class="nav-link border-bottom active" id="v-pills-customization-tab" data-toggle="pill" href="#v-pills-customization" role="tab" aria-controls="v-pills-customization" aria-selected="true">
+<div class="col-3">
+
+    <div class="list-group tabTypes" id="list-tab" role="tablist">
+        <a class="list-group-item list-group-item-action active" id="v-pills-customization-tab" data-toggle="list" href="#v-pills-customization" role="tab" aria-controls="v-pills-customization">
             Personalização
             <span class="badge badge-pill badge-primary">{{ $count }}</span>
-        </a>
+        </a><!-- PERSONALIZAÇÃO // -->
 
-        <a class="nav-link border-bottom" id="v-pills-product-tab" data-toggle="pill" href="#v-pills-product" role="tab" aria-controls="v-pills-product" aria-selected="false">Cadastro de produto</a>
+        <a class="list-group-item list-group-item-action" id="v-pills-product-tab" data-toggle="list" href="#v-pills-product" role="tab" aria-controls="v-pills-product">
+            Cadastro de produto
+        </a><!-- CADASTRO DE PRODUTO // -->
 
-        <a class="nav-link border-bottom" id="v-pills-searchCustomization-tab" data-toggle="pill" href="#v-pills-searchCustomization" role="tab" aria-controls="v-pills-searchCustomization" aria-selected="false">
+        <a class="list-group-item list-group-item-action" id="v-pills-searchCustomization-tab" data-toggle="list" href="#v-pills-searchCustomization" role="tab" aria-controls="v-pills-searchCustomization">
             Buscar Personalização
             <span class="badge badge-pill badge-primary pillcustoms">{{ $customizationsCount }}</span>
-        </a>
+        </a><!-- busca de personalização // -->
 
-        <a class="nav-link border-bottom" id="v-pills-searchProduct-tab" data-toggle="pill" href="#v-pills-searchProduct" role="tab" aria-controls="v-pills-searchProduct" aria-selected="false">Buscar Produto</a>
+        <a class="list-group-item list-group-item-action" id="v-pills-disfellowshipped-tab" data-toggle="list" href="#v-pills-disfellowshipped" role="tab" aria-controls="v-pills-disfellowshipped">
+            Persinalizações desasociadas
+            <span class="badge badge-pill badge-primary pillcustoms">{{ $customizationsCount }}</span>
+        </a><!-- busca de personalização // -->
 
-        <a class="nav-link" id="v-pills-users-tab" data-toggle="pill" href="#v-pills-users" role="tab" aria-controls="v-pills-users" aria-selected="false">Usuários</a>
+        <a class="list-group-item list-group-item-action" id="v-pills-users-tab" data-toggle="list" href="#v-pills-users" role="tab" aria-controls="v-pills-users">
+            Usuários
+        </a><!-- Usuários // -->
     </div>
 </div>

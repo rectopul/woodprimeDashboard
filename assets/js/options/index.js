@@ -225,7 +225,7 @@ const showOptions = id => {
                const optionPrice = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price)
                //return console.log(optionPrice)
                let divOption = document.createElement('div')
-               divOption.classList.add('col-4', 'option')
+               divOption.classList.add('col-6', 'col-lg-4', 'option')
                divOption.innerHTML = `
                      <div class="card border-primary mb-3 cardOption" data-id="${option.id}">
                         <div class="card-header">
@@ -279,7 +279,7 @@ const InsertOption = id => {
 
    const divOption = document.createElement('div')
 
-   divOption.classList.add('col-4', 'option')
+   divOption.classList.add('col-6', 'col-lg-4', 'option')
 
    //validação
    if (!name.value) {

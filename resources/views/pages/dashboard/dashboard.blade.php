@@ -11,7 +11,7 @@
 <div class="row justify-content-center mt-5">
     @include('components.sidebar', ['count' => $count, 'customizationsCount' => $customizationsCount])
 
-    <div class="col-9 pl-5">
+    <div class="col-9 pl-3">
         <div class="tab-content" id="v-pills-tabContent">
             <div class="tab-pane fade show active" id="v-pills-customization" role="tabpanel" aria-labelledby="v-pills-customization-tab">
                 @yield('custom', View::make('components.customform'))
@@ -30,7 +30,7 @@
             </div> <!-- Buscar produto.// -->
 
             <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
-                Usuários
+                @include('components.users', ['users', $users])
             </div> <!-- Buscar Usuários.// -->
         </div>
     </div> <!-- col.// -->

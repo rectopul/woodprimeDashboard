@@ -4,10 +4,11 @@ const custonResource = `custon`
 const createCardCustom = item => {
    const card = document.createElement('div')
 
-   const { id, name, description } = item
+   const { id, name, description, type } = item
 
-   card.classList.add('col-6', `card-custom-${id}`)
+   card.classList.add('col-3', `card-custom-${id}`)
 
+   card.dataset.category = `type-${type}`
    card.dataset.id = id
 
    card.innerHTML = `
@@ -55,7 +56,7 @@ const insertCardCustom = item => {
 
    const card = createCardCustom(item)
 
-   document.querySelector(`.container-type-${type}`).prepend(card)
+   document.querySelector(`.container-types`).prepend(card)
 
    const pillCustoms = document.querySelector('.pillcustoms')
 
@@ -165,3 +166,163 @@ openFormOption.addEventListener('click', function(e) {
       $('#options').modal('show')
    })
 })
+
+//SEARCH CUSTOMS
+/**
+ * fetch nos custom
+ */
+const controller = new AbortController()
+const signal = controller.signal
+const indexCustom = () => {
+   fetch(`${URL}/api/${custonResource}`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+      signal: signal,
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            //Caso retorne vazio
+            if (!res.length) return (document.querySelector('.container-types').innerHTML = `Nenhum registro encontrado`)
+            //limpando dados existentes
+            document.querySelector('.container-types').innerHTML = ``
+            //mappeando
+            res.forEach(custom => {
+               insertCardCustom({
+                  name: custom.name,
+                  description: custom.description,
+                  id: custom.id,
+                  type: custom.type_id,
+               })
+            })
+
+            return console.log(res)
+         }, `dark`)
+      })
+      .catch(error => {
+         // catch the abort if you like
+         if (error.name === 'AbortError') {
+            console.log(`abortado`)
+         }
+      })
+}
+const findCustoms = text => {
+   fetch(`${URL}/api/${custonResource}/search/${text}`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+      signal: signal,
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            //Caso retorne vazio
+            if (!res.length) return (document.querySelector('.container-types').innerHTML = `Nenhum registro encontrado`)
+            //limpando dados existentes
+            document.querySelector('.container-types').innerHTML = ``
+            //mappeando
+            res.forEach(custom => {
+               insertCardCustom({
+                  name: custom.name,
+                  description: custom.description,
+                  id: custom.id,
+                  type: custom.type_id,
+               })
+            })
+
+            return console.log(res)
+         }, `dark`)
+      })
+      .catch(error => {
+         // catch the abort if you like
+         if (error.name === 'AbortError') {
+            console.log(`abortado`)
+         }
+      })
+}
+const searchCustom = () => {
+   const inputSearch = document.querySelector('.search-custom')
+   const btnSearchCustom = document.querySelector('.customSearchButton')
+   const searchFormCustom = document.querySelector('.formSearchCustom')
+
+   btnSearchCustom.addEventListener('click', function(e) {
+      e.preventDefault()
+      const text = inputSearch.value
+      if (text.length < 3) {
+         update(1, `dark`)
+         return indexCustom(text)
+      }
+
+      if (text.length > 3) {
+         update(1, `dark`)
+         return findCustoms(text)
+      }
+   })
+   searchFormCustom.addEventListener('submit', function(e) {
+      e.preventDefault()
+      const text = inputSearch.value
+      if (text.length > 3) {
+         update(1, `dark`)
+         return findCustoms(text)
+      }
+   })
+}
+
+searchCustom()
+
+//Filtro
+const filter = () => {
+   const buttons = document.querySelectorAll('.filtersCustom > a')
+
+   Array.from(buttons).forEach(el => {
+      el.addEventListener('click', function(e) {
+         e.preventDefault()
+
+         const dataFilter = el.dataset.filter
+
+         //pega todos que não possuem o filtro selecionados
+         const cards = document.querySelectorAll('.container-types > div')
+         const cardshide = document.querySelectorAll(`.container-types > div[data-category="${dataFilter}"]`)
+
+         if (dataFilter == `type-all`) {
+            Array.from(cards).forEach(nofilter => {
+               nofilter.classList.remove('hide')
+            })
+            return Array.from(cards).forEach(nofilter => {
+               return animateCSS(nofilter, 'fadeIn')
+            })
+         }
+
+         let cardsIn = [],
+            cardsOut = []
+
+         Array.from(cards).forEach(nofilter => {
+            const datanofilter = nofilter.dataset.category
+
+            if (datanofilter != dataFilter) {
+               return cardsOut.push(nofilter)
+            }
+
+            return cardsIn.push(nofilter)
+         })
+
+         async function hidecards() {
+            await Array.from(cardsOut).forEach(async card => {
+               return await animateCSS(card, 'bounceOut').then(() => card.classList.add('hide'))
+            })
+
+            await Array.from(cardsIn).forEach(async card => {
+               card.classList.remove('hide')
+               return await animateCSS(card, 'fadeIn')
+            })
+         }
+
+         hidecards()
+      })
+   })
+}
+
+filter()

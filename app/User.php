@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;

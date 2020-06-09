@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Type;
 use App\Models\Customization;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Option;
 use App\Models\ProductCustomization;
@@ -21,6 +22,7 @@ class DashboardController extends Controller
         //Types
         $types = Type::all();
         $count = $types->count();
+        $users = User::get();
 
         $customTypes = Type::get();
 
@@ -29,6 +31,6 @@ class DashboardController extends Controller
         }
 
         //dd($types);
-        return view('pages.dashboard.dashboard', compact('types', 'user', 'count', 'customTypes', 'customizationsCount'));
+        return view('pages.dashboard.dashboard', compact('types', 'user', 'count', 'customTypes', 'customizationsCount', 'users'));
     }
 }

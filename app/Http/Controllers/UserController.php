@@ -2,32 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customization;
-use App\Models\Type;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Validator;
+use Illuminate\Support\Str;
 
-class CustomizationController extends Controller
+class UserController extends Controller
 {
-    /**
-     * Find or search custom
-     * @return \Illuminate\Http\Response
-     */
-    public function find($find)
-    {
-        $text = $find;
-
-        $custom = Customization::query()
-            ->where('name', 'LIKE', "%{$text}%")
-            ->orWhere('description', 'LIKE', "%{$text}%")->get();
-
-
-        if ($custom) {
-            return response()->json($custom);
-        }
-
-        return response()->json('', 200);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -35,14 +17,7 @@ class CustomizationController extends Controller
      */
     public function index()
     {
-        $custom = Customization::with('type')->get();
-
-
-        if ($custom) {
-            return response()->json($custom);
-        }
-
-        return response()->json('', 200);
+        //
     }
 
     /**
@@ -63,14 +38,29 @@ class CustomizationController extends Controller
      */
     public function store(Request $request)
     {
-        $custom = new Customization;
-        $custom->name = $request->input('name');
-        $custom->description = $request->input('description');
-        $custom->type_id = $request->input('type_id');
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        $custom->save();
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
 
-        return response()->json($custom);
+        $input = $request->all();
+        $input['password'] = Hash::make($input['password']);
+        $input['remember_token'] = Str::random(10);
+        $user = User::create($input);
+        $success['name'] =  $user->name;
+        return response()->json(['success' => $success], 200);
+
+        /* $user = new User;
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = Hash::make($request->input('type_id'));
+
+        $user->save(); */
     }
 
     /**
@@ -81,11 +71,11 @@ class CustomizationController extends Controller
      */
     public function show($id)
     {
-        $custom = Customization::where('id', $id)->with('type')->first();
+        $user = User::where('id', $id)->first();
 
 
-        if ($custom) {
-            return response()->json($custom);
+        if ($user) {
+            return response()->json($user);
         }
 
         return response()->json('', 200);
@@ -122,6 +112,7 @@ class CustomizationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $res = User::where('id', $id)->delete();
+        return response()->json($res);
     }
 }

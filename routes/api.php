@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 /*
@@ -21,7 +22,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('custon', 'CustomizationController');
 //Options
 Route::resource('option', 'OptionController');
+//Users
+Route::resource('user', 'UserController');
 
 
 //types of customization
 Route::resource('type', 'TypeController');
+
+//Search customizations
+Route::get('/custon/search/{find}', 'CustomizationController@find')->name('findcustom');

@@ -9,6 +9,28 @@ use Illuminate\Http\Request;
 class CustomizationController extends Controller
 {
     /**
+     * Display all unrelated values.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function relate()
+    {
+        $unrelated = Customization::whereNull('type_id')->get();
+
+        return response()->json($unrelated);
+    }
+    /**
+     * Display all unrelated values.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function relation($id)
+    {
+        $unrelated = Customization::whereNull('type_id')->get();
+
+        return response()->json($unrelated);
+    }
+    /**
      * Find or search custom
      * @return \Illuminate\Http\Response
      */
@@ -97,9 +119,15 @@ class CustomizationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
+        $custom = Customization::find($id);
+
+        $custom->name = $request->input('name');
+        $custom->description = $request->input('description');
+        $custom->type_id = $request->input('type_id');
+
+        $custom->save();
     }
 
     /**
@@ -111,7 +139,13 @@ class CustomizationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $custom = Customization::find($id);
+
+        $custom->name = $request->input('name');
+        $custom->description = $request->input('description');
+        $custom->type_id = $request->input('type_id');
+
+        $custom->save();
     }
 
     /**

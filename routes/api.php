@@ -24,6 +24,8 @@ Route::resource('custon', 'CustomizationController');
 Route::resource('option', 'OptionController');
 //Users
 Route::resource('user', 'UserController');
+//Poducts
+Route::resource('product', 'ProductController');
 
 
 //types of customization
@@ -31,3 +33,5 @@ Route::resource('type', 'TypeController');
 
 //Search customizations
 Route::get('/custon/search/{find}', 'CustomizationController@find')->name('findcustom');
+// nao associado
+Route::get('custon/relate/index', 'CustomizationController@relate')->name('CustomUnrelated');

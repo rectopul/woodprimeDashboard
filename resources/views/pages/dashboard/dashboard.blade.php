@@ -5,6 +5,7 @@
 @section('content')
 <!-- Just an image -->
 @include('components.modalType', ['types' => $types])
+@include('components.modalunrelated', ['types' => $types])
 @include('components.navbar', ['user', $user])
 
 
@@ -18,7 +19,7 @@
             </div> <!-- Personalização.// -->
 
             <div class="tab-pane fade" id="v-pills-product" role="tabpanel" aria-labelledby="v-pills-product-tab">
-                Produto
+                @include('components.products')
             </div> <!-- Produto.// -->
             
             <div class="tab-pane fade" id="v-pills-searchCustomization" role="tabpanel" aria-labelledby="v-pills-searchCustomization-tab">
@@ -31,6 +32,10 @@
 
             <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
                 @include('components.users', ['users', $users])
+            </div> <!-- Buscar Usuários.// -->
+            
+            <div class="tab-pane fade" id="v-pills-unrelated" role="tabpanel" aria-labelledby="v-pills-unrelated">
+                @include('components.unrelated', ['unrelated', $unrelated])
             </div> <!-- Buscar Usuários.// -->
         </div>
     </div> <!-- col.// -->

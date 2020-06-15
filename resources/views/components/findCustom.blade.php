@@ -73,7 +73,13 @@
                         @foreach ($customType->customization as $customization)
                             <div class="col-3 card-custom-{{ $customization->id }}" data-category="type-{{ $customType->id }}" data-id="{{ $customization->id }}">
                                 <div class="card border-primary mb-3 cardCustom item" data-id="{{ $customization->id }}">
-                                        <div class="card-header">{{ $customization->name }}</div>
+                                        <div class="card-header">
+                                            {{ $customization->name }}
+                                            <button type="button" class="btn btn-danger btn-sm" data-id="{{ $customization->id }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+
                                         <div class="card-body text-primary">
                                             <p class="card-text">{{ $customization->description }}</p>
                                         </div>

@@ -1,5 +1,5 @@
-const URL = `http://woodprime.herokuapp.com/`
-//const URL = `http://192.168.0.10`
+//const URL = `http://woodprime.herokuapp.com/`
+const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')
@@ -802,6 +802,9 @@ btnSaveOption.addEventListener('click', e => {
    InsertOption(document.querySelector('.insertOption').dataset.option)
 })
 
+const vtexAccountName = `woodprime`
+const vtexEnvironment = `vtexcommercestable`
+
 const getVtexProduct = skuProduct => {
    if (!skuProduct.value) return alert('Informe o sku do produto')
    const sku = skuProduct.value
@@ -810,7 +813,13 @@ const getVtexProduct = skuProduct => {
       Host: '*',
    })
 
-   fetch(`https://www.woodprime.com.br/produto/sku/${sku}`)
+   fetch(`https://${vtexAccountName}.${vtexEnvironment}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/skuId${sku}`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+         accept: 'application/json',
+      },
+   })
       .then(response => {
          return response.json()
       })
@@ -820,12 +829,99 @@ const getVtexProduct = skuProduct => {
       .catch(err => console.log(err))
 }
 
+const putValues = object => {
+   const { name, code } = object
+   document.querySelector('.nameProduct').value = name
+   document.querySelector('.codeProduct').value = code
+}
+
 const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
 btnSearchProduct.addEventListener('click', e => {
    e.preventDefault()
    let inputSkuProduct = document.querySelector('.skuProduct')
-   getVtexProduct(inputSkuProduct)
+   //getVtexProduct(inputSkuProduct)
+   return putValues({
+      name: `Produto Teste`,
+      code: `6277`,
+   })
+})
+
+const productResource = `product`
+
+const requestProduct = object => {
+   const { name, code, description, image } = object
+   update(1, `dark`)
+   fetch(`${URL}/api/${productResource}`, {
+      method: 'POST',
+      headers: {
+         'content-type': 'application/json',
+      },
+      body: JSON.stringify({ name, code, description, image }),
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            //SweetAlert
+            Swal.fire({
+               title: `Produto ${res.name} cadastrado`,
+               icon: 'success',
+               showCloseButton: true,
+            })
+         }, `dark`)
+      })
+}
+
+const insertProduct = () => {
+   const nameProduct = document.querySelector('.nameProduct')
+   const codeProduct = document.querySelector('.codeProduct')
+   const descriptionProduct = document.querySelector('.descriptionProduct')
+   const imageProduct = document.querySelector('.imageProduct')
+
+   //validar formulário
+
+   //Nome
+   if (!nameProduct.value) {
+      nameProduct.setCustomValidity('Informe o nome do produto')
+      return nameProduct.reportValidity()
+   }
+   //code
+   if (!codeProduct.value) {
+      codeProduct.setCustomValidity('Informe o nome do produto')
+      return codeProduct.reportValidity()
+   }
+   //description
+   if (!descriptionProduct.value) {
+      descriptionProduct.setCustomValidity('Informe o nome do produto')
+      return descriptionProduct.reportValidity()
+   }
+   //image
+   if (!imageProduct.value) {
+      imageProduct.setCustomValidity('Informe o nome do produto')
+      return imageProduct.reportValidity()
+   }
+
+   return console.log({
+      name: nameProduct.value,
+      code: codeProduct.value,
+      description: descriptionProduct.value,
+      image: imageProduct.value,
+   })
+
+   requestProduct({
+      name: nameProduct.value,
+      code: codeProduct.value,
+      description: descriptionProduct.value,
+      image: imageProduct.value,
+   })
+}
+
+const buttonInsert = document.querySelector('.insertProduct')
+
+buttonInsert.addEventListener('click', e => {
+   e.preventDefault()
+
+   insertProduct()
 })
 
 const typeResource = `type`
@@ -1047,3 +1143,71 @@ Array.from(btnSelect).forEach(el => {
       selectType(el)
    })
 })
+
+const customUpdate = object => {
+   const { id, name, description, type_id } = object
+
+   update(1, `dark`)
+   fetch(`${URL}/api/${custonResource}/${id}`, {
+      method: 'PUT',
+      headers: {
+         'content-type': 'application/json',
+      },
+      body: JSON.stringify({ name, description, type_id }),
+   })
+      .then(response => {
+         update(() => {
+            console.log(response)
+
+            return $('#modalUnrelated').modal('hide')
+         }, `dark`)
+      })
+      .catch(err => {
+         console.log(err)
+         return update(() => {
+            Swal.fire({
+               title: `Tivemos um erro de sistema`,
+               icon: 'error',
+               showCloseButton: true,
+            })
+         })
+      })
+}
+
+const editCustom = () => {
+   const customs = document.querySelectorAll('.unrelatedCustom')
+   const customForm = document.querySelector('.editCustomForm')
+
+   //Submit form
+   customForm.addEventListener('submit', e => {
+      e.preventDefault()
+
+      const data = {
+         id: document.querySelector('.unrelatedCustomId').value,
+         name: document.querySelector('#ulName').value,
+         description: document.querySelector('#ulDescription').value,
+         type_id: parseInt(document.querySelector('#ulTypeId').value),
+      }
+
+      return customUpdate(data)
+
+      console.log(data)
+   })
+
+   //Click nos cards
+   Array.from(customs).forEach(custom => {
+      custom.addEventListener('click', e => {
+         const id = custom.dataset.id
+         const name = custom.querySelector('.unrelatedName').innerHTML
+         const description = custom.querySelector('.unrelatedDescription').innerHTML
+
+         document.querySelector('.unrelatedCustomId').value = id
+         document.querySelector('#ulName').value = name
+         document.querySelector('#ulDescription').value = description
+
+         $('#modalUnrelated').modal('show')
+      })
+   })
+}
+
+editCustom()

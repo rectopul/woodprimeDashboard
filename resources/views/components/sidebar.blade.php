@@ -6,18 +6,21 @@
             <span class="badge badge-pill badge-primary">{{ $count }}</span>
         </a><!-- PERSONALIZAÇÃO // -->
 
-        <a class="list-group-item list-group-item-action" id="v-pills-product-tab" data-toggle="list" href="#v-pills-product" role="tab" aria-controls="v-pills-product">
-            Cadastro de produto
-        </a><!-- CADASTRO DE PRODUTO // -->
-
         <a class="list-group-item list-group-item-action" id="v-pills-searchCustomization-tab" data-toggle="list" href="#v-pills-searchCustomization" role="tab" aria-controls="v-pills-searchCustomization">
             Buscar Personalização
             <span class="badge badge-pill badge-primary pillcustoms">{{ $customizationsCount }}</span>
         </a><!-- busca de personalização // -->
 
-        <a class="list-group-item list-group-item-action" id="v-pills-disfellowshipped-tab" data-toggle="list" href="#v-pills-disfellowshipped" role="tab" aria-controls="v-pills-disfellowshipped">
+        <a class="list-group-item list-group-item-action" id="v-pills-product-tab" data-toggle="list" href="#v-pills-product" role="tab" aria-controls="v-pills-product">
+            Cadastro de produto
+        </a><!-- CADASTRO DE PRODUTO // -->
+
+        <a class="list-group-item list-group-item-action" id="v-pills-searchProduct-tab" data-toggle="list" href="#v-pills-searchProduct" role="tab" aria-controls="v-pills-searchProduct">
+            Busca de produtos
+        </a><!-- CADASTRO DE PRODUTO // -->
+
+        <a class="list-group-item list-group-item-action" id="v-pills-unrelated-tab" data-toggle="list" href="#v-pills-unrelated" role="tab" aria-controls="v-pills-unrelated">
             Persinalizações desasociadas
-            <span class="badge badge-pill badge-primary pillcustoms">{{ $customizationsCount }}</span>
         </a><!-- busca de personalização // -->
 
         <a class="list-group-item list-group-item-action" id="v-pills-users-tab" data-toggle="list" href="#v-pills-users" role="tab" aria-controls="v-pills-users">

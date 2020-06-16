@@ -4,3 +4,18 @@
         transition: all 1s
         &.hide
             display none
+
+.cardCustom
+    & .card-header
+        position relative
+        & > button
+            height 31px
+            position absolute
+            right 5px
+            top 50%
+            margin-top -15.5px
+            opacity .0
+    &:hover
+        & .card-header
+            & > button
+                opacity 1

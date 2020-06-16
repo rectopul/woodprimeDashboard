@@ -18,10 +18,11 @@ const clickOption = option => {
 
       option.classList.add('active')
 
-      if (!document.querySelector(`.optionsSelected div[data-option="${id}"]`))
-         return optionInsert({ name, id, custom, custom_name, image })
+      if (!document.querySelector(`.optionsSelected div[data-option="${id}"]`)) {
+         optionInsert({ name, id, custom, custom_name, image })
 
-      optionsProduct.push(parseInt(id))
+         return optionsProduct.push(parseInt(id))
+      }
    })
 }
 
@@ -30,11 +31,16 @@ const optionInsert = object => {
 
    const div = document.createElement('div')
 
-   div.classList.add('col-3')
+   div.classList.add('col-3', 'optionSelect')
    div.dataset.option = id
 
    div.innerHTML = `<div class="card">
-      <div class="card-header text-center productCustomName" data-custom="${custom}">${custom_name}</div>
+      <div class="card-header text-center productCustomName" data-custom="${custom}">
+         <button type="button" class="btn btn-danger btn-sm optionSelectDel" data-id="${id}">
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+         </button>
+         ${custom_name}
+      </div>
       <div class="card-body productOptionName text-center">
          <p>${name}</p>
          <div class="row">
@@ -44,6 +50,16 @@ const optionInsert = object => {
          </div>
       </div>
    </div>`
+
+   //remove
+   const btnDel = div.querySelector(`.optionSelectDel`)
+   btnDel.addEventListener('click', e => {
+      const id = btnDel.dataset.id
+
+      optionsProduct.splice(optionsProduct.indexOf(parseInt(id)), 1)
+
+      return btnDel.closest('.optionSelect').remove()
+   })
 
    return document.querySelector('.optionsSelected').append(div)
 }

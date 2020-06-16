@@ -9,30 +9,25 @@
           </button>
         </div>
         <div class="modal-body d-flex flex-wrap productCustonsBody">
-            <div class="row">
-                <div class="col-12 ProductcustonsContainer">
-                    @foreach ($customTypes as $key => $customType)
-                        @foreach ($customType->customization as $customization)
-                            <div class="col-4 product-option-{{ $customization->id }}" data-custom="type-{{ $customType->id }}" data-id="{{ $customization->id }}">
-                                <div class="card border-primary mb-3 productCustom item" data-option-id="{{ $customization->id }}">
-                                        <div class="card-header productOptionName">
-                                            {{ $customization->name }}
-                                        </div>
+            <div class="row ProductcustonsContainer">
+                @foreach ($customTypes as $key => $customType)
+                    @foreach ($customType->customization as $customization)
+                        <div class="col-4 productOption product-option-{{ $customization->id }}" data-custom-name="{{ $customType->name }}" data-custom="{{ $customization->id }}" data-id="{{ $customization->id }}">
+                            <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="{{ $customization->id }}">
+                                    <div class="card-header productOptionName">
+                                        {{ $customization->name }}
+                                    </div>
 
-                                        <div class="card-body text-primary productOptionDesc">
-                                            <p class="card-text">{{ $customization->description }}</p>
-                                        </div>
+                                    <div class="card-body text-primary productOptionDesc">
+                                        <p class="card-text">{{ $customization->description }}</p>
                                     </div>
                                 </div>
-                        @endforeach
+                            </div>
+                    @endforeach
                 @endforeach
-                </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary insertOption" data-dismiss="modal">
-                <i class="fas fa-plus"></i> Novo
-            </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
         </div>
       </div>

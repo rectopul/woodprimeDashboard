@@ -32,8 +32,8 @@
         <div class="row">
           <div class="col-12 mt-5">
             <form>
-              <input type="hidden" class="nameProduct" name="">
-              <input type="hidden" class="codeProduct" name="">
+              <input type="hidden" class="nameProduct" name="" value="Teste">
+              <input type="hidden" class="codeProduct" name="" value="Teste">
               <div class="form-group">
                 <label for="exampleFormControlTextarea1">Descrição</label>
                 <textarea class="form-control descriptionProduct" rows="3" placeholder="Informe uma descrição"></textarea>
@@ -44,28 +44,23 @@
                 <input type="text" class="form-control imageProduct" placeholder="http://www.image.com">
               </div>
               <!--CUSTOMIZAÇÕES -->
+              
               <div class="col-12">
                 <div class="row">
                   <h4>Customizações selecionadas</h4>
                 </div>
 
-                <div class="row rounded py-2 mb-4 border">
-                  <div class="col-3">
-                    <div class="card">
-                      <div class="card-body">
-                        This is some text within a card body.
-                      </div>
-                    </div>
-                  </div>
+                <div class="row mb-2">
+                  <button class="btn btn-primary optionsSelect">
+                    Selecionar opções do produto
+                  </button>
+                </div>
+
+                <div class="row rounded py-2 mb-4 border optionsSelected">
+                  <!-- OPTIONS SELECTED -->
                 </div>
               </div>
 
-              <div class="row mb-5">
-                <div class="col-12">
-                  <button class="btn btn-primary optionsSelect">Selecionar opções do produto</button>
-                </div>
-              </div>
-                
               <button class="btn btn-primary insertProduct">Atualizar Produto</button>
             </form>
           </div><!-- FORMU;ÁRIO DE CADASTRO -->

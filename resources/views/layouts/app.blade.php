@@ -26,8 +26,6 @@
 <body>
     @include('components.modalOptions')
     @include('components.formOption')
-    @include('components.productCustons', ['types' => $customTypes])
-    @include('components.productOptions')
     <div class="container">
         @yield('content')
     </div>

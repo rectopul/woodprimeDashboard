@@ -7,6 +7,8 @@
 @include('components.modalType', ['types' => $types])
 @include('components.modalunrelated', ['types' => $types])
 @include('components.navbar', ['user', $user])
+@include('components.productCustons', ['types' => $customTypes])
+@include('components.productOptions')
 
 
 <div class="row justify-content-center mt-5">

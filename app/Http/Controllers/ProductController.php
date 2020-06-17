@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -37,12 +38,29 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $check = Product::where('name', '=', $request->input('name'))->count();
+
+        if ($check > 0) {
+            return response()->json(['error' => 'This product name already exist'], 400);
+        }
+
         $product = new Product;
         $product->name = $request->input('name');
         $product->description = $request->input('description');
         $product->image = $request->input('image');
 
         $product->save();
+
+        $options = $request->input('options');
+
+        foreach ($options as $key => $option) {
+            $productCustomization = new ProductOption;
+            $productCustomization->option_id = $option;
+            $productCustomization->product_id = $product->id;
+
+            //Save Custom
+            $productCustomization->save();
+        }
 
         return response()->json($product);
     }

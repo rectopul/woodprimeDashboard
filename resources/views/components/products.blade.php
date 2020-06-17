@@ -21,11 +21,11 @@
       <div class="col-12">
         <div class="row pt-5">
           <div class="col-auto">
-            <img src="https://via.placeholder.com/200" alt="..." class="img-thumbnail">
+            <img src="https://via.placeholder.com/200" alt="..." width="210" class="img-thumbnail productImageInsert">
           </div> <!-- Form Image // -->
           <div class="col-8">
-            <h5>Titulo do produto</h5>
-            <p><small><b>Código do produto</b></small></p>
+            <h5 class="productNameInsert">Titulo do produto</h5>
+            <p class="productCodeInsert"><small><b>Código do produto</b></small></p>
           </div> <!-- Form Info // -->
         </div><!-- PRODUTO BUSCADO -->
 

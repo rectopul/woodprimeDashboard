@@ -126,17 +126,25 @@ const requestProduct = object => {
       headers: {
          'content-type': 'application/json',
       },
-      body: JSON.stringify({ name, code, description, image }),
+      body: JSON.stringify({ name, code, description, image, options }),
    })
       .then(response => response.json())
       .then(res => {
          update(() => {
+            if (res.error)
+               return Swal.fire({
+                  title: res.error,
+                  icon: 'warning',
+                  showCloseButton: true,
+               })
             //reset Form
             optionsProduct = []
             document.querySelector('.nameProduct').value = ``
             document.querySelector('.codeProduct').value = ``
             document.querySelector('.descriptionProduct').value = ``
             document.querySelector('.imageProduct').value = ``
+            document.querySelector('.skuProduct').value = ``
+            document.querySelector('.resultProduct').classList.remove('full')
 
             //remove as opcoes
             document.querySelector(`.optionsSelected`).innerHTML = ``

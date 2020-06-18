@@ -1,6 +1,147 @@
 const vtexAccountName = `woodprime`
 const vtexEnvironment = `vtexcommercestable`
 
+const createProductBySearch = object => {
+   return new Promise((resolve, reject) => {
+      const { name, code, image, options, id } = object
+
+      const div = document.createElement('div')
+
+      let productOptions = ``
+      if (options.length) {
+         options.forEach(opt => {
+            const { id, option } = opt
+
+            productOptions += `
+            <tr class="text-left optionProduct">
+               <th scope="row" class="px-1 productOptionName">
+                  ${option.name} (${option.customization.name})
+               </th>
+               
+               <td>${option.price}</td>
+               <td class="text-right px-1 productRemoveO\ption">
+                  <a href="#" data-id="${id}">
+                  <i class="fas fa-trash-alt"></i>
+                  </a>
+               </td>
+            </tr>
+            `
+         })
+      }
+
+      div.classList.add('col-4', 'productItem', 'my-2')
+
+      div.innerHTML = `
+      <div class="card border-primary mb-3 cardProduct item" data-id="${id}">
+         <div class="card-header text-center searchProductName">
+            ${name}
+            <button type="button" class="btn btn-danger btn-sm productDestroy" data-id="${id}">
+               <i class="fas fa-trash-alt"></i>
+            </button>
+         </div>
+   
+         <div class="card-body text-primary searchProductOptionsBody text-center px-1">
+            <table class="table table-hover searchProductOptions mb-0">
+               <thead>
+                  <tr>
+                     <th scope="col" class="text-left px-1">Option</th>
+                     <th scope="col">Preço</th>
+                     <th scope="col" class="text-right px-1">Action</th>
+                  </tr>
+               </thead>
+   
+               <tbody> ${productOptions} </tbody>
+            </table>
+            <!-- TABLE // -->
+         </div>
+      </div>
+      `
+
+      //remove option
+      const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
+
+      Array.from(linkRemoveOption).forEach(link => {
+         actionRemoveOption(link)
+      })
+
+      //remove product
+      const btnsDestroyProduct = div.querySelector('.productDestroy')
+
+      clickDestroyProduct(btnsDestroyProduct)
+
+      return resolve(div)
+   })
+}
+
+const searchProduct = slug => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product_search/${slug}`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            return res.forEach(product => {
+               document.querySelector('.listProduct').innerHTML = ``
+               return createProductBySearch(product).then(res => {
+                  return document.querySelector('.listProduct').append(res)
+               })
+            })
+         }, `dark`)
+      })
+      .catch(err => {
+         return Swal.fire({
+            title: err,
+            icon: 'error',
+            showCloseButton: true,
+         })
+      })
+}
+
+const indexProducts = () => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            return res.forEach(product => {
+               document.querySelector('.listProduct').innerHTML = ``
+               return createProductBySearch(product).then(res => {
+                  return document.querySelector('.listProduct').append(res)
+               })
+            })
+         }, `dark`)
+      })
+      .catch(err => {
+         return Swal.fire({
+            title: err,
+            icon: 'error',
+            showCloseButton: true,
+         })
+      })
+}
+
+const btnSearchProductInternal = document.querySelector('.searchProductInternal')
+
+btnSearchProductInternal.addEventListener('click', function(e) {
+   e.preventDefault()
+   const inputParamSearch = document.querySelector('.productParamSearch')
+
+   if (inputParamSearch.value) {
+      return searchProduct(inputParamSearch.value)
+   } else {
+      return indexProducts()
+   }
+})
+
 const internalRequest = id => {
    return new Promise((resolve, reject) => {
       fetch(`${URL}/api/${productResource}/${id}`, {

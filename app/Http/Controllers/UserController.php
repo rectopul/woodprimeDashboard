@@ -52,7 +52,9 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $input['remember_token'] = Str::random(10);
         $user = User::create($input);
+        $success['id'] =  $user->id;
         $success['name'] =  $user->name;
+        $success['email'] =  $user->email;
         return response()->json(['success' => $success], 200);
 
         /* $user = new User;

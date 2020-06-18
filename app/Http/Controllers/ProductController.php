@@ -13,13 +13,31 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function search($find)
+    {
+        $text = $find;
+
+        $products = Product::query()
+            ->where('name', 'LIKE', "%{$text}%")
+            ->orWhere('description', 'LIKE', "%{$text}%")
+            ->orWhere('code', 'LIKE', "%{$text}%")
+            ->with('options.option.customization')->get();
+
+
+        if ($products) {
+            return response()->json($products);
+        }
+
+        return response()->json('', 200);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $products = Product::with('options.option.customization')->get();
-
-        /* foreach ($products->options() as $option) {
-            $option->with('option');
-        } */
 
         return $products;
     }

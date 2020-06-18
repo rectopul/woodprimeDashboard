@@ -6,11 +6,11 @@
           <div class="input-group-prepend">
             <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
           </div>
-          <input type="text" class="form-control skuProduct" id="skuProduct" name="skuProduct" placeholder="ID do produto">
+          <input type="text" class="form-control productParamSearch" id="skuProduct" name="skuProduct" placeholder="ID do produto">
         </div>
       </div>
       <div class="col-auto">
-        <button type="submit" class="btn btn-primary mb-2 btnGetProductVtex">Buscar</button>
+        <button type="submit" class="btn btn-primary mb-2 searchProductInternal">Buscar</button>
       </div>
     </div>
 </form> <!-- Form Product // -->
@@ -68,5 +68,4 @@
       </div>
     @endforeach
 
-    </div>
 </div>

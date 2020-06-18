@@ -1,5 +1,5 @@
-const URL = `http://woodprime.herokuapp.com/`
-//const URL = `http://192.168.0.10`
+//const URL = `http://woodprime.herokuapp.com/`
+const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')
@@ -410,7 +410,167 @@ const filter = () => {
 
 filter()
 
+const insertUser = object => {
+   return new Promise((resolve, reject) => {
+      const { name, email, password } = object
 
+      update(1, `dark`)
+
+      fetch(`${URL}/api/user`, {
+         method: 'POST',
+         headers: {
+            'content-type': 'application/json',
+         },
+         body: JSON.stringify({ name, email, password }),
+      })
+         .then(response => response.json())
+         .then(res => {
+            if (res.error) return reject(`Erro ao inserir novo usuário`)
+            update(2, `dark`)
+            return resolve(res)
+         })
+         .catch(error => {
+            return reject(error)
+         })
+   })
+}
+
+const formNewUser = button => {
+   button.addEventListener('click', e => {
+      e.preventDefault()
+
+      const inputName = document.querySelector('.newUserName')
+      const inputEmail = document.querySelector('.newUserMail')
+      const inputPassword = document.querySelector('.newUserPassword')
+
+      const name = inputName.value
+      const email = inputEmail.value
+      const password = inputPassword.value
+
+      console.log({ name, email, password })
+
+      if (!name) {
+         inputName.setCustomValidity('Informe o nome do usuário')
+         return inputName.reportValidity()
+      }
+      if (!email) {
+         inputEmail.setCustomValidity('Informe o e-mail do usuário')
+         return inputEmail.reportValidity()
+      }
+      if (!password) {
+         inputPassword.setCustomValidity('Informe uma senha para o usuário')
+         return inputPassword.reportValidity()
+      }
+
+      insertUser({ name, email, password })
+         .then(user => {
+            const { success } = user
+
+            return update(() => {
+               //insert user and button
+               //listUserInSistem
+               const newUser = document.createElement('tr')
+
+               newUser.innerHTML = `
+                <th scope="row">${success.id}</th>
+                <td>${success.name}</td>
+                <td>${success.email}</td>
+                <td class="td-actions text-right">
+                    <button type="button" class="btn btn-danger btnRemoveUser" data-id="${success.id}">
+                        <i class="far fa-trash-alt" aria-hidden="true"></i> Excluir
+                    </button>
+                </td>
+                `
+
+               document.querySelector('.listUserInSistem').append(newUser)
+
+               clickToDestroyUser(newUser.querySelector('.btnRemoveUser'))
+
+               $('#newUser').modal('hide')
+
+               return $('#newUser').on('hidden.bs.modal', function(e) {
+                  // do something...
+                  Swal.fire({
+                     title: `Usuário ${success.name} criado com sucesso!`,
+                     icon: 'success',
+                     showCloseButton: true,
+                  })
+
+                  return document.querySelector('.modal-backdrop').remove()
+               })
+            }, `dark`)
+         })
+         .catch(error => {
+            update(() => {
+               return Swal.fire({
+                  title: error,
+                  icon: 'error',
+                  showCloseButton: true,
+               })
+            }, `dark`)
+         })
+   })
+}
+
+const formInsertNewUser = document.querySelector('.btnInsertNewUser')
+
+formNewUser(formInsertNewUser)
+
+//Destroy user
+const destroyUser = id => {
+   return new Promise((resolve, reject) => {
+      update(1, `dark`)
+
+      fetch(`${URL}/api/user/${id}`, {
+         method: 'DELETE',
+         headers: {
+            'content-type': 'application/json',
+         },
+      })
+         .then(response => response.json())
+         .then(res => {
+            if (res.error) return reject(`Erro ao inserir novo usuário`)
+            update(2, `dark`)
+            return resolve(res)
+         })
+         .catch(error => {
+            return reject(error)
+         })
+   })
+}
+
+const clickToDestroyUser = btn => {
+   btn.addEventListener('click', function(e) {
+      const id = btn.dataset.id
+
+      return destroyUser(id)
+         .then(() => {
+            btn.closest('tr').remove()
+            return update(() => {
+               Swal.fire({
+                  title: `Usuário deletado com sucesso!`,
+                  icon: 'success',
+                  showCloseButton: true,
+               })
+            }, `dark`)
+         })
+         .catch(error => {
+            return update(() => {
+               Swal.fire({
+                  title: `Erro ao deletar usuário!`,
+                  icon: 'error',
+                  showCloseButton: true,
+               })
+            }, `dark`)
+         })
+   })
+}
+
+const btnsRemoveUser = document.querySelectorAll('.btnRemoveUser')
+
+Array.from(btnsRemoveUser).forEach(btn => {
+   return clickToDestroyUser(btn)
+})
 
 const optionResource = `option`
 
@@ -804,6 +964,147 @@ btnSaveOption.addEventListener('click', e => {
 
 const vtexAccountName = `woodprime`
 const vtexEnvironment = `vtexcommercestable`
+
+const createProductBySearch = object => {
+   return new Promise((resolve, reject) => {
+      const { name, code, image, options, id } = object
+
+      const div = document.createElement('div')
+
+      let productOptions = ``
+      if (options.length) {
+         options.forEach(opt => {
+            const { id, option } = opt
+
+            productOptions += `
+            <tr class="text-left optionProduct">
+               <th scope="row" class="px-1 productOptionName">
+                  ${option.name} (${option.customization.name})
+               </th>
+               
+               <td>${option.price}</td>
+               <td class="text-right px-1 productRemoveO\ption">
+                  <a href="#" data-id="${id}">
+                  <i class="fas fa-trash-alt"></i>
+                  </a>
+               </td>
+            </tr>
+            `
+         })
+      }
+
+      div.classList.add('col-4', 'productItem', 'my-2')
+
+      div.innerHTML = `
+      <div class="card border-primary mb-3 cardProduct item" data-id="${id}">
+         <div class="card-header text-center searchProductName">
+            ${name}
+            <button type="button" class="btn btn-danger btn-sm productDestroy" data-id="${id}">
+               <i class="fas fa-trash-alt"></i>
+            </button>
+         </div>
+   
+         <div class="card-body text-primary searchProductOptionsBody text-center px-1">
+            <table class="table table-hover searchProductOptions mb-0">
+               <thead>
+                  <tr>
+                     <th scope="col" class="text-left px-1">Option</th>
+                     <th scope="col">Preço</th>
+                     <th scope="col" class="text-right px-1">Action</th>
+                  </tr>
+               </thead>
+   
+               <tbody> ${productOptions} </tbody>
+            </table>
+            <!-- TABLE // -->
+         </div>
+      </div>
+      `
+
+      //remove option
+      const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
+
+      Array.from(linkRemoveOption).forEach(link => {
+         actionRemoveOption(link)
+      })
+
+      //remove product
+      const btnsDestroyProduct = div.querySelector('.productDestroy')
+
+      clickDestroyProduct(btnsDestroyProduct)
+
+      return resolve(div)
+   })
+}
+
+const searchProduct = slug => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product_search/${slug}`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            return res.forEach(product => {
+               document.querySelector('.listProduct').innerHTML = ``
+               return createProductBySearch(product).then(res => {
+                  return document.querySelector('.listProduct').append(res)
+               })
+            })
+         }, `dark`)
+      })
+      .catch(err => {
+         return Swal.fire({
+            title: err,
+            icon: 'error',
+            showCloseButton: true,
+         })
+      })
+}
+
+const indexProducts = () => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product`, {
+      method: 'GET',
+      headers: {
+         'content-type': 'application/json',
+      },
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            return res.forEach(product => {
+               document.querySelector('.listProduct').innerHTML = ``
+               return createProductBySearch(product).then(res => {
+                  return document.querySelector('.listProduct').append(res)
+               })
+            })
+         }, `dark`)
+      })
+      .catch(err => {
+         return Swal.fire({
+            title: err,
+            icon: 'error',
+            showCloseButton: true,
+         })
+      })
+}
+
+const btnSearchProductInternal = document.querySelector('.searchProductInternal')
+
+btnSearchProductInternal.addEventListener('click', function(e) {
+   e.preventDefault()
+   const inputParamSearch = document.querySelector('.productParamSearch')
+
+   if (inputParamSearch.value) {
+      return searchProduct(inputParamSearch.value)
+   } else {
+      return indexProducts()
+   }
+})
 
 const internalRequest = id => {
    return new Promise((resolve, reject) => {

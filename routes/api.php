@@ -28,6 +28,8 @@ Route::resource('user', 'UserController');
 Route::resource('product', 'ProductController');
 //Product Option
 Route::resource('product_option', 'ProductOptionController');
+//Product Option
+Route::get('product_search/{find}', 'ProductController@search');
 
 
 //types of customization

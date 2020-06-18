@@ -20,7 +20,7 @@
         </a><!-- CADASTRO DE PRODUTO // -->
 
         <a class="list-group-item list-group-item-action" id="v-pills-unrelated-tab" data-toggle="list" href="#v-pills-unrelated" role="tab" aria-controls="v-pills-unrelated">
-            Persinalizações desasociadas
+            Desasociadas
         </a><!-- busca de personalização // -->
 
         <a class="list-group-item list-group-item-action" id="v-pills-users-tab" data-toggle="list" href="#v-pills-users" role="tab" aria-controls="v-pills-users">

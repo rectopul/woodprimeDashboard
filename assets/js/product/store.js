@@ -7,6 +7,86 @@ $('#modalProductOptions').on('hidden.bs.modal', function(e) {
    $('#productCustons').modal('show')
 })
 
+const destroyProductOption = id => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product_option/${id}`, {
+      method: 'DELETE',
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            const optionDelete = document.querySelector(`.productRemoveOption a[data-id="${id}"]`).closest('.optionProduct')
+
+            optionDelete.remove()
+            return Swal.fire({
+               title: `Customização removida com sucesso!`,
+               icon: 'success',
+               showCloseButton: true,
+            })
+         }, `dark`)
+      })
+}
+
+const actionRemoveOption = link => {
+   link.addEventListener('click', e => {
+      e.preventDefault()
+
+      const linkId = link.dataset.id
+
+      destroyProductOption(linkId)
+   })
+}
+
+const linkRemoveOption = document.querySelectorAll('.productRemoveOption > a')
+
+Array.from(linkRemoveOption).forEach(link => {
+   actionRemoveOption(link)
+})
+
+const destroyProduct = id => {
+   update(1, `dark`)
+   fetch(`${URL}/api/product/${id}`, {
+      method: 'DELETE',
+   })
+      .then(response => response.json())
+      .then(res => {
+         update(() => {
+            const productDelete = document.querySelector(`.productDestroy[data-id="${id}"]`).closest('.productItem')
+
+            productDelete.remove()
+            return Swal.fire({
+               title: `Produto excluído com sucesso!`,
+               icon: 'success',
+               showCloseButton: true,
+            })
+         }, `dark`)
+      })
+      .catch(err => {
+         update(() => {
+            return Swal.fire({
+               title: `Erro ao excluir produto!`,
+               icon: 'warning',
+               showCloseButton: true,
+            })
+         }, `dark`)
+      })
+}
+
+const clickDestroyProduct = btn => {
+   btn.addEventListener('click', e => {
+      e.preventDefault()
+      const id = btn.dataset.id
+
+      destroyProduct(id)
+   })
+}
+
+const btnsDestroyProduct = document.querySelectorAll('.productDestroy')
+
+Array.from(btnsDestroyProduct).forEach(btn => {
+   clickDestroyProduct(btn)
+})
+
 const clickOption = option => {
    option.addEventListener('click', function(e) {
       // body
@@ -207,7 +287,7 @@ const insertProduct = () => {
 
    return requestProduct({
       name: nameProduct.value,
-      code: codeProduct.value,
+      code: parseFloat(codeProduct.value),
       description: descriptionProduct.value,
       image: imageProduct.value,
       options: optionsProduct,

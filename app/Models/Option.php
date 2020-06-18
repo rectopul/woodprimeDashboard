@@ -9,7 +9,7 @@ class Option extends Model
 {
     protected $fillable = ['customization_id', 'name', 'image', 'price'];
 
-    public function custom()
+    public function customization()
     {
         return $this->belongsTo(Customization::class);
     }

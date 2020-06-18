@@ -26,6 +26,8 @@ Route::resource('option', 'OptionController');
 Route::resource('user', 'UserController');
 //Poducts
 Route::resource('product', 'ProductController');
+//Product Option
+Route::resource('product_option', 'ProductOptionController');
 
 
 //types of customization

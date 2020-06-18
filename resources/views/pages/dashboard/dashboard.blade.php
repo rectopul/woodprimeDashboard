@@ -29,7 +29,7 @@
             </div> <!-- Buscar personalização.// -->
 
             <div class="tab-pane fade" id="v-pills-searchProduct" role="tabpanel" aria-labelledby="v-pills-searchProduct-tab">
-                @include('components.searchProduct')
+                @include('components.searchProduct', ['products', $products])
             </div> <!-- Buscar produto.// -->
 
             <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">

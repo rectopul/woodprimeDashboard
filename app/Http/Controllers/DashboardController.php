@@ -24,6 +24,7 @@ class DashboardController extends Controller
         $count = $types->count();
         $users = User::get();
         $unrelated = Customization::whereNull('type_id')->get();
+        $products = Product::with('options.option')->get();
 
         $customTypes = Type::get();
 
@@ -32,6 +33,6 @@ class DashboardController extends Controller
         }
 
         //dd($types);
-        return view('pages.dashboard.dashboard', compact('types', 'user', 'count', 'customTypes', 'customizationsCount', 'users', 'unrelated'));
+        return view('pages.dashboard.dashboard', compact('types', 'user', 'count', 'customTypes', 'customizationsCount', 'users', 'unrelated', 'products'));
     }
 }

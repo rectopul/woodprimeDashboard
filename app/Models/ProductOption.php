@@ -10,7 +10,7 @@ class ProductOption extends Model
 
     public function option()
     {
-        return $this->belongsTo('App\Models\OptionController');
+        return $this->belongsTo('App\Models\Option');
     }
     public function product()
     {

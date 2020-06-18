@@ -23,7 +23,7 @@ class OptionController extends Controller
             return response()->json($custom);
         }
 
-        $options = Option::get();
+        $options = Option::with('customization')->get();
 
         return response()->json($options);
     }
@@ -67,7 +67,9 @@ class OptionController extends Controller
      */
     public function show($id)
     {
-        //
+        $option = Option::where('id', $id)->with('custom')->first();
+
+        return response()->json($option);
     }
 
     /**

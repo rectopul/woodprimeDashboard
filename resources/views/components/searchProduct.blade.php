@@ -6,7 +6,7 @@
           <div class="input-group-prepend">
             <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
           </div>
-          <input type="text" class="form-control skuProduct" id="skuProduct" name="skuProduct" placeholder="SKU do produto">
+          <input type="text" class="form-control skuProduct" id="skuProduct" name="skuProduct" placeholder="ID do produto">
         </div>
       </div>
       <div class="col-auto">
@@ -15,10 +15,58 @@
     </div>
 </form> <!-- Form Product // -->
 
-<div class="resultProduct row">
-    <div class="col-4 productSearchImage"><img src="" alt="..." class="img-thumbnail"></div>
-    <div class="col-8"><h5 class="productSearchTitle"></h5></div>
-    <div class="col-12 productSearchDescription">
+<div class="listProduct row">
+  <!-- $products -->
+    @foreach ($products as $product)
+      <div class="col-4 productItem my-2">
+        <div class="card border-primary mb-3 cardProduct item" data-id="{{ $product->id }}">
+          <div class="card-header text-center searchProductName">
+              {{ $product->name }}
+              <button type="button" class="btn btn-danger btn-sm productDestroy" data-id="{{ $product->id }}">
+                  <i class="fas fa-trash-alt"></i>
+              </button>
+          </div>
+
+          <div class="card-body text-primary searchProductOptionsBody text-center px-1">
+              <table class="table table-hover searchProductOptions mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-left px-1">Option</th>
+                    <th scope="col">Preço</th>
+                    <th scope="col" class="text-right px-1">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if ($product->options)
+
+                    @foreach ($product->options as $option)
+                      <tr class="text-left optionProduct">
+                        <th scope="row" class="px-1 productOptionName">
+                          {{ $option->option->name }} ({{ $option->option->customization->name }})
+                        </th>
+                        
+                        <td>{{ $option->option->price }}</td>
+                        <td class="text-right px-1 productRemoveOption">
+                          <a href="#" data-id="{{ $option->id }}">
+                            <i class="fas fa-trash-alt"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    @endforeach
+                      
+                  @endif
+                </tbody>
+              </table>
+              <!-- TABLE // -->
+              {{-- @if ( $product->image )
+                <img src="{{ $product->image }}" alt="..." width="100" class="img-thumbnail">
+              @else
+                <img src="http://via.placeholder.com/200" alt="..." width="100" class="img-thumbnail">
+              @endif --}}
+          </div>
+        </div>
+      </div>
+    @endforeach
 
     </div>
 </div>

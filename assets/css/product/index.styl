@@ -19,7 +19,35 @@
     &.full
         max-height 2000px
         transition max-height 1s ease-in-out
-  
+.searchProductDesc
+    font-size .75rem
+.productOptionName
+    letter-spacing -1px
+.productRemoveOption
+    & a
+        color red
+.searchProductOptionsBody
+    height 165px
+    overflow-y auto
+.searchProductOptions
+    font-size .7rem
+.searchProductName
+    font-size .8rem
+    position relative
+    & > button
+        height 31px
+        position absolute
+        right 15px
+        top 50%
+        margin-top -15.5px
+        opacity .8
+        display none
+    &:hover
+        & > button
+            opacity 1
+            display block
+.cardProduct
+    height 260px
 .productCustomName
     position relative
     & > button

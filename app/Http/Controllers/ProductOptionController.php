@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class ProductOptionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,13 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('options.option.customization')->get();
-
-        /* foreach ($products->options() as $option) {
-            $option->with('option');
-        } */
-
-        return $products;
+        //
     }
 
     /**
@@ -42,32 +35,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $check = Product::where('name', '=', $request->input('name'))->count();
-
-        if ($check > 0) {
-            return response()->json(['error' => 'This product name already exist'], 400);
-        }
-
-        $product = new Product;
-        $product->name = $request->input('name');
-        $product->description = $request->input('description');
-        $product->image = $request->input('image');
-        $product->code = $request->input('code');
-
-        $product->save();
-
-        $options = $request->input('options');
-
-        foreach ($options as $key => $option) {
-            $productCustomization = new ProductOption;
-            $productCustomization->option_id = $option;
-            $productCustomization->product_id = $product->id;
-
-            //Save Custom
-            $productCustomization->save();
-        }
-
-        return response()->json($product);
+        //
     }
 
     /**
@@ -112,7 +80,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $res = Product::where('id', $id)->delete();
+        $res = ProductOption::where('id', $id)->delete();
         return response()->json($res);
     }
 }

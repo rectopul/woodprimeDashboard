@@ -6,6 +6,18 @@
             display none
 
 .cardCustom
+    & .card-body
+        border 2px solid transparent
+        & button
+            width 50px
+            position absolute
+            bottom 5px
+            left 50%
+            margin-left -25px
+            display none
+        &:hover
+            & button
+                display block
     & .card-header
         position relative
         & > button

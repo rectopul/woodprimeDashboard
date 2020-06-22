@@ -68,20 +68,22 @@
             </div>
             <div class="row container-types filter-gallery">
                 @foreach ($customTypes as $key => $customType)
-                    {{-- <div class="tab-pane fade @if ($key == 0) show active @endif" id="list-type-{{ $customType->id }}" role="tabpanel" aria-labelledby="list-type-{{ $customType->id }}-list"> --}}
                         
                         @foreach ($customType->customization as $customization)
                             <div class="col-3 card-custom-{{ $customization->id }}" data-category="type-{{ $customType->id }}" data-id="{{ $customization->id }}">
                                 <div class="card border-primary mb-3 cardCustom item" data-id="{{ $customization->id }}">
                                         <div class="card-header">
                                             {{ $customization->name }}
-                                            <button type="button" class="btn btn-danger btn-sm" data-id="{{ $customization->id }}">
+                                            <button type="button" class="btn btn-danger btn-sm btnDeleteCustom" data-id="{{ $customization->id }}">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
 
                                         <div class="card-body text-primary">
                                             <p class="card-text">{{ $customization->description }}</p>
+                                            <button type="button" class="btn btn-primary btnShowOptionsCustom" data-custom="{{ $customization->id }}" data-toggle="tooltip" data-placement="top" title="Visualizar opções">
+                                                <i class="far fa-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

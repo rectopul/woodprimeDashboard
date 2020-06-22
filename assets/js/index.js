@@ -1,5 +1,5 @@
-const URL = `http://woodprime.herokuapp.com/`
-//const URL = `http://192.168.0.10`
+//const URL = `http://woodprime.herokuapp.com/`
+const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')
@@ -79,4 +79,5 @@ const animateCSS = async (element, animation, prefix = 'animate__') =>
 
 $(document).ready(function() {
    $('.dropdown-toggle').dropdown()
+   $('[data-toggle="tooltip"]').tooltip()
 })

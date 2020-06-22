@@ -156,6 +156,7 @@ class CustomizationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $res = Customization::where('id', $id)->delete();
+        return response()->json($res);
     }
 }

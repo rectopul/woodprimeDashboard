@@ -1,5 +1,5 @@
-const URL = `http://woodprime.herokuapp.com/`
-//const URL = `http://192.168.0.10`
+//const URL = `http://woodprime.herokuapp.com/`
+const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')
@@ -79,6 +79,7 @@ const animateCSS = async (element, animation, prefix = 'animate__') =>
 
 $(document).ready(function() {
    $('.dropdown-toggle').dropdown()
+   $('[data-toggle="tooltip"]').tooltip()
 })
 
 const btnInsertCustom = document.querySelector('.btn-insert-custom')
@@ -96,9 +97,26 @@ const createCardCustom = item => {
 
    card.innerHTML = `
     <div class="card border-primary mb-3 cardCustom" data-id="${id}">
-        <div class="card-header">${name}</div>
+         <div class="card-header">
+            ${name}
+            <button type="button" 
+               class="btn btn-danger btn-sm btnDeleteCustom" 
+               data-id="${id}"
+            >
+               <i class="fas fa-trash-alt"></i>
+            </button>
+         </div>
         <div class="card-body text-primary">
             <p class="card-text">${description}</p>
+            <button type="button"
+               class="btn btn-primary btnShowOptionsCustom"
+               data-custom="${id}"
+               data-toggle="tooltip"
+               data-placement="top"
+               title="Visualizar opções"
+            >
+               <i class="far fa-eye"></i>
+            </button>
         </div>
     </div>`
 
@@ -109,28 +127,30 @@ const clickCard = item => {
    return item.addEventListener('click', e => {
       // body
       e.preventDefault()
+
+      //open modal
       $('#options').modal('show')
 
       //add loader in body
       document.querySelector('.optionsContainer').innerHTML = `<div class="spinner-border text-primary" role="status">
-                  <span class="sr-only">Loading...</span>
-              </div>`
+                     <span class="sr-only">Loading...</span>
+                 </div>`
       //add loader in title modal
       document.querySelector('.modal.options .modal-title').innerHTML = `<div class="spinner-border text-primary" role="status">
-                  <span class="sr-only">Loading...</span>
-              </div>`
+                     <span class="sr-only">Loading...</span>
+                 </div>`
       //add loader in title modal form option
       document.querySelector(
          '.modal.formOptions .modal-title'
       ).innerHTML = `<div class="spinner-border text-primary" role="status">
-                  <span class="sr-only">Loading...</span>
-              </div>`
+                     <span class="sr-only">Loading...</span>
+                 </div>`
 
       //set the option
-      document.querySelector('.insertOption').dataset.option = item.dataset.id
+      document.querySelector('.insertOption').dataset.option = item.dataset.custom
 
       //load options
-      return showOptions(item.dataset.id)
+      return showOptions(item.dataset.custom)
    })
 }
 
@@ -147,7 +167,9 @@ const insertCardCustom = item => {
 
    pillCustoms.innerHTML = countcustom + 1
 
-   return clickCard(card)
+   $(card.querySelector('.btnShowOptionsCustom')).tooltip()
+
+   return clickCard(card.querySelector('.btnShowOptionsCustom'))
 }
 
 btnInsertCustom.addEventListener('click', e => {
@@ -227,7 +249,7 @@ btnInsertCustom.addEventListener('click', e => {
 })
 
 //Show modal options
-const cardCustom = document.querySelectorAll('.cardCustom')
+const cardCustom = document.querySelectorAll('.btnShowOptionsCustom')
 
 Array.from(cardCustom).forEach(el => {
    clickCard(el)
@@ -272,16 +294,16 @@ const indexCustom = () => {
             //limpando dados existentes
             document.querySelector('.container-types').innerHTML = ``
             //mappeando
-            res.forEach(custom => {
-               insertCardCustom({
-                  name: custom.name,
-                  description: custom.description,
-                  id: custom.id,
-                  type: custom.type_id,
-               })
+            return res.forEach(custom => {
+               if (custom.type_id) {
+                  return insertCardCustom({
+                     name: custom.name,
+                     description: custom.description,
+                     id: custom.id,
+                     type: custom.type_id,
+                  })
+               }
             })
-
-            return console.log(res)
          }, `dark`)
       })
       .catch(error => {
@@ -307,7 +329,7 @@ const findCustoms = text => {
             //limpando dados existentes
             document.querySelector('.container-types').innerHTML = ``
             //mappeando
-            res.forEach(custom => {
+            return res.forEach(custom => {
                insertCardCustom({
                   name: custom.name,
                   description: custom.description,
@@ -315,8 +337,6 @@ const findCustoms = text => {
                   type: custom.type_id,
                })
             })
-
-            return console.log(res)
          }, `dark`)
       })
       .catch(error => {
@@ -409,6 +429,65 @@ const filter = () => {
 }
 
 filter()
+
+//DELETE CUSTOM
+//request Delete Custom
+const requestDestroyCustom = id => {
+   return new Promise((resolve, reject) => {
+      update(1, `dark`)
+      fetch(`${URL}/api/${custonResource}/${id}`, {
+         method: 'DELETE',
+         headers: {
+            'content-type': 'application/json',
+         },
+      })
+         .then(response => response.json())
+         .then(res => {
+            update(2, `dark`)
+            if (res === 0) return reject(`Customização não existe`)
+
+            return resolve(`Customização excluida com sucesso!`)
+         })
+         .catch(erro => {
+            return reject(`Erro ao excluir customização`)
+         })
+   })
+}
+//btnDeleteCustom
+const destroyCustom = btn => {
+   btn.addEventListener('click', e => {
+      e.preventDefault()
+
+      const id = btn.dataset.id
+
+      return requestDestroyCustom(id)
+         .then(response => {
+            return update(() => {
+               btn.closest('.col-3').remove()
+               return Swal.fire({
+                  title: response,
+                  icon: 'success',
+                  showCloseButton: true,
+               })
+            }, `dark`)
+         })
+         .catch(error => {
+            return update(() => {
+               Swal.fire({
+                  title: error,
+                  icon: 'error',
+                  showCloseButton: true,
+               })
+            }, `dark`)
+         })
+   })
+}
+
+const btnDestroyCustom = document.querySelectorAll('.btnDeleteCustom')
+
+Array.from(btnDestroyCustom).forEach(btn => {
+   return destroyCustom(btn)
+})
 
 const insertUser = object => {
    return new Promise((resolve, reject) => {

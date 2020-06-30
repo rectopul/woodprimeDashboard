@@ -92,7 +92,9 @@ class CustomizationController extends Controller
 
         $custom->save();
 
-        return response()->json($custom);
+        $response = Customization::where('id', $custom->id)->with('type')->first();
+
+        return response()->json($response);
     }
 
     /**

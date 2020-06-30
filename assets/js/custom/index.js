@@ -1,6 +1,57 @@
 const btnInsertCustom = document.querySelector('.btn-insert-custom')
 const custonResource = `custon`
 
+/* const custom = (() => {
+   //Private
+
+   //Create card from new customs
+   const createCardCustom = item => {
+      const card = document.createElement('div')
+
+      const { id, name, description, type } = item
+
+      card.classList.add('col-3', `card-custom-${id}`)
+
+      card.dataset.category = `type-${type}`
+      card.dataset.id = id
+
+      card.innerHTML = `
+       <div class="card border-primary mb-3 cardCustom" data-id="${id}">
+            <div class="card-header">
+               ${name}
+               <button type="button" 
+                  class="btn btn-danger btn-sm btnDeleteCustom" 
+                  data-id="${id}"
+               >
+                  <i class="fas fa-trash-alt"></i>
+               </button>
+            </div>
+           <div class="card-body text-primary">
+               <p class="card-text">${description}</p>
+               <button type="button"
+                  class="btn btn-primary btnShowOptionsCustom"
+                  data-custom="${id}"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Visualizar opções"
+               >
+                  <i class="far fa-eye"></i>
+               </button>
+           </div>
+       </div>`
+
+      const btnDeleteCstom = card.querySelector('.btnDeleteCustom')
+
+      destroyCustom(btnDeleteCstom)
+
+      return card
+   }
+
+   return {
+      create,
+   }
+})() */
+
 const createCardCustom = item => {
    const card = document.createElement('div')
 
@@ -41,6 +92,36 @@ const createCardCustom = item => {
    destroyCustom(btnDeleteCstom)
 
    return card
+}
+
+const createCardinProduct = item => {
+   const { id, name, type, type_id, description } = item
+   const card = document.createElement('div')
+
+   card.classList.add(`col-4`, `productOption`, `product-option-${id}`)
+
+   card.dataset.customName = type.name || null
+
+   card.dataset.custom = id
+
+   card.dataset.id = id
+
+   card.dataset.customName = card.innerHTML = `
+   <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="32">
+      <div class="card-header productOptionName">
+            ${name}
+      </div>
+
+      <div class="card-body text-primary productOptionDesc">
+         <p class="card-text">${description}</p>
+      </div>
+   </div>`
+
+   const option = card.querySelector('.card')
+
+   clickCustom(option)
+
+   return document.querySelector('.productCustonsBody').append(card)
 }
 
 const clickCard = item => {
@@ -138,6 +219,8 @@ btnInsertCustom.addEventListener('click', e => {
                icon: 'success',
                showCloseButton: true,
             })
+
+            createCardinProduct(res)
 
             document.querySelector('.btn-modal-types').classList.remove('btn-success')
             document.querySelector('.btn-modal-types').classList.add('btn-primary')
@@ -384,6 +467,7 @@ const destroyCustom = btn => {
          .then(response => {
             return update(() => {
                btn.closest('.col-3').remove()
+               document.querySelector(`.productCustonsBody .product-option-${id}`).remove()
                return Swal.fire({
                   title: response,
                   icon: 'success',

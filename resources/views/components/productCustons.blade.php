@@ -9,23 +9,21 @@
           </button>
         </div>
         <div class="modal-body d-flex flex-wrap productCustonsBody">
-            <div class="row ProductcustonsContainer">
-                @foreach ($customTypes as $key => $customType)
-                    @foreach ($customType->customization as $customization)
-                        <div class="col-4 productOption product-option-{{ $customization->id }}" data-custom-name="{{ $customType->name }}" data-custom="{{ $customization->id }}" data-id="{{ $customization->id }}">
-                            <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="{{ $customization->id }}">
-                                    <div class="card-header productOptionName">
-                                        {{ $customization->name }}
-                                    </div>
+            @foreach ($customTypes as $key => $customType)
+                @foreach ($customType->customization as $customization)
+                    <div class="col-4 productOption product-option-{{ $customization->id }}" data-custom-name="{{ $customType->name }}" data-custom="{{ $customization->id }}" data-id="{{ $customization->id }}">
+                        <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="{{ $customization->id }}">
+                                <div class="card-header productOptionName">
+                                    {{ $customization->name }}
+                                </div>
 
-                                    <div class="card-body text-primary productOptionDesc">
-                                        <p class="card-text">{{ $customization->description }}</p>
-                                    </div>
+                                <div class="card-body text-primary productOptionDesc">
+                                    <p class="card-text">{{ $customization->description }}</p>
                                 </div>
                             </div>
-                    @endforeach
+                        </div>
                 @endforeach
-            </div>
+            @endforeach
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>

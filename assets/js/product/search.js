@@ -12,10 +12,12 @@ const createProductBySearch = object => {
          options.forEach(opt => {
             const { id, option } = opt
 
+            const customName = option.customization ? `(${option.customization.name})` : ``
+
             productOptions += `
             <tr class="text-left optionProduct">
                <th scope="row" class="px-1 productOptionName">
-                  ${option.name} (${option.customization.name})
+                  ${option.name} ${customName}
                </th>
                
                <td>${option.price}</td>
@@ -67,7 +69,7 @@ const createProductBySearch = object => {
       //remove product
       const btnsDestroyProduct = div.querySelector('.productDestroy')
 
-      clickDestroyProduct(btnsDestroyProduct)
+      product.destroy(btnsDestroyProduct)
 
       return resolve(div)
    })

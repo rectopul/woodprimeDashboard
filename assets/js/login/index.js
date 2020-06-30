@@ -4,7 +4,7 @@ const insertUser = object => {
 
       update(1, `dark`)
 
-      fetch(`${URL}/api/user`, {
+      fetch(`/api/user`, {
          method: 'POST',
          headers: {
             'content-type': 'application/json',
@@ -109,7 +109,7 @@ const destroyUser = id => {
    return new Promise((resolve, reject) => {
       update(1, `dark`)
 
-      fetch(`${URL}/api/user/${id}`, {
+      fetch(`/api/user/${id}`, {
          method: 'DELETE',
          headers: {
             'content-type': 'application/json',

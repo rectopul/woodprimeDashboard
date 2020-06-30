@@ -75,7 +75,7 @@ const createProductBySearch = object => {
 
 const searchProduct = slug => {
    update(1, `dark`)
-   fetch(`${URL}/api/product_search/${slug}`, {
+   fetch(`/api/product_search/${slug}`, {
       method: 'GET',
       headers: {
          'content-type': 'application/json',
@@ -103,7 +103,7 @@ const searchProduct = slug => {
 
 const indexProducts = () => {
    update(1, `dark`)
-   fetch(`${URL}/api/product`, {
+   fetch(`/api/product`, {
       method: 'GET',
       headers: {
          'content-type': 'application/json',
@@ -144,7 +144,7 @@ btnSearchProductInternal.addEventListener('click', function(e) {
 
 const internalRequest = id => {
    return new Promise((resolve, reject) => {
-      fetch(`${URL}/api/${productResource}/${id}`, {
+      fetch(`/api/${productResource}/${id}`, {
          method: 'GET',
          headers: {
             'content-type': 'application/json',

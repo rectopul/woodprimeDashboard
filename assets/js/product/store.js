@@ -8,7 +8,7 @@ const product = (() => {
    const requestProduct = object => {
       const { name, code, description, image, options } = object
       update(1, `dark`)
-      fetch(`${URL}/api/${productResource}`, {
+      fetch(`/api/${productResource}`, {
          method: 'POST',
          headers: {
             'content-type': 'application/json',
@@ -160,7 +160,7 @@ $('#modalProductOptions').on('hidden.bs.modal', function(e) {
 
 const destroyProductOption = id => {
    update(1, `dark`)
-   fetch(`${URL}/api/product_option/${id}`, {
+   fetch(`/api/product_option/${id}`, {
       method: 'DELETE',
    })
       .then(response => response.json())
@@ -287,7 +287,7 @@ const getOptions = custom => {
    document.querySelector('.modalProductOptionsContainer').innerHTML = ``
    document.querySelector('.modalProductOptionsContainer').append(spinner())
 
-   fetch(`${URL}/api/option?custom=${custom}`, {
+   fetch(`/api/option?custom=${custom}`, {
       method: 'GET',
    })
       .then(response => response.json())

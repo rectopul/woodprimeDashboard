@@ -2,7 +2,7 @@ const customUpdate = object => {
    const { id, name, description, type_id } = object
 
    update(1, `dark`)
-   fetch(`${URL}/api/${custonResource}/${id}`, {
+   fetch(`/api/${custonResource}/${id}`, {
       method: 'PUT',
       headers: {
          'content-type': 'application/json',

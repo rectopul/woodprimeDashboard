@@ -79,7 +79,7 @@ const updateOption = () => {
 
    update(1)
 
-   fetch(`${URL}/api/${optionResource}/${id}`, {
+   fetch(`/api/${optionResource}/${id}`, {
       method: 'PUT',
       headers: {
          'content-type': 'application/json',
@@ -167,7 +167,7 @@ const deleteOption = element => {
    const id = element.dataset.id
    //return console.log(element.closest('.option'))
    update(1)
-   fetch(`${URL}/api/${optionResource}/${id}`, {
+   fetch(`/api/${optionResource}/${id}`, {
       method: 'DELETE',
       headers: {
          'content-type': 'application/json',
@@ -201,7 +201,7 @@ const clickRemoveOption = element => {
 const showOptions = id => {
    //Request
    update(1, `dark`)
-   fetch(`${URL}/api/${optionResource}?custom=${id}`)
+   fetch(`/api/${optionResource}?custom=${id}`)
       .then(response => response.json())
       .then(res => {
          update(() => {
@@ -307,7 +307,7 @@ const InsertOption = id => {
 
    //Request
    update(1)
-   fetch(`${URL}/api/${optionResource}`, {
+   fetch(`/api/${optionResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',

@@ -114,7 +114,7 @@ btnInsertCustom.addEventListener('click', e => {
 
    //Request
    update(1, `dark`)
-   fetch(`${URL}/api/${custonResource}`, {
+   fetch(`/api/${custonResource}`, {
       method: 'POST',
       headers: {
          'content-type': 'application/json',

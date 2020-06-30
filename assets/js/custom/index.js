@@ -162,12 +162,6 @@ const insertCardCustom = item => {
 
    document.querySelector(`.container-types`).prepend(card)
 
-   const pillCustoms = document.querySelector('.pillcustoms')
-
-   const countcustom = parseInt(pillCustoms.innerHTML)
-
-   pillCustoms.innerHTML = countcustom + 1
-
    $(card.querySelector('.btnShowOptionsCustom')).tooltip()
 
    return clickCard(card.querySelector('.btnShowOptionsCustom'))

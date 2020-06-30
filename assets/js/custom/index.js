@@ -461,7 +461,10 @@ const destroyCustom = btn => {
          .then(response => {
             return update(() => {
                btn.closest('.col-3').remove()
-               document.querySelector(`.productCustonsBody .product-option-${id}`).remove()
+               const inProdDestroy = document.querySelector(`.productCustonsBody .product-option-${id}`)
+
+               if (inProdDestroy) inProdDestroy.remove()
+
                return Swal.fire({
                   title: response,
                   icon: 'success',

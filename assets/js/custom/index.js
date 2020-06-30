@@ -36,6 +36,10 @@ const createCardCustom = item => {
         </div>
     </div>`
 
+   const btnDeleteCstom = card.querySelector('.btnDeleteCustom')
+
+   destroyCustom(btnDeleteCstom)
+
    return card
 }
 
@@ -137,7 +141,7 @@ btnInsertCustom.addEventListener('click', e => {
 
             document.querySelector('.btn-modal-types').classList.remove('btn-success')
             document.querySelector('.btn-modal-types').classList.add('btn-primary')
-            document.querySelector('.btn-modal-types').innerHTML = `Tipos de customização`
+            document.querySelector('.btn-modal-types').innerHTML = `Items`
 
             console.log(inputTypeCustom.value)
 

@@ -42,7 +42,10 @@
                     @foreach ($product->options as $option)
                       <tr class="text-left optionProduct">
                         <th scope="row" class="px-1 productOptionName">
-                          {{ $option->option->name }} ({{ $option->option->customization->name }})
+                          {{ $option->option->name }} 
+                          @if ($option->option->customization)
+                          ({{ $option->option->customization->name }})
+                          @endif
                         </th>
                         
                         <td>{{ $option->option->price }}</td>

@@ -12,7 +12,7 @@
         </a><!-- busca de personalização // -->
 
         <a class="list-group-item list-group-item-action" id="v-pills-product-tab" data-toggle="list" href="#v-pills-product" role="tab" aria-controls="v-pills-product">
-            Cadastro de produto
+            Integrar produtos
         </a><!-- CADASTRO DE PRODUTO // -->
 
         <a class="list-group-item list-group-item-action" id="v-pills-searchProduct-tab" data-toggle="list" href="#v-pills-searchProduct" role="tab" aria-controls="v-pills-searchProduct">

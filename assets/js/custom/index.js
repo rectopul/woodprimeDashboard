@@ -195,7 +195,7 @@ openFormOption.addEventListener('click', function(e) {
 const controller = new AbortController()
 const signal = controller.signal
 const indexCustom = () => {
-   fetch(`${URL}/api/${custonResource}`, {
+   fetch(`/api/${custonResource}`, {
       method: 'GET',
       headers: {
          'content-type': 'application/json',
@@ -230,7 +230,7 @@ const indexCustom = () => {
       })
 }
 const findCustoms = text => {
-   fetch(`${URL}/api/${custonResource}/search/${text}`, {
+   fetch(`/api/${custonResource}/search/${text}`, {
       method: 'GET',
       headers: {
          'content-type': 'application/json',
@@ -351,7 +351,7 @@ filter()
 const requestDestroyCustom = id => {
    return new Promise((resolve, reject) => {
       update(1, `dark`)
-      fetch(`${URL}/api/${custonResource}/${id}`, {
+      fetch(`/api/${custonResource}/${id}`, {
          method: 'DELETE',
          headers: {
             'content-type': 'application/json',

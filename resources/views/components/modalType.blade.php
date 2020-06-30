@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Tipos de customização</h5>
+          <h5 class="modal-title">Tipos de personalização</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -26,7 +26,7 @@
           @endforeach
         </div>
         <div class="modal-footer">
-          <input type="text" class="typeName" placeholder="Tipo de customização" name="typeName" id="typeName">
+          <input type="text" class="typeName" placeholder="Tipo de personalização" name="typeName" id="typeName">
           <button type="button" class="btn btn-primary insertType">Novo</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
         </div>

@@ -2,13 +2,13 @@
     <input type="hidden" name="typeCustom" class="typeCustom" id="typeCustom" value=""> <!--Type Customization .// -->
     <div class="form-row">
       <div class="form-group col-md-12">
-        <input type="text" class="form-control nameCustom" placeholder="Nome da customização" name="name" id="name">
+        <input type="text" class="form-control nameCustom" placeholder="Nome da Personalização" name="name" id="name">
       </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-12">
-            <label for="description">Descrição da customização</label>
-            <textarea name="" id="" cols="30" rows="5" class="form-control descCustom" placeholder="Descrição da customização" name="description" id="description"></textarea>
+            <label for="description">Descrição da personalização</label>
+            <textarea name="" id="" cols="30" rows="5" class="form-control descCustom" placeholder="Descrição da Personalização" name="description" id="description"></textarea>
         </div>
     </div>
     <div class="form-row">

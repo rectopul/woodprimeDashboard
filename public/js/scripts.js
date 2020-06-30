@@ -1,5 +1,5 @@
-const URL = `http://woodprime.herokuapp.com/`
-//const URL = `http://192.168.0.10`
+//const URL = `http://woodprime.herokuapp.com/`
+const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
    var element = document.querySelector('.barload')
@@ -1737,6 +1737,35 @@ const tabTypeRemove = id => {
    document.querySelector(`#list-type-${id}`).remove()
 }
 
+const createType = object => {
+   const { id, name } = object
+   const newType = document.createElement('div')
+
+   newType.classList.add('card', 'mb-3', 'card-type')
+
+   newType.id = `type-${id}`
+
+   newType.style.flex = `0 0 calc(33.333333% - 10px)`
+   newType.style.margin = `0 5px`
+   newType.innerHTML = `
+   <div class="card-body text-center">
+      <h6 class="card-title mb-0">${name}</h6>
+   </div>
+   <div class="types-hover">
+      <button type="button" class="btn btn-danger del-type" data-delete="#type-${id}">
+      <i class="fas fa-trash-alt"></i>
+      </button>
+      <button type="button" class="btn btn-success select-type" data-dismiss="modal" type-id="${id}" data-select="#type-${res.id}">
+      <i class="fas fa-check"></i>
+      </button>
+   </div>`
+
+   newType.querySelector('.select-type').addEventListener('click', e => {
+      e.preventDefault()
+      selectType(newType.querySelector('.select-type'))
+   })
+}
+
 const insertType = input => {
    if (!input.value) return alert('Informe o nome do tipo de customização')
    update(1, `dark`)
@@ -1784,7 +1813,7 @@ const insertType = input => {
                   })
 
                   //insert tab
-                  tabTypeInsert({ id: res.id, name: res.name })
+                  //tabTypeInsert({ id: res.id, name: res.name })
 
                   const btnDelType = newType.querySelector('.del-type')
 
@@ -1822,7 +1851,7 @@ const deleteType = input => {
                //Delete card to modal
 
                return update(() => {
-                  tabTypeRemove(id)
+                  //tabTypeRemove(id)
                   return document.querySelector(input.getAttribute('data-delete')).remove()
                }, `dark`)
             })

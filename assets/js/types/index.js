@@ -48,7 +48,7 @@ let type = (() => {
    const insertType = input => {
       if (!input.value) return alert('Informe o nome do tipo de customização')
       update(1, `dark`)
-      fetch(`${URL}/api/${typeResource}`, {
+      fetch(`/api/${typeResource}`, {
          method: 'POST',
          headers: {
             'content-type': 'application/json',
@@ -83,7 +83,7 @@ let type = (() => {
 
       update(1, `dark`)
 
-      fetch(`${URL}/api/${typeResource}/${id}`, {
+      fetch(`/api/${typeResource}/${id}`, {
          method: 'DELETE',
       })
          .then(response => {
@@ -218,6 +218,7 @@ let type = (() => {
    }
 })()
 
+//Create new Type
 const btnInsertType = document.querySelector('.insertType')
 
 btnInsertType.addEventListener('click', e => {
@@ -226,6 +227,7 @@ btnInsertType.addEventListener('click', e => {
    //insertType(document.querySelector('.typeName'))
 })
 
+//Delete types
 const btnDeleteType = document.querySelectorAll('.del-type')
 
 Array.from(btnDeleteType).forEach(el => {
@@ -236,6 +238,7 @@ Array.from(btnDeleteType).forEach(el => {
    })
 })
 
+//Select type form create custom
 let btnSelect = document.querySelectorAll('.select-type')
 
 Array.from(btnSelect).forEach(el => {

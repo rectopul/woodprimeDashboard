@@ -13,7 +13,7 @@
     </div>
     <div class="form-row">
       <div class="form-group col-md-6">
-        <button type="button" class="btn btn-primary btn-modal-types" data-toggle="modal" data-target="#types">Tipos de customização</button>
+        <button type="button" class="btn btn-primary btn-modal-types" data-toggle="modal" data-target="#types">Items</button>
       </div>
 
       <div class="form-group col-6 text-right loaderInsertCustom">
@@ -23,5 +23,5 @@
       </div>
     </div>
     <hr>
-    <button type="submit" class="btn btn-primary btn-insert-custom">Criar customização</button>
+    <button type="submit" class="btn btn-primary btn-insert-custom">Criar Personalização</button>
 </form>

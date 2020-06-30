@@ -58,6 +58,20 @@ function update(callback, theme) {
    }
 }
 
+const spinner = (color, size) => {
+   const spinner = document.createElement('div')
+
+   spinner.classList.add('spinner-border', `text-${color ? color : 'primary'}`)
+
+   if (size && size === `small`) spinner.classList.add('spinner-border-sm')
+
+   spinner.setAttribute('role', 'status')
+
+   spinner.innerHTML = `<span class="sr-only">Loading...</span>`
+
+   return spinner
+}
+
 const animateCSS = async (element, animation, prefix = 'animate__') =>
    // We create a Promise and return it
    new Promise((resolve, reject) => {

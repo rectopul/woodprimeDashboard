@@ -240,11 +240,15 @@ const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 btnSearchProduct.addEventListener('click', e => {
    e.preventDefault()
    let inputSkuProduct = document.querySelector('.skuProduct')
+   const olderText = btnSearchProduct.innerHTML
+   btnSearchProduct.innerHTML = ``
+   btnSearchProduct.append(spinner(`ligth`, 'small'))
    getVtexProduct(inputSkuProduct)
       .then(res => {
          console.log(res)
          const { name, id: code, image } = res
          document.querySelector('.resultProduct').classList.add('full')
+         btnSearchProduct.innerHTML = olderText
          return putValues({ name, code, image })
       })
       .catch(res => {

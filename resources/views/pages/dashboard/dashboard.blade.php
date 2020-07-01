@@ -10,6 +10,7 @@
 @include('components.productCustons', ['types' => $customTypes])
 @include('components.productOptions')
 @include('components.newUser')
+@include('components.modalConfirmDestroy')
 
 
 <div class="row justify-content-center mt-5">

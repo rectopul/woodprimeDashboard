@@ -79,37 +79,62 @@ let type = (() => {
 
    //Destroy type in data-base and remove of container
    const destroyType = input => {
-      const id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
+      const inputAction = document.querySelector('.actionConfirm')
+      const btnAceptAction = document.querySelector('.aceptAction')
 
-      update(1, `dark`)
+      inputAction.value = `TypeDestroy`
 
-      fetch(`/api/${typeResource}/${id}`, {
-         method: 'DELETE',
+      btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
+
+      $('.modal.types').on('hidden.bs.modal', function(e) {
+         // do something...
+         $('.modalActionConfirm').modal('show')
+         $(this).off('hidden.bs.modal')
       })
-         .then(response => {
-            update(2, `dark`)
-            response
-               .json()
-               .then(res => {
-                  //Delete card to modal
 
-                  return update(() => {
-                     //tabTypeRemove(id)
-                     return document.querySelector(input.getAttribute('data-delete')).remove()
+      $('.modal.types').modal('hide')
+
+      btnAceptAction.addEventListener('click', e => {
+         if (inputAction.value == `TypeDestroy`) {
+            const id = btnAceptAction.dataset.id
+
+            $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
+               // do something...
+               $('.modal.types').modal('show')
+               $(this).off('hidden.bs.modal')
+            })
+
+            update(1, `dark`)
+
+            fetch(`/api/${typeResource}/${id}`, {
+               method: 'DELETE',
+            })
+               .then(response => {
+                  update(2, `dark`)
+                  response
+                     .json()
+                     .then(res => {
+                        //Delete card to modal
+
+                        return update(() => {
+                           //tabTypeRemove(id)
+                           return input.closest('.card').remove()
+                        }, `dark`)
+                     })
+                     .catch(err => console.log(err))
+               })
+               .catch(err => {
+                  console.log(err)
+                  update(() => {
+                     Swal.fire({
+                        title: `Tivemos um erro de sistema`,
+                        icon: 'error',
+                        showCloseButton: true,
+                     })
                   }, `dark`)
                })
-               .catch(err => console.log(err))
-         })
-         .catch(err => {
-            console.log(err)
-            update(() => {
-               Swal.fire({
-                  title: `Tivemos um erro de sistema`,
-                  icon: 'error',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
+         }
+      })
    }
 
    //select type and put in form value

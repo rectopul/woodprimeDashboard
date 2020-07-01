@@ -1,8 +1,80 @@
 const btnInsertCustom = document.querySelector('.btn-insert-custom')
 const custonResource = `custon`
 
-/* const custom = (() => {
+const custom = (() => {
    //Private
+
+   //request Delete Custom
+   const requestDestroyCustom = id => {
+      return new Promise((resolve, reject) => {
+         update(1, `dark`)
+         fetch(`/api/${custonResource}/${id}`, {
+            method: 'DELETE',
+            headers: {
+               'content-type': 'application/json',
+            },
+         })
+            .then(response => response.json())
+            .then(res => {
+               update(2, `dark`)
+               if (res === 0) return reject(`Customização não existe`)
+
+               return resolve(`Customização excluida com sucesso!`)
+            })
+            .catch(erro => {
+               return reject(`Erro ao excluir customização`)
+            })
+      })
+   }
+
+   //Destroy card custom
+   const destroyCustom = btn => {
+      btn.addEventListener('click', e => {
+         e.preventDefault()
+
+         //modalActionConfirm
+         const inputAction = document.querySelector('.actionConfirm')
+         const btnAceptAction = document.querySelector('.aceptAction')
+
+         inputAction.value = `customDestroy`
+
+         btnAceptAction.dataset.id = btn.dataset.id
+
+         $('.modalActionConfirm').modal('show')
+
+         btnAceptAction.addEventListener('click', e => {
+            const id = btnAceptAction.dataset.id
+
+            if (inputAction.value == `customDestroy`) {
+               return requestDestroyCustom(id)
+                  .then(response => {
+                     return update(() => {
+                        btn.closest('.col-3').remove()
+
+                        const inProdDestroy = document.querySelector(`.productCustonsBody .product-option-${id}`)
+
+                        if (inProdDestroy) inProdDestroy.remove()
+
+                        return Swal.fire({
+                           title: response,
+                           icon: 'success',
+                           showCloseButton: true,
+                        })
+                     }, `dark`)
+                  })
+                  .catch(error => {
+                     return update(() => {
+                        Swal.fire({
+                           title: error,
+                           icon: 'error',
+                           showCloseButton: true,
+                        })
+                     }, `dark`)
+                  })
+            }
+         })
+      })
+   }
 
    //Create card from new customs
    const createCardCustom = item => {
@@ -47,10 +119,203 @@ const custonResource = `custon`
       return card
    }
 
-   return {
-      create,
+   //Create custom
+   const createCardinProduct = item => {
+      const { id, name, type, type_id, description } = item
+      const card = document.createElement('div')
+
+      card.classList.add(`col-4`, `productOption`, `product-option-${id}`)
+
+      card.dataset.customName = type.name || null
+
+      card.dataset.custom = id
+
+      card.dataset.id = id
+
+      card.dataset.customName = card.innerHTML = `
+      <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="32">
+         <div class="card-header productOptionName">
+               ${name}
+         </div>
+   
+         <div class="card-body text-primary productOptionDesc">
+            <p class="card-text">${description}</p>
+         </div>
+      </div>`
+
+      const option = card.querySelector('.card')
+
+      clickCustom(option)
+
+      return document.querySelector('.productCustonsBody').append(card)
    }
-})() */
+
+   //request createCustom
+   const requestCreateCustom = object => {
+      return new Promise((resolve, reject) => {
+         const { name, description, type_id } = object
+         //Request
+         update(1, `dark`)
+         fetch(`/api/${custonResource}`, {
+            method: 'POST',
+            headers: {
+               'content-type': 'application/json',
+            },
+            body: JSON.stringify({ name, description, type_id }),
+         })
+            .then(response => {
+               if (!response.ok) return reject(`Não foi possível cadastrar a customização`)
+               return response.json()
+            })
+            .then(res => {
+               return resolve(res)
+            })
+            .catch(err => {
+               console.log(err)
+               return update(() => {
+                  Swal.fire({
+                     title: `Tivemos um erro de sistema`,
+                     icon: 'error',
+                     showCloseButton: true,
+                  })
+               })
+            })
+      })
+   }
+
+   const validateCustom = list => {
+      return new Promise((resolve, reject) => {
+         list.map(item => {
+            const { input, msg } = item
+
+            if (!input.value) {
+               input.setCustomValidity(msg)
+
+               input.reportValidity()
+
+               return reject(msg)
+            }
+
+            return resolve()
+         })
+      })
+   }
+
+   const clickCard = item => {
+      return item.addEventListener('click', e => {
+         // body
+         e.preventDefault()
+
+         //open modal
+         $('#options').modal('show')
+
+         //add loader in body
+         document.querySelector('.optionsContainer').innerHTML = `
+         <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+         </div>`
+
+         //add loader in title modal
+         document.querySelector('.modal.options .modal-title').innerHTML = `
+         <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+         </div>`
+
+         //add loader in title modal form option
+         document.querySelector('.modal.formOptions .modal-title').innerHTML = `
+         <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+         </div>`
+
+         //set the option
+         document.querySelector('.insertOption').dataset.option = item.dataset.custom
+
+         //load options
+         return showOptions(item.dataset.custom)
+      })
+   }
+
+   const insertCardCustom = item => {
+      const { id, name, description, type } = item
+
+      const card = createCardCustom(item)
+
+      document.querySelector(`.container-types`).prepend(card)
+
+      $(card.querySelector('.btnShowOptionsCustom')).tooltip()
+
+      return clickCard(card.querySelector('.btnShowOptionsCustom'))
+   }
+
+   const createCustom = () => {
+      //Pegar inputs
+      const inputTypeCustom = document.querySelector('.typeCustom')
+      const inputNameCustom = document.querySelector('.nameCustom')
+      const inputDescriptionCustom = document.querySelector('.descCustom')
+
+      return validateCustom([
+         { input: inputTypeCustom, msg: 'Informe o nome da customização' },
+         { input: inputNameCustom, msg: 'Informe uma descrição para a customização' },
+         { input: inputDescriptionCustom, msg: 'Selecione o tipo de customização' },
+      ])
+         .then(res => {
+            //Put loader in form
+            document.querySelector('.loaderInsertCustom').classList.add('show')
+
+            //Send request
+            const customValues = {
+               name: inputNameCustom.value,
+               description: inputDescriptionCustom.value,
+               type_id: inputTypeCustom.value,
+            }
+
+            return requestCreateCustom(customValues)
+               .then(res => {
+                  const { name, description, id } = res
+
+                  return update(() => {
+                     //SweetAlert
+                     Swal.fire({
+                        title: `Customização ${res.name} cadastrada`,
+                        icon: 'success',
+                        showCloseButton: true,
+                     })
+
+                     createCardinProduct(res)
+
+                     document.querySelector('.btn-modal-types').classList.remove('btn-success')
+                     document.querySelector('.btn-modal-types').classList.add('btn-primary')
+                     document.querySelector('.btn-modal-types').innerHTML = `Items`
+
+                     console.log(inputTypeCustom.value)
+
+                     //insertCard in list tab
+                     insertCardCustom({ name, description, id, type: inputTypeCustom.value })
+
+                     //Limpar inputs
+                     inputTypeCustom.value = ``
+                     inputNameCustom.value = ``
+                     inputDescriptionCustom.value = ``
+
+                     return document.querySelector('.loaderInsertCustom').classList.remove('show')
+                  }, `dark`)
+               })
+               .catch(err => {
+                  return Swal.fire({
+                     title: err,
+                     icon: 'error',
+                     showCloseButton: true,
+                  })
+               })
+         })
+         .catch(err => console.log(err))
+   }
+
+   return {
+      create: createCustom,
+      destroy: destroyCustom,
+   }
+})()
 
 const createCardCustom = item => {
    const card = document.createElement('div')
@@ -169,80 +434,7 @@ const insertCardCustom = item => {
 
 btnInsertCustom.addEventListener('click', e => {
    e.preventDefault()
-   //Pegar inputs
-   const inputTypeCustom = document.querySelector('.typeCustom')
-   const inputNameCustom = document.querySelector('.nameCustom')
-   const inputDescriptionCustom = document.querySelector('.descCustom')
-   //Validação
-   if (!inputNameCustom.value) {
-      inputNameCustom.setCustomValidity('Informe o nome da customização')
-      return inputNameCustom.reportValidity()
-   }
-   if (!inputDescriptionCustom.value) {
-      inputDescriptionCustom.setCustomValidity('Informe uma descrição para a customização')
-      return inputDescriptionCustom.reportValidity()
-   }
-   if (!inputTypeCustom.value) {
-      inputTypeCustom.setCustomValidity('Selecione o tipo de customização')
-      return inputTypeCustom.reportValidity()
-   }
-
-   console.log('cliquei no custom')
-
-   document.querySelector('.loaderInsertCustom').classList.add('show')
-
-   //Request
-   update(1, `dark`)
-   fetch(`/api/${custonResource}`, {
-      method: 'POST',
-      headers: {
-         'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-         name: inputNameCustom.value,
-         description: inputDescriptionCustom.value,
-         type_id: inputTypeCustom.value,
-      }),
-   })
-      .then(response => response.json())
-      .then(res => {
-         update(() => {
-            //SweetAlert
-            Swal.fire({
-               title: `Customização ${res.name} cadastrada`,
-               icon: 'success',
-               showCloseButton: true,
-            })
-
-            createCardinProduct(res)
-
-            document.querySelector('.btn-modal-types').classList.remove('btn-success')
-            document.querySelector('.btn-modal-types').classList.add('btn-primary')
-            document.querySelector('.btn-modal-types').innerHTML = `Items`
-
-            console.log(inputTypeCustom.value)
-
-            //insertCard in list tab
-            insertCardCustom({ name: res.name, description: res.description, id: res.id, type: inputTypeCustom.value })
-
-            //Limpar inputs
-            inputTypeCustom.value = ``
-            inputNameCustom.value = ``
-            inputDescriptionCustom.value = ``
-
-            return document.querySelector('.loaderInsertCustom').classList.remove('show')
-         }, `dark`)
-      })
-      .catch(err => {
-         console.log(err)
-         return update(() => {
-            Swal.fire({
-               title: `Tivemos um erro de sistema`,
-               icon: 'error',
-               showCloseButton: true,
-            })
-         })
-      })
+   return custom.create()
 })
 
 //Show modal options
@@ -428,64 +620,9 @@ const filter = () => {
 filter()
 
 //DELETE CUSTOM
-//request Delete Custom
-const requestDestroyCustom = id => {
-   return new Promise((resolve, reject) => {
-      update(1, `dark`)
-      fetch(`/api/${custonResource}/${id}`, {
-         method: 'DELETE',
-         headers: {
-            'content-type': 'application/json',
-         },
-      })
-         .then(response => response.json())
-         .then(res => {
-            update(2, `dark`)
-            if (res === 0) return reject(`Customização não existe`)
-
-            return resolve(`Customização excluida com sucesso!`)
-         })
-         .catch(erro => {
-            return reject(`Erro ao excluir customização`)
-         })
-   })
-}
-//btnDeleteCustom
-const destroyCustom = btn => {
-   btn.addEventListener('click', e => {
-      e.preventDefault()
-
-      const id = btn.dataset.id
-
-      return requestDestroyCustom(id)
-         .then(response => {
-            return update(() => {
-               btn.closest('.col-3').remove()
-               const inProdDestroy = document.querySelector(`.productCustonsBody .product-option-${id}`)
-
-               if (inProdDestroy) inProdDestroy.remove()
-
-               return Swal.fire({
-                  title: response,
-                  icon: 'success',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
-         .catch(error => {
-            return update(() => {
-               Swal.fire({
-                  title: error,
-                  icon: 'error',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
-   })
-}
 
 const btnDestroyCustom = document.querySelectorAll('.btnDeleteCustom')
 
 Array.from(btnDestroyCustom).forEach(btn => {
-   return destroyCustom(btn)
+   return custom.destroy(btn)
 })

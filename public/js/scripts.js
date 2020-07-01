@@ -412,123 +412,9 @@ const custom = (() => {
    return {
       create: createCustom,
       destroy: destroyCustom,
+      showOptions: clickCard,
    }
 })()
-
-const createCardCustom = item => {
-   const card = document.createElement('div')
-
-   const { id, name, description, type } = item
-
-   card.classList.add('col-3', `card-custom-${id}`)
-
-   card.dataset.category = `type-${type}`
-   card.dataset.id = id
-
-   card.innerHTML = `
-    <div class="card border-primary mb-3 cardCustom" data-id="${id}">
-         <div class="card-header">
-            ${name}
-            <button type="button" 
-               class="btn btn-danger btn-sm btnDeleteCustom" 
-               data-id="${id}"
-            >
-               <i class="fas fa-trash-alt"></i>
-            </button>
-         </div>
-        <div class="card-body text-primary">
-            <p class="card-text">${description}</p>
-            <button type="button"
-               class="btn btn-primary btnShowOptionsCustom"
-               data-custom="${id}"
-               data-toggle="tooltip"
-               data-placement="top"
-               title="Visualizar opções"
-            >
-               <i class="far fa-eye"></i>
-            </button>
-        </div>
-    </div>`
-
-   const btnDeleteCstom = card.querySelector('.btnDeleteCustom')
-
-   destroyCustom(btnDeleteCstom)
-
-   return card
-}
-
-const createCardinProduct = item => {
-   const { id, name, type, type_id, description } = item
-   const card = document.createElement('div')
-
-   card.classList.add(`col-4`, `productOption`, `product-option-${id}`)
-
-   card.dataset.customName = type.name || null
-
-   card.dataset.custom = id
-
-   card.dataset.id = id
-
-   card.dataset.customName = card.innerHTML = `
-   <div class="card border-primary mb-3 productCustom item" data-dismiss="modal" data-option-id="32">
-      <div class="card-header productOptionName">
-            ${name}
-      </div>
-
-      <div class="card-body text-primary productOptionDesc">
-         <p class="card-text">${description}</p>
-      </div>
-   </div>`
-
-   const option = card.querySelector('.card')
-
-   clickCustom(option)
-
-   return document.querySelector('.productCustonsBody').append(card)
-}
-
-const clickCard = item => {
-   return item.addEventListener('click', e => {
-      // body
-      e.preventDefault()
-
-      //open modal
-      $('#options').modal('show')
-
-      //add loader in body
-      document.querySelector('.optionsContainer').innerHTML = `<div class="spinner-border text-primary" role="status">
-                     <span class="sr-only">Loading...</span>
-                 </div>`
-      //add loader in title modal
-      document.querySelector('.modal.options .modal-title').innerHTML = `<div class="spinner-border text-primary" role="status">
-                     <span class="sr-only">Loading...</span>
-                 </div>`
-      //add loader in title modal form option
-      document.querySelector(
-         '.modal.formOptions .modal-title'
-      ).innerHTML = `<div class="spinner-border text-primary" role="status">
-                     <span class="sr-only">Loading...</span>
-                 </div>`
-
-      //set the option
-      document.querySelector('.insertOption').dataset.option = item.dataset.custom
-
-      //load options
-      return showOptions(item.dataset.custom)
-   })
-}
-
-const insertCardCustom = item => {
-   const { id, name, description, type } = item
-
-   const card = createCardCustom(item)
-
-   document.querySelector(`.container-types`).prepend(card)
-
-   $(card.querySelector('.btnShowOptionsCustom')).tooltip()
-
-   return clickCard(card.querySelector('.btnShowOptionsCustom'))
-}
 
 btnInsertCustom.addEventListener('click', e => {
    e.preventDefault()
@@ -539,7 +425,7 @@ btnInsertCustom.addEventListener('click', e => {
 const cardCustom = document.querySelectorAll('.btnShowOptionsCustom')
 
 Array.from(cardCustom).forEach(el => {
-   clickCard(el)
+   return custom.showOptions(el)
 })
 
 const openFormOption = document.querySelector('.insertOption')

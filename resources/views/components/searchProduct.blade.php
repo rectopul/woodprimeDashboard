@@ -18,7 +18,7 @@
 <div class="listProduct row">
   <!-- $products -->
     @foreach ($products as $product)
-      <div class="col-4 productItem my-2">
+      <div class="col-md-6 productItem my-2">
         <div class="card border-primary mb-3 cardProduct item" data-id="{{ $product->id }}">
           <div class="card-header text-center searchProductName">
               {{ $product->name }}

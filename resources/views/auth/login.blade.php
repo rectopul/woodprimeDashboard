@@ -6,7 +6,9 @@
 <div class="row justify-content-center mt-5">
     <aside class="col-sm-4">
         <div class="card">
-            <div class="card-header">WoodPrime</div>
+            <div class="card-header text-center">
+                <img src="http://localhost/img/logo.webp" width="170" class="d-inline-block align-top" alt="" loading="lazy">
+            </div>
             <article class="card-body">
                 <h4 class="card-title text-center mb-4 mt-1">{{ __('Login') }}</h4>
                 <hr>
@@ -19,7 +21,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fas fa-envelope"></i> </span>
                             </div>
-                            <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" placeholder="Email or login" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                            <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" placeholder="E-mail" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         </div> <!-- input-group.// -->
 
                         @error('email')
@@ -50,7 +52,7 @@
                                 <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                 <label class="form-check-label" for="remember">
-                                    {{ __('Remember Me') }}
+                                    Lembrar-me
                                 </label>
                             </div>
                         </div>
@@ -60,7 +62,11 @@
                         <button type="submit" class="btn btn-primary btn-block btn-login"> {{ __('Login') }}  </button>
                     </div> <!-- form-group// -->
                     @if (Route::has('password.request'))
-                        <p class="text-center"><a href="{{ route('password.request') }}" class="btn">{{ __('Forgot Your Password?') }}</a></p>
+                        <p class="text-center">
+                            <a href="{{ route('password.request') }}" class="btn">
+                                Recuperar senha
+                            </a>
+                        </p>
                     @endif
                 </form>
             </article>

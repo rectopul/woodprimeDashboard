@@ -42,26 +42,21 @@
 
                       @foreach ($product->options as $option)
                         @if ($option)
-                          @if ($option->option->customization->name)
-                            <tr class="text-left optionProduct">
-                              <th scope="row" class="px-1 productOptionName">
-                                @if ($option->option->name)
-                                {{ $option->option->name }} 
-                                @endif
-                                @if ($option->option->customization->name)
-                                ({{ $option->option->customization->name }})
-                                @endif
-                              </th>
-                              
-                              
-                              <td>{{ $option->option->price }}</td>
-                              <td class="text-right px-1 productRemoveOption">
-                                <a href="#" data-id="{{ $option->id }}">
-                                  <i class="fas fa-trash-alt"></i>
-                                </a>
-                              </td>
-                            </tr>
-                          @endif
+                        <tr class="text-left optionProduct">
+                          <th scope="row" class="px-1 productOptionName">
+                            @if ($option->option->name)
+                            {{ $option->option->name }} 
+                            @endif
+                          </th>
+                          
+                          
+                          <td>{{ $option->option->price }}</td>
+                          <td class="text-right px-1 productRemoveOption">
+                            <a href="#" data-id="{{ $option->id }}">
+                              <i class="fas fa-trash-alt"></i>
+                            </a>
+                          </td>
+                        </tr>
                         @endif
                       @endforeach
                         

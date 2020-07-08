@@ -42,21 +42,26 @@
 
                       @foreach ($product->options as $option)
                         @if ($option)
-                          <tr class="text-left optionProduct">
-                            <th scope="row" class="px-1 productOptionName">
-                              {{ $option->option->name }} 
-                              @if ($option->option->customization)
-                              ({{ $option->option->customization->name }})
-                              @endif
-                            </th>
-                            
-                            <td>{{ $option->option->price }}</td>
-                            <td class="text-right px-1 productRemoveOption">
-                              <a href="#" data-id="{{ $option->id }}">
-                                <i class="fas fa-trash-alt"></i>
-                              </a>
-                            </td>
-                          </tr>
+                          @if ($option->option->customization->name)
+                            <tr class="text-left optionProduct">
+                              <th scope="row" class="px-1 productOptionName">
+                                @if ($option->option->name)
+                                {{ $option->option->name }} 
+                                @endif
+                                @if ($option->option->customization->name)
+                                ({{ $option->option->customization->name }})
+                                @endif
+                              </th>
+                              
+                              
+                              <td>{{ $option->option->price }}</td>
+                              <td class="text-right px-1 productRemoveOption">
+                                <a href="#" data-id="{{ $option->id }}">
+                                  <i class="fas fa-trash-alt"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          @endif
                         @endif
                       @endforeach
                         

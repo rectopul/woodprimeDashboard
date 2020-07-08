@@ -315,6 +315,7 @@ const custom = (() => {
       create: createCustom,
       destroy: destroyCustom,
       showOptions: clickCard,
+      createCard: createCardCustom,
    }
 })()
 
@@ -363,23 +364,26 @@ const indexCustom = () => {
    })
       .then(response => response.json())
       .then(res => {
-         update(() => {
-            //Caso retorne vazio
-            if (!res.length) return (document.querySelector('.container-types').innerHTML = `Nenhum registro encontrado`)
-            //limpando dados existentes
-            document.querySelector('.container-types').innerHTML = ``
-            //mappeando
-            return res.forEach(custom => {
-               if (custom.type_id) {
-                  return insertCardCustom({
-                     name: custom.name,
-                     description: custom.description,
-                     id: custom.id,
-                     type: custom.type_id,
-                  })
-               }
-            })
-         }, `dark`)
+         if (res.length > 0) {
+            update(() => {
+               //Caso retorne vazio
+               if (!res.length) return (document.querySelector('.container-types').innerHTML = `Nenhum registro encontrado`)
+               //limpando dados existentes
+               document.querySelector('.container-types').innerHTML = ``
+               //mappeando
+               return res.forEach(c => {
+                  if (c.type_id) {
+                     const newCard = custom.createCard({
+                        name: c.name,
+                        description: c.description,
+                        id: c.id,
+                        type: c.type_id,
+                     })
+                     document.querySelector('.container-types').append(newCard)
+                  }
+               })
+            }, `dark`)
+         }
       })
       .catch(error => {
          // catch the abort if you like

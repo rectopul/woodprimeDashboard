@@ -38,6 +38,39 @@ const custom = (() => {
       return card
    }
 
+   const handleSelectOption = object => {
+      const { name, id } = object
+
+      const card = document.createElement('div')
+
+      card.classList.add('col-md-3', `optionSelected-${id}`)
+
+      card.dataset.id = id
+
+      card.innerHTML = `
+      <div class="card">
+         <div class="card-header">
+            Option
+         </div>
+
+         <div class="card-body">
+            <h6>${name}</h6>
+         </div>
+
+         <div class="card-footer text-muted">
+            <button class="btn btn-primary" data-id="${id}">
+               <i class="far fa-trash-alt" aria-hidden="true"></i>
+            </button>
+         </div>
+      </div>
+      `
+      const button = card.querySelector('button')
+
+      destroySelectedOption(button)
+
+      return card
+   }
+
    const destroySelectedCustom = button => {
       button.addEventListener('click', e => {
          e.preventDefault()
@@ -74,20 +107,39 @@ const custom = (() => {
       })
    }
 
+   const destroySelectedOption = button => {
+      button.addEventListener('click', e => {
+         e.preventDefault()
+
+         const id = button.dataset.id
+
+         //remove from constant
+         excludes.options.splice(excludes.options.indexOf(id), 1)
+
+         //remove card
+         button.closest(`.optionSelected-${id}`).remove()
+      })
+   }
+
    const getExcludes = () => excludes
 
    const selectAllTypes = check => {
       check.addEventListener('change', e => {
          const id = check.value
          const name = check.closest('.productType').querySelector('h3').textContent
+         const card = check.closest('.productType')
 
          if (check.checked == true) {
             excludes.types.push(id)
+
+            card.classList.add('selected')
 
             //put on container
             optionsSelected.append(handleSelectContainers({ id, name }, `type`))
          } else {
             excludes.types.splice(excludes.types.indexOf(id), 1)
+
+            card.classList.remove('selected')
 
             optionsSelected.querySelector(`.typeSelected-${id}`).remove()
          }
@@ -98,14 +150,19 @@ const custom = (() => {
       check.addEventListener('change', e => {
          const id = check.value
          const name = check.closest('.card').querySelector('h6').textContent
+         const card = check.closest('.col-md-4')
 
          if (check.checked == true) {
             excludes.custons.push(id)
+
+            card.classList.add('selected')
 
             //put in container
             optionsSelected.append(handleSelectContainers({ id, name }, `custom`))
          } else {
             excludes.custons.splice(excludes.custons.indexOf(id), 1)
+
+            card.classList.remove('selected')
 
             //Remove from container
             optionsSelected.querySelector(`.customSelected-${id}`).remove()
@@ -116,13 +173,20 @@ const custom = (() => {
    const selectOptions = check => {
       check.addEventListener('click', e => {
          const id = check.dataset.id
+         const name = check.querySelector('h5').textContent
 
          check.classList.toggle('show')
 
-         if (check.classList.contains('show')) excludes.options.push(id)
-         else excludes.options.splice(excludes.options.indexOf(id), 1)
+         if (check.classList.contains('show')) {
+            excludes.options.push(id)
 
-         console.log(excludes)
+            optionsSelected.append(handleSelectOption({ id, name }))
+         } else {
+            excludes.options.splice(excludes.options.indexOf(id), 1)
+
+            //remove option from list
+            optionsSelected.querySelector(`.optionSelected-${id}`).remove()
+         }
       })
    }
 
@@ -141,7 +205,7 @@ const custom = (() => {
                update(2, `dark`)
                if (res === 0) return reject(`Customização não existe`)
 
-               return resolve(`Customização excluida com sucesso!`)
+               return resolve(`Customização excluída com sucesso!`)
             })
             .catch(erro => {
                return reject(`Erro ao excluir customização`)
@@ -515,12 +579,14 @@ const custom = (() => {
 
       card.dataset.id = object.id
 
+      const indexOfCustom = excludes.custons.indexOf(`${object.id}`) != -1 ? `checked` : ``
+
       card.innerHTML = `
       <div class="card border-primary mb-3">
 
          <div class="card-header d-flex justify-content-between align-items-center">
          Selecionar Todos
-         <input type="checkbox" class="ml-auto selectAllCustom" id="selectAllCustom" value="${object.id}">
+         <input type="checkbox" class="ml-auto selectAllCustom" id="selectAllCustom" value="${object.id}" ${indexOfCustom}>
          </div>
 
          <div class="card-body text-primary text-center customNv1Item" data-id="${object.id}" data-dismiss="modal">

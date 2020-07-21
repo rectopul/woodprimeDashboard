@@ -33,7 +33,7 @@
                                 <div class="navbar-footer-content">
                                     <div class="row">
                                         <div class="col-md-7">
-                                            <a href="/reset" class="btn btn-primary btn-sm">Mudar a senha</a>
+                                            <a href="/password/reset" class="btn btn-primary btn-sm">Mudar a senha</a>
                                         </div>
                                         <div class="col-md-5 text-right">
                                             <a href="/logout" class="btn btn-danger btn-sm pull-right">Logout</a>

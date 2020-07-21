@@ -131,27 +131,111 @@ const custom = (() => {
    //Private
    const excludes = { types: [], custons: [], options: [] }
 
+   const optionsSelected = document.querySelector('.optionsSelected')
+
+   const handleSelectContainers = (object, type) => {
+      const { id, name } = object
+
+      const card = document.createElement('div')
+
+      card.classList.add('col-md-3', `${type === `type` ? `typeSelected` : `customSelected`}-${id}`)
+
+      card.dataset.id = id
+
+      card.innerHTML = `
+      <div class="card">
+         <div class="card-header">
+            All ${type === `type` ? `Type` : `Custom`}
+         </div>
+
+         <div class="card-body">
+            <h3>${name}</h3>
+         </div>
+
+         <div class="card-footer text-muted">
+            <button class="btn btn-primary" data-id="${id}"><i class="far fa-trash-alt"></i></button>
+         </div>
+      </div>
+      `
+
+      if (type == `type`) destroySelectedType(card.querySelector('button'))
+      else destroySelectedCustom(card.querySelector('button'))
+
+      return card
+   }
+
+   const destroySelectedCustom = button => {
+      button.addEventListener('click', e => {
+         e.preventDefault()
+
+         const id = button.dataset.id
+         const checkbox = document.querySelector(`.listCustomByType div[data-id="${id}"] .selectAllCustom`)
+
+         //remove from constant
+         excludes.custons.splice(excludes.custons.indexOf(id), 1)
+
+         //remove card
+         button.closest(`.customSelected-${id}`).remove()
+
+         //unchecked type
+         checkbox.checked = false
+      })
+   }
+
+   const destroySelectedType = button => {
+      button.addEventListener('click', e => {
+         e.preventDefault()
+
+         const id = button.dataset.id
+         const checkbox = document.querySelector(`.productType[data-id="${id}"] .selectAllType`)
+
+         //remove from constant
+         excludes.types.splice(excludes.types.indexOf(id), 1)
+
+         //remove card
+         button.closest(`.typeSelected-${id}`).remove()
+
+         //unchecked type
+         checkbox.checked = false
+      })
+   }
+
    const getExcludes = () => excludes
 
    const selectAllTypes = check => {
       check.addEventListener('change', e => {
          const id = check.value
+         const name = check.closest('.productType').querySelector('h3').textContent
 
-         if (check.checked == true) excludes.types.push(id)
-         else excludes.types.splice(excludes.types.indexOf(id), 1)
+         if (check.checked == true) {
+            excludes.types.push(id)
 
-         console.log(excludes)
+            //put on container
+            optionsSelected.append(handleSelectContainers({ id, name }, `type`))
+         } else {
+            excludes.types.splice(excludes.types.indexOf(id), 1)
+
+            optionsSelected.querySelector(`.typeSelected-${id}`).remove()
+         }
       })
    }
 
    const selectAllCustom = check => {
       check.addEventListener('change', e => {
          const id = check.value
+         const name = check.closest('.card').querySelector('h6').textContent
 
-         if (check.checked == true) excludes.custons.push(id)
-         else excludes.custons.splice(excludes.custons.indexOf(id), 1)
+         if (check.checked == true) {
+            excludes.custons.push(id)
 
-         console.log(excludes)
+            //put in container
+            optionsSelected.append(handleSelectContainers({ id, name }, `custom`))
+         } else {
+            excludes.custons.splice(excludes.custons.indexOf(id), 1)
+
+            //Remove from container
+            optionsSelected.querySelector(`.customSelected-${id}`).remove()
+         }
       })
    }
 
@@ -583,7 +667,7 @@ const custom = (() => {
       return card
    }
 
-   const changelvl = card => {
+   const changeLevel = card => {
       card.addEventListener('click', async e => {
          e.preventDefault()
 
@@ -648,7 +732,7 @@ const custom = (() => {
       showOptions: clickCard,
       createCard: createCardCustom,
       cardCustom: insertCardCustom,
-      changelvl,
+      changeLevel,
       closeCustom,
       allTypes: selectAllTypes,
       getExcludes,
@@ -666,7 +750,7 @@ if (btnCloseCustom) custom.closeCustom(btnCloseCustom)
 
 const typesCustom = document.querySelectorAll('.typeCustomItem')
 
-if (typesCustom) Array.from(typesCustom).forEach(card => custom.changelvl(card))
+if (typesCustom) Array.from(typesCustom).forEach(card => custom.changeLevel(card))
 
 btnInsertCustom.addEventListener('click', e => {
    e.preventDefault()

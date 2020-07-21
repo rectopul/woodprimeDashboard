@@ -8,7 +8,8 @@
 @include('components.modalunrelated', ['types' => $types])
 @include('components.navbar', ['user', $user])
 @include('components.productCustons', ['types' => $customTypes])
-@include('components.productOptions')
+@include('components.modals.customNv1')
+@include('components.modals.customNv2')
 @include('components.newUser')
 @include('components.modalConfirmDestroy')
 

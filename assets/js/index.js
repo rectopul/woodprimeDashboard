@@ -58,6 +58,34 @@ function update(callback, theme) {
    }
 }
 
+const util = (() => {
+   //private var/functions
+   const request = options => {
+      return new Promise((resolve, reject) => {
+         const { headers, body, method, url } = options
+         var myHeaders = new Headers()
+
+         if (headers['content-type']) myHeaders.append('Content-Type', headers['content-type'])
+
+         var myInit = { method: method || 'GET', headers: myHeaders }
+
+         if (body) myInit.body = JSON.stringify(body)
+
+         var myRequest = new Request(url, myInit)
+
+         fetch(myRequest)
+            .then(r => r.json())
+            .then(res => resolve(res))
+            .catch(err => reject(err))
+      })
+   }
+
+   return {
+      //public var/functions
+      request,
+   }
+})()
+
 const spinner = (color, size) => {
    const spinner = document.createElement('div')
 

@@ -70,8 +70,8 @@ class TypeController extends Controller
     {
 
         if ($id) {
-            $type = Type::find($id);
-            return response()->json($type->getRelations());
+            $type = Type::where('id', '=', $id)->with('customization')->first();
+            return response()->json($type);
         }
     }
 

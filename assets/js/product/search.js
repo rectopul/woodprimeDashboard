@@ -1,6 +1,271 @@
 const vtexAccountName = `woodprime`
 const vtexEnvironment = `vtexcommercestable`
 
+const searching = (() => {
+   //private var/functions
+   const putOnResults = products => {
+      const containerPartial = document.querySelector('.productsFound')
+
+      containerPartial.classList.add('show')
+
+      containerPartial.innerHTML = ``
+
+      products.map(prod => {
+         const produto = product(prod)
+
+         containerPartial.append(produto)
+      })
+   }
+
+   const custromDestroy = option => {
+      option.addEventListener('click', async e => {
+         try {
+            e.preventDefault()
+
+            option.closest('.col-6.col-md-3').style.display = `none`
+
+            const option_id = option.dataset.id
+
+            const product_id = option.closest('.productFind').dataset.id
+
+            //remove from product
+            await request({
+               url: `/api/product_opt`,
+               method: 'POST',
+               headers: {
+                  'content-type': 'application/json',
+               },
+               body: { option_id, product_id },
+            })
+
+            //remove from list
+
+            option.closest('.col-6.col-md-3').remove()
+         } catch (error) {
+            option.closest('.col-6.col-md-3').style.display = `flex`
+            console.log(error)
+         }
+      })
+   }
+
+   const productDesctroy = button => {
+      button.addEventListener('click', async e => {
+         try {
+            e.preventDefault()
+
+            button.closest('.productFind').style.display = `none`
+
+            const id = button.dataset.id
+
+            await request({
+               url: `/api/product/${id}`,
+               method: 'DELETE',
+               headers: {
+                  'content-type': 'application/json',
+               },
+            })
+
+            return button.closest('.productFind').remove()
+         } catch (error) {
+            button.closest('.productFind').style.display = `flex`
+            console.log(error)
+         }
+      })
+   }
+
+   const listCustom = customList => {
+      const custons = customList.map(custom => {
+         const list = document.createElement('div')
+
+         list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
+
+         list.dataset.id = custom.id
+
+         list.innerHTML = `
+         <div class="card">
+            <img class="card-img-top" src="${custom.image}" alt="Card image cap">
+            <div class="card-body">
+               <h5 class="card-title">${custom.name}</h5>
+               <small>${custom.customization ? custom.customization.name : ``}</small>
+            </div>
+         </div>
+         `
+
+         custromDestroy(list)
+
+         return list
+      })
+
+      return custons
+   }
+
+   const productStrong = infos => {
+      const { name, id, image, code, custom } = infos
+
+      const product = document.createElement('div')
+
+      product.classList.add('col-12', 'productFind')
+
+      product.dataset.id = id
+
+      product.innerHTML = `
+      <div class="row">
+         <div class="col-md-4">
+         <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
+         </div>
+
+         <div class="col-md">
+            <h4>${name}</h4>
+
+            <p>${code}</p>
+         </div>
+
+         <div class="col-2 text-right">
+            <button type="button" class="btn btn-danger destrProduct" data-id="${id}">Deletar</button>
+         </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+         <h1 class="text-center mx-auto mb-4">Customizações</h1>
+         <div class="col-12 productCustoms">
+            <div class="row"></div>
+         </div>
+      </div>
+      `
+      const btnDestroy = product.querySelector('.destrProduct')
+
+      if (btnDestroy) productDesctroy(btnDestroy)
+
+      const custons = [...listCustom(custom)]
+
+      custons.map(custom => {
+         product.querySelector('.productCustoms > .row').append(custom)
+      })
+
+      return product
+   }
+
+   const product = infos => {
+      const { id, image, name } = infos
+      const div = document.createElement('div')
+
+      div.classList.add('col-12')
+
+      div.dataset.id = id
+
+      div.innerHTML = `
+      <div class="row">
+         <img src="${image}" alt="produto" width="40px" class="img-thumbnail">
+         <!--name of product -->
+         <span>${name}</span>
+      </div>
+      `
+
+      select(div)
+
+      return div
+   }
+
+   const request = options => {
+      return new Promise((resolve, reject) => {
+         const { url, headers, method, body } = options
+
+         const opt = { method }
+
+         if (headers) opt.headers = headers
+         if (body) opt.body = JSON.stringify(body)
+
+         fetch(url, opt)
+            .then(r => r.json())
+            .then(res => resolve(res))
+            .catch(error => reject(error))
+      })
+   }
+
+   const delay_method = (label, callback, time) => {
+      if (typeof window.delayed_methods == 'undefined') {
+         window.delayed_methods = {}
+      }
+      delayed_methods[label] = Date.now()
+      var t = delayed_methods[label]
+
+      setTimeout(function() {
+         if (delayed_methods[label] != t) {
+            return
+         } else {
+            console.log(arguments)
+            delayed_methods[label] = ''
+            callback()
+         }
+      }, time || 500)
+   }
+
+   const search = input => {
+      input.addEventListener('keyup', e => {
+         const containerPartial = document.querySelector('.productsFound')
+
+         if (!input.value.length) {
+            return containerPartial.classList.remove('show')
+         }
+
+         if (input.value && input.value.length > 3) {
+            delay_method('check date parallel', async () => {
+               try {
+                  const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+                  const products = await request({
+                     url: `/api/product_search/${find}`,
+                     method: 'GET',
+                     headers: {
+                        'content-type': 'application/json',
+                     },
+                  })
+
+                  if (products.length) return putOnResults(products)
+               } catch (error) {
+                  console.log(error)
+               }
+            })
+         }
+      })
+   }
+
+   const select = button => {
+      const productContainer = document.querySelector('.listProduct')
+      button.addEventListener('click', async e => {
+         e.preventDefault()
+
+         const id = button.dataset.id
+
+         const product = await request({
+            url: `/api/product/${id}`,
+            method: 'GET',
+            headers: {
+               'content-type': 'application/json',
+            },
+         })
+
+         //esconde a pesquisa
+         button.closest('.productsFound').classList.remove('show')
+
+         productContainer.innerHTML = ``
+
+         if (productContainer) productContainer.append(productStrong(product))
+      })
+   }
+
+   return {
+      //public var/functions
+      search,
+   }
+})()
+
+const inputSearch = document.querySelector('.productParamSearch')
+
+if (inputSearch) searching.search(inputSearch)
+
 const createProductBySearch = object => {
    return new Promise((resolve, reject) => {
       const { name, code, image, options, id } = object
@@ -185,6 +450,7 @@ const getVtexProduct = skuProduct => {
       })
          .then(response => response.json())
          .then(data => {
+            console.log(data)
             const { product } = data
             if (!product) return reject(`Produto não encontrado`)
 
@@ -209,6 +475,10 @@ const getVtexProduct = skuProduct => {
             const retorno = {
                name: product_name || productName,
                id: id || productId,
+            }
+
+            if (product.vtexData.items.length) {
+               retorno.skus = product.vtexData.items
             }
 
             if (items[0] && items[0].MainImage) {
@@ -248,7 +518,30 @@ btnSearchProduct.addEventListener('click', e => {
    getVtexProduct(inputSkuProduct)
       .then(res => {
          console.log(res)
-         const { name, id: code, image } = res
+         const { name, id: code, image, skus } = res
+
+         //subitens
+         if (skus) {
+            const subProducts = document.querySelector('.subProducts')
+            if (subProducts) subProducts.innerHTML = ``
+            skus.map(sku => {
+               const subProduct = document.createElement('div')
+
+               subProduct.classList.add('col-md-2', 'mt-3')
+
+               subProduct.innerHTML = `
+               <div class="card">
+                  <img class="card-img-top" src="${sku.images[0].imageUrl}" alt="Card image cap">
+                  <div class="card-body text-center" style="border-top: 1px solid rgba(0,0,0,.125)">
+                     <h6 class="card-title">${sku.name}</h6>
+                  </div>
+               </div>
+               `
+
+               if (subProducts) subProducts.append(subProduct)
+            })
+         }
+
          document.querySelector('.resultProduct').classList.add('full')
          btnSearchProduct.innerHTML = olderText
          return putValues({ name, code, image })

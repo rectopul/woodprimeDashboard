@@ -249,9 +249,6 @@ const showOptions = id => {
                                 <img src="${option.image}" class="img-thumbnail">
                             </p>
                         </div>
-                        <div class="card-footer bg-transparent">
-                            <a href="#" class="btn btn-primary priceOption">${optionPrice}</a>
-                        </div>
                      </div>`
                clickRemoveOption(divOption.querySelector('.card-header .btn-danger'))
                //edit options

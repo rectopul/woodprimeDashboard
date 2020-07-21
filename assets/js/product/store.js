@@ -6,14 +6,14 @@ const product = (() => {
 
    //Send request from create product
    const requestProduct = object => {
-      const { name, code, description, image, options } = object
+      const { name, code, description, image, options, excludes } = object
       update(1, `dark`)
       fetch(`/api/${productResource}`, {
          method: 'POST',
          headers: {
             'content-type': 'application/json',
          },
-         body: JSON.stringify({ name, code, description, image, options }),
+         body: JSON.stringify({ name, code, description, image, options, excludes }),
       })
          .then(response => response.json())
          .then(res => {
@@ -86,12 +86,15 @@ const product = (() => {
          return imageProduct.reportValidity()
       }
 
+      const excludes = custom.getExcludes()
+
       return requestProduct({
          name: nameProduct.value,
          code: parseFloat(codeProduct.value),
          description: descriptionProduct.value,
          image: imageProduct.value,
          options: optionsProduct,
+         excludes,
       })
    }
 

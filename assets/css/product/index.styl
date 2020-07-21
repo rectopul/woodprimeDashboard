@@ -69,3 +69,38 @@
     & .card
         height 220px
         margin-bottom: 15px
+
+.productInSearch
+    & .card
+        cursor pointer
+        &:hover
+            border-color red
+            color red
+            & img
+                opacity .7
+.productsFound
+    position absolute
+    width calc(100% - 30px)
+    display none
+    flex-direction column
+    background-color rgba(255,255,255,0.9)
+    top 40px
+    left 15px
+    z-index 9
+    border 1px solid #ccc
+    &.show
+        display flex
+    & > div
+        align-items center
+        padding 15px
+        cursor pointer
+        & > div
+            padding: 0 15px
+        &:hover
+            background-color #ccc
+        & span
+            display flex
+            align-items center
+            margin-left 15px
+        &:not(:last-child)
+            border-bottom 1px solid #ccc

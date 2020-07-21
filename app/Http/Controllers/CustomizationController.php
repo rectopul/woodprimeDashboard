@@ -115,6 +115,25 @@ class CustomizationController extends Controller
         return response()->json('', 200);
     }
 
+
+    /**
+     * Display all options by customization id.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function options($id)
+    {
+        $custom = Customization::where('id', $id)->with('options')->first();
+
+
+        if ($custom) {
+            return response()->json($custom);
+        }
+
+        return response()->json('', 200);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

@@ -20,6 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //customizations
 Route::resource('custon', 'CustomizationController');
+//optionsByCustom
+Route::get('custon/option/{id}', 'CustomizationController@options');
 //Options
 Route::resource('option', 'OptionController');
 //Users
@@ -30,6 +32,10 @@ Route::resource('product', 'ProductController');
 Route::resource('product_option', 'ProductOptionController');
 //Product Option
 Route::get('product_search/{find}', 'ProductController@search');
+//Get Option
+Route::get('product_opt/{id}', 'ProductController@option');
+//Exclude options
+Route::post('product_opt', 'ProductController@excludeOption');
 
 
 //types of customization

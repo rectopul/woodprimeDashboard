@@ -2,6 +2,21 @@ const typeResource = `type`
 
 let type = (() => {
    //private vars or function
+   const request = options => {
+      return new Promise((resolve, reject) => {
+         const { url, headers, method, body } = options
+
+         const opt = { method }
+
+         if (headers) opt.headers = headers
+         if (body) opt.body = JSON.stringify(body)
+
+         fetch(url, opt)
+            .then(r => r.json())
+            .then(res => resolve(res))
+            .catch(error => reject(error))
+      })
+   }
 
    //Create new card type and return this
    const cardType = object => {
@@ -153,6 +168,26 @@ let type = (() => {
       document.querySelector('.btn-modal-types').classList.add('btn-success')
 
       return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
+   }
+
+   const removeAllType = input => {
+      input.addEventListener('change', async e => {
+         try {
+            if (input.checked == true) {
+               const id = input.value
+
+               await request({
+                  url: `/api/types/exclude/${id}`,
+                  method: 'POST',
+                  headers: {
+                     'content-type': 'application/json',
+                  },
+               })
+
+               input.closest('.card.border-primary').classList.add('exclude')
+            }
+         } catch (error) {}
+      })
    }
 
    return {

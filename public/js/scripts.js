@@ -2,127 +2,153 @@
 const URL = `http://192.168.0.10`
 
 function update(callback, theme) {
-   var element = document.querySelector('.barload')
+    var element = document.querySelector('.barload')
 
-   if (theme && theme == `dark`) {
-      element.classList.add('dark')
-   } else {
-      element.classList.remove('dark')
-   }
+    if (theme && theme == `dark`) {
+        element.classList.add('dark')
+    } else {
+        element.classList.remove('dark')
+    }
 
-   var width = 1
+    var width = 1
 
-   if (typeof callback === `function`) {
-      width = 33
-      var identity = setInterval(scene, 14)
+    if (typeof callback === `function`) {
+        width = 33
+        var identity = setInterval(scene, 14)
 
-      function scene() {
-         if (width >= 100) {
-            width = 1
-            element.style.width = 0 + '%'
-            callback()
-            clearInterval(identity)
-         } else {
-            width++
-            element.style.width = width + '%'
-         }
-      }
-   }
+        function scene() {
+            if (width >= 100) {
+                width = 1
+                element.style.width = 0 + '%'
+                callback()
+                clearInterval(identity)
+            } else {
+                width++
+                element.style.width = width + '%'
+            }
+        }
+    }
 
-   if (typeof callback === `number` && callback === 2) {
-      width = 33
-      var identity = setInterval(scene, 14)
+    if (typeof callback === `number` && callback === 2) {
+        width = 33
+        var identity = setInterval(scene, 14)
 
-      function scene() {
-         if (width === 65) {
-            return clearInterval(identity)
-         } else {
-            width++
-            element.style.width = width + '%'
-         }
-      }
-   }
+        function scene() {
+            if (width === 65) {
+                return clearInterval(identity)
+            } else {
+                width++
+                element.style.width = width + '%'
+            }
+        }
+    }
 
-   if (typeof callback == `number` && callback === 1) {
-      width = 1
-      var identity = setInterval(scene, 7)
+    if (typeof callback == `number` && callback === 1) {
+        width = 1
+        var identity = setInterval(scene, 7)
 
-      function scene() {
-         if (width === 33) {
-            return clearInterval(identity)
-         } else {
-            width++
-            element.style.width = width + '%'
-         }
-      }
-   }
+        function scene() {
+            if (width === 33) {
+                return clearInterval(identity)
+            } else {
+                width++
+                element.style.width = width + '%'
+            }
+        }
+    }
 }
 
 const util = (() => {
-   //private var/functions
-   const request = options => {
-      return new Promise((resolve, reject) => {
-         const { headers, body, method, url } = options
-         var myHeaders = new Headers()
+    //private var/functions
+    const request = options => {
+        return new Promise((resolve, reject) => {
+            const {
+                headers,
+                body,
+                method,
+                url
+            } = options
+            var myHeaders = new Headers()
 
-         if (headers['content-type']) myHeaders.append('Content-Type', headers['content-type'])
+            if (headers['content-type']) myHeaders.append('Content-Type', headers['content-type'])
 
-         var myInit = { method: method || 'GET', headers: myHeaders }
+            var myInit = {
+                method: method || 'GET',
+                headers: myHeaders
+            }
 
-         if (body) myInit.body = JSON.stringify(body)
+            if (body) myInit.body = JSON.stringify(body)
 
-         var myRequest = new Request(url, myInit)
+            var myRequest = new Request(url, myInit)
 
-         fetch(myRequest)
-            .then(r => r.json())
-            .then(res => resolve(res))
-            .catch(err => reject(err))
-      })
-   }
+            fetch(myRequest)
+                .then(r => r.json())
+                .then(res => resolve(res))
+                .catch(err => reject(err))
+        })
+    }
 
-   return {
-      //public var/functions
-      request,
-   }
+    return {
+        //public var/functions
+        request,
+    }
 })()
 
 const spinner = (color, size) => {
-   const spinner = document.createElement('div')
+    const spinner = document.createElement('div')
 
-   spinner.classList.add('spinner-border', `text-${color ? color : 'primary'}`)
+    spinner.classList.add('spinner-border', `text-${color ? color : 'primary'}`)
 
-   if (size && size === `small`) spinner.classList.add('spinner-border-sm')
+    if (size && size === `small`) spinner.classList.add('spinner-border-sm')
 
-   spinner.setAttribute('role', 'status')
+    spinner.setAttribute('role', 'status')
 
-   spinner.innerHTML = `<span class="sr-only">Loading...</span>`
+    spinner.innerHTML = `<span class="sr-only">Loading...</span>`
 
-   return spinner
+    return spinner
 }
 
 const animateCSS = async (element, animation, prefix = 'animate__') =>
-   // We create a Promise and return it
-   new Promise((resolve, reject) => {
-      const animationName = `${prefix}${animation}`
-      const node = element
+    // We create a Promise and return it
+    new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`
+        const node = element
 
-      node.classList.add(`${prefix}animated`, animationName)
+        node.classList.add(`${prefix}animated`, animationName)
 
-      // When the animation ends, we clean the classes and resolve the Promise
-      function handleAnimationEnd() {
-         node.classList.remove(`${prefix}animated`, animationName)
-         node.removeEventListener('animationend', handleAnimationEnd)
+        // When the animation ends, we clean the classes and resolve the Promise
+        function handleAnimationEnd() {
+            node.classList.remove(`${prefix}animated`, animationName)
+            node.removeEventListener('animationend', handleAnimationEnd)
 
-         resolve('Animation ended')
-      }
+            resolve('Animation ended')
+        }
 
-      node.addEventListener('animationend', handleAnimationEnd)
-   })
+        node.addEventListener('animationend', handleAnimationEnd)
+    })
 
-$(document).ready(function() {
-   $('.dropdown-toggle').dropdown()
-   $('[data-toggle="tooltip"]').tooltip()
+$(document).ready(function () {
+    $('.dropdown-toggle').dropdown()
+    $('[data-toggle="tooltip"]').tooltip()
 })
+
+//Form validation
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+'use strict';
+window.addEventListener('load', function () {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+}, false);
 
 const btnInsertCustom = document.querySelector('.btn-insert-custom')
 const custonResource = `custon`
@@ -1018,67 +1044,85 @@ Array.from(btnDestroyCustom).forEach(btn => {
 })
 
 const insertUser = object => {
-   return new Promise((resolve, reject) => {
-      const { name, email, password } = object
+    return new Promise((resolve, reject) => {
+        const {
+            name,
+            email,
+            password
+        } = object
 
-      update(1, `dark`)
+        update(1, `dark`)
 
-      fetch(`/api/user`, {
-         method: 'POST',
-         headers: {
-            'content-type': 'application/json',
-         },
-         body: JSON.stringify({ name, email, password }),
-      })
-         .then(response => response.json())
-         .then(res => {
-            if (res.error) return reject(`Erro ao inserir novo usuário`)
-            update(2, `dark`)
-            return resolve(res)
-         })
-         .catch(error => {
-            return reject(error)
-         })
-   })
+        fetch(`/api/user`, {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                }),
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.error) return reject(`Erro ao inserir novo usuário`)
+                update(2, `dark`)
+                return resolve(res)
+            })
+            .catch(error => {
+                return reject(error)
+            })
+    })
 }
 
 const formNewUser = button => {
-   button.addEventListener('click', e => {
-      e.preventDefault()
+    button.addEventListener('click', e => {
+        e.preventDefault()
 
-      const inputName = document.querySelector('.newUserName')
-      const inputEmail = document.querySelector('.newUserMail')
-      const inputPassword = document.querySelector('.newUserPassword')
+        const inputName = document.querySelector('.newUserName')
+        const inputEmail = document.querySelector('.newUserMail')
+        const inputPassword = document.querySelector('.newUserPassword')
 
-      const name = inputName.value
-      const email = inputEmail.value
-      const password = inputPassword.value
+        const name = inputName.value
+        const email = inputEmail.value
+        const password = inputPassword.value
 
-      console.log({ name, email, password })
+        console.log({
+            name,
+            email,
+            password
+        })
 
-      if (!name) {
-         inputName.setCustomValidity('Informe o nome do usuário')
-         return inputName.reportValidity()
-      }
-      if (!email) {
-         inputEmail.setCustomValidity('Informe o e-mail do usuário')
-         return inputEmail.reportValidity()
-      }
-      if (!password) {
-         inputPassword.setCustomValidity('Informe uma senha para o usuário')
-         return inputPassword.reportValidity()
-      }
+        if (!name) {
+            inputName.setCustomValidity('Informe o nome do usuário')
+            return inputName.reportValidity()
+        }
+        if (!email) {
+            inputEmail.setCustomValidity('Informe o e-mail do usuário')
+            return inputEmail.reportValidity()
+        }
+        if (!password) {
+            inputPassword.setCustomValidity('Informe uma senha para o usuário')
+            return inputPassword.reportValidity()
+        }
 
-      insertUser({ name, email, password })
-         .then(user => {
-            const { success } = user
+        insertUser({
+                name,
+                email,
+                password
+            })
+            .then(user => {
+                const {
+                    success
+                } = user
 
-            return update(() => {
-               //insert user and button
-               //listUserInSistem
-               const newUser = document.createElement('tr')
+                return update(() => {
+                    //insert user and button
+                    //listUserInSistem
+                    const newUser = document.createElement('tr')
 
-               newUser.innerHTML = `
+                    newUser.innerHTML = `
                 <th scope="row">${success.id}</th>
                 <td>${success.name}</td>
                 <td>${success.email}</td>
@@ -1089,34 +1133,34 @@ const formNewUser = button => {
                 </td>
                 `
 
-               document.querySelector('.listUserInSistem').append(newUser)
+                    document.querySelector('.listUserInSistem').append(newUser)
 
-               clickToDestroyUser(newUser.querySelector('.btnRemoveUser'))
+                    clickToDestroyUser(newUser.querySelector('.btnRemoveUser'))
 
-               $('#newUser').modal('hide')
+                    $('#newUser').modal('hide')
 
-               return $('#newUser').on('hidden.bs.modal', function(e) {
-                  // do something...
-                  Swal.fire({
-                     title: `Usuário ${success.name} criado com sucesso!`,
-                     icon: 'success',
-                     showCloseButton: true,
-                  })
+                    return $('#newUser').on('hidden.bs.modal', function (e) {
+                        // do something...
+                        Swal.fire({
+                            title: `Usuário ${success.name} criado com sucesso!`,
+                            icon: 'success',
+                            showCloseButton: true,
+                        })
 
-                  return document.querySelector('.modal-backdrop').remove()
-               })
-            }, `dark`)
-         })
-         .catch(error => {
-            update(() => {
-               return Swal.fire({
-                  title: error,
-                  icon: 'error',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
-   })
+                        return document.querySelector('.modal-backdrop').remove()
+                    })
+                }, `dark`)
+            })
+            .catch(error => {
+                update(() => {
+                    return Swal.fire({
+                        title: error,
+                        icon: 'error',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+    })
 }
 
 const formInsertNewUser = document.querySelector('.btnInsertNewUser')
@@ -1125,59 +1169,114 @@ formNewUser(formInsertNewUser)
 
 //Destroy user
 const destroyUser = id => {
-   return new Promise((resolve, reject) => {
-      update(1, `dark`)
+    return new Promise((resolve, reject) => {
+        update(1, `dark`)
 
-      fetch(`/api/user/${id}`, {
-         method: 'DELETE',
-         headers: {
-            'content-type': 'application/json',
-         },
-      })
-         .then(response => response.json())
-         .then(res => {
-            if (res.error) return reject(`Erro ao inserir novo usuário`)
-            update(2, `dark`)
-            return resolve(res)
-         })
-         .catch(error => {
-            return reject(error)
-         })
-   })
+        fetch(`/api/user/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.error) return reject(`Erro ao inserir novo usuário`)
+                update(2, `dark`)
+                return resolve(res)
+            })
+            .catch(error => {
+                return reject(error)
+            })
+    })
 }
 
 const clickToDestroyUser = btn => {
-   btn.addEventListener('click', function(e) {
-      const id = btn.dataset.id
+    btn.addEventListener('click', function (e) {
+        const id = btn.dataset.id
 
-      return destroyUser(id)
-         .then(() => {
-            btn.closest('tr').remove()
-            return update(() => {
-               Swal.fire({
-                  title: `Usuário deletado com sucesso!`,
-                  icon: 'success',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
-         .catch(error => {
-            return update(() => {
-               Swal.fire({
-                  title: `Erro ao deletar usuário!`,
-                  icon: 'error',
-                  showCloseButton: true,
-               })
-            }, `dark`)
-         })
-   })
+        return destroyUser(id)
+            .then(() => {
+                btn.closest('tr').remove()
+                return update(() => {
+                    Swal.fire({
+                        title: `Usuário deletado com sucesso!`,
+                        icon: 'success',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+            .catch(error => {
+                return update(() => {
+                    Swal.fire({
+                        title: `Erro ao deletar usuário!`,
+                        icon: 'error',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+    })
 }
 
 const btnsRemoveUser = document.querySelectorAll('.btnRemoveUser')
 
 Array.from(btnsRemoveUser).forEach(btn => {
-   return clickToDestroyUser(btn)
+    return clickToDestroyUser(btn)
 })
+
+//Change password
+const user = (() => {
+    //private var/functions
+
+    //Change password
+    const handleFormPassword = form => {
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+
+            if (form.checkValidity()) {
+                const id = form.dataset.id
+                const password = form.querySelector('.newPassword').value
+
+
+                update(1, `dark`)
+                util.request({
+                    method: `PUT`,
+                    url: `/api/user/${id}`,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        password
+                    }
+                }).then(res => {
+                    return update(() => {
+                        $('#changePasswordModal').modal('hide')
+
+                        $('#changePasswordModal').on('hidden.bs.modal', function (e) {
+                            // do something...
+
+                            if (document.querySelector('.modal-backdrop')) document.querySelector('.modal-backdrop').remove()
+
+                            return Swal.fire({
+                                title: `Senha atualizada`,
+                                icon: 'success',
+                                showCloseButton: true,
+                            })
+                        })
+                    }, `dark`)
+                })
+            }
+        });
+    }
+
+    return {
+        //public var/functions
+        changePassword: handleFormPassword
+    }
+})()
+
+const formChangePassword = document.querySelector('.formChangePassword')
+
+if (formChangePassword) user.changePassword(formChangePassword)
 
 const optionResource = `option`
 
@@ -2806,69 +2905,78 @@ Array.from(btnSelect).forEach(el => {
 })
 
 const customUpdate = object => {
-   const { id, name, description, type_id } = object
+    const {
+        id,
+        name,
+        description,
+        type_id
+    } = object
 
-   update(1, `dark`)
-   fetch(`/api/${custonResource}/${id}`, {
-      method: 'PUT',
-      headers: {
-         'content-type': 'application/json',
-      },
-      body: JSON.stringify({ name, description, type_id }),
-   })
-      .then(response => {
-         update(() => {
-            console.log(response)
+    update(1, `dark`)
+    fetch(`/api/${custonResource}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                description,
+                type_id
+            }),
+        })
+        .then(response => {
+            update(() => {
+                console.log(response)
 
-            return $('#modalUnrelated').modal('hide')
-         }, `dark`)
-      })
-      .catch(err => {
-         console.log(err)
-         return update(() => {
-            Swal.fire({
-               title: `Tivemos um erro de sistema`,
-               icon: 'error',
-               showCloseButton: true,
+                return $('#modalUnrelated').modal('hide')
+            }, `dark`)
+        })
+        .catch(err => {
+            console.log(err)
+            return update(() => {
+                Swal.fire({
+                    title: `Tivemos um erro de sistema`,
+                    icon: 'error',
+                    showCloseButton: true,
+                })
             })
-         })
-      })
+        })
 }
 
 const editCustom = () => {
-   const customs = document.querySelectorAll('.unrelatedCustom')
-   const customForm = document.querySelector('.editCustomForm')
+    const customs = document.querySelectorAll('.unrelatedCustom')
+    const customForm = document.querySelector('.editCustomForm')
 
-   //Submit form
-   customForm.addEventListener('submit', e => {
-      e.preventDefault()
+    //Submit form
+    customForm.addEventListener('submit', e => {
+        e.preventDefault()
 
-      const data = {
-         id: document.querySelector('.unrelatedCustomId').value,
-         name: document.querySelector('#ulName').value,
-         description: document.querySelector('#ulDescription').value,
-         type_id: parseInt(document.querySelector('#ulTypeId').value),
-      }
+        const data = {
+            id: document.querySelector('.unrelatedCustomId').value,
+            name: document.querySelector('#ulName').value,
+            description: document.querySelector('#ulDescription').value,
+            type_id: parseInt(document.querySelector('#ulTypeId').value),
+        }
 
-      return customUpdate(data)
+        return customUpdate(data)
 
-      console.log(data)
-   })
+        console.log(data)
+    })
 
-   //Click nos cards
-   Array.from(customs).forEach(custom => {
-      custom.addEventListener('click', e => {
-         const id = custom.dataset.id
-         const name = custom.querySelector('.unrelatedName').innerHTML
-         const description = custom.querySelector('.unrelatedDescription').innerHTML
+    //Click nos cards
+    Array.from(customs).forEach(custom => {
+        custom.addEventListener('click', e => {
+            const id = custom.dataset.id
+            const name = custom.querySelector('.unrelatedName').innerHTML
+            const description = custom.querySelector('.unrelatedDescription').innerHTML
 
-         document.querySelector('.unrelatedCustomId').value = id
-         document.querySelector('#ulName').value = name
-         document.querySelector('#ulDescription').value = description
+            document.querySelector('.unrelatedCustomId').value = id
+            document.querySelector('#ulName').value = name
+            document.querySelector('#ulDescription').value = description
 
-         $('#modalUnrelated').modal('show')
-      })
-   })
+            $('#modalUnrelated').modal('show')
+        })
+    })
 }
 
 editCustom()

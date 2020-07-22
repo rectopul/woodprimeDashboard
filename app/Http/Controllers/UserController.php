@@ -103,7 +103,15 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+
+        $input = $request->all();
+
+        $user->password = Hash::make($input['password']);
+
+        $user->save();
+
+        return response()->json($user, 200);
     }
 
     /**

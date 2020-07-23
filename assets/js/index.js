@@ -62,19 +62,14 @@ const util = (() => {
     //private var/functions
     const request = options => {
         return new Promise((resolve, reject) => {
-            const {
-                headers,
-                body,
-                method,
-                url
-            } = options
+            const { headers, body, method, url } = options
             var myHeaders = new Headers()
 
             if (headers['content-type']) myHeaders.append('Content-Type', headers['content-type'])
 
             var myInit = {
                 method: method || 'GET',
-                headers: myHeaders
+                headers: myHeaders,
             }
 
             if (body) myInit.body = JSON.stringify(body)
@@ -127,25 +122,33 @@ const animateCSS = async (element, animation, prefix = 'animate__') =>
         node.addEventListener('animationend', handleAnimationEnd)
     })
 
-$(document).ready(function () {
+$(document).ready(function() {
     $('.dropdown-toggle').dropdown()
     $('[data-toggle="tooltip"]').tooltip()
 })
 
 //Form validation
 // Example starter JavaScript for disabling form submissions if there are invalid fields
-'use strict';
-window.addEventListener('load', function () {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-            if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    });
-}, false);
+;('use strict')
+window.addEventListener(
+    'load',
+    function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation')
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener(
+                'submit',
+                function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                },
+                false
+            )
+        })
+    },
+    false
+)

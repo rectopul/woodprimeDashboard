@@ -97,6 +97,10 @@ class ProductController extends Controller
 
         $excludes =  $request->input('excludes');
 
+        $childs = $request->input('children');
+
+        //return var_dump($childs);
+
         if ($check > 0) {
             $product = Product::where('code', '=', $request->input('code'))->first();
 
@@ -156,6 +160,41 @@ class ProductController extends Controller
 
                     //Save Custom
                     $productCustomization->save();
+                }
+
+                //children
+
+                foreach ($childs as $children) {
+
+                    //check if product exist 
+
+                    $check_product = Product::where('name', '=', $children['name'])->first();
+
+                    if ($check_product === null) {
+                        $childrenProduct = new Product;
+                        $childrenProduct->name = $children['name'];
+                        $childrenProduct->description = $children['description'];
+                        $childrenProduct->image = $children['image'];
+                        $childrenProduct->code = $children['code'];
+
+                        $childrenProduct->save();
+
+                        //option
+                        $productCustomization = new ProductOption;
+                        $productCustomization->option_id = $option_id;
+                        $productCustomization->product_id = $childrenProduct->id;
+
+                        //Save Custom
+                        $productCustomization->save();
+                    } else {
+                        //option
+                        $productCustomization = new ProductOption;
+                        $productCustomization->option_id = $option_id;
+                        $productCustomization->product_id = $check_product->id;
+
+                        //Save Custom
+                        $productCustomization->save();
+                    }
                 }
             }
 
@@ -224,6 +263,37 @@ class ProductController extends Controller
 
             //Save Custom
             $productCustomization->save();
+
+            foreach ($childs as $children) {
+
+                $check_product = Product::where('name', '=', $children['name'])->first();
+
+                if ($check_product === null) {
+
+                    $childrenProduct = new Product;
+                    $childrenProduct->name = $children['name'];
+                    $childrenProduct->description = $children['description'];
+                    $childrenProduct->image = $children['image'];
+                    $childrenProduct->code = $children['code'];
+
+                    $childrenProduct->save();
+
+                    //option
+                    $productCustomization = new ProductOption;
+                    $productCustomization->option_id = $option_id;
+                    $productCustomization->product_id = $childrenProduct->id;
+
+                    //Save Custom
+                    $productCustomization->save();
+                } else {
+                    //option
+                    $productCustomization = new ProductOption;
+                    $productCustomization->option_id = $option_id;
+                    $productCustomization->product_id = $check_product->id;
+
+                    //Save Custom
+                }
+            }
         }
 
         $response = Product::where('code', '=', $request->input('code'))->with('options.option')->get();

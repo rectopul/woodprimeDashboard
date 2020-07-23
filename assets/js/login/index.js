@@ -1,24 +1,20 @@
 const insertUser = object => {
     return new Promise((resolve, reject) => {
-        const {
-            name,
-            email,
-            password
-        } = object
+        const { name, email, password } = object
 
         update(1, `dark`)
 
         fetch(`/api/user`, {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name,
-                    email,
-                    password
-                }),
-            })
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+            }),
+        })
             .then(response => response.json())
             .then(res => {
                 if (res.error) return reject(`Erro ao inserir novo usuário`)
@@ -46,7 +42,7 @@ const formNewUser = button => {
         console.log({
             name,
             email,
-            password
+            password,
         })
 
         if (!name) {
@@ -63,14 +59,12 @@ const formNewUser = button => {
         }
 
         insertUser({
-                name,
-                email,
-                password
-            })
+            name,
+            email,
+            password,
+        })
             .then(user => {
-                const {
-                    success
-                } = user
+                const { success } = user
 
                 return update(() => {
                     //insert user and button
@@ -94,7 +88,7 @@ const formNewUser = button => {
 
                     $('#newUser').modal('hide')
 
-                    return $('#newUser').on('hidden.bs.modal', function (e) {
+                    return $('#newUser').on('hidden.bs.modal', function(e) {
                         // do something...
                         Swal.fire({
                             title: `Usuário ${success.name} criado com sucesso!`,
@@ -128,11 +122,11 @@ const destroyUser = id => {
         update(1, `dark`)
 
         fetch(`/api/user/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'content-type': 'application/json',
-                },
-            })
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(res => {
                 if (res.error) return reject(`Erro ao inserir novo usuário`)
@@ -146,7 +140,7 @@ const destroyUser = id => {
 }
 
 const clickToDestroyUser = btn => {
-    btn.addEventListener('click', function (e) {
+    btn.addEventListener('click', function(e) {
         const id = btn.dataset.id
 
         return destroyUser(id)
@@ -191,22 +185,21 @@ const user = (() => {
                 const id = form.dataset.id
                 const password = form.querySelector('.newPassword').value
 
-
                 update(1, `dark`)
                 util.request({
                     method: `PUT`,
                     url: `/api/user/${id}`,
                     headers: {
-                        'content-type': 'application/json'
+                        'content-type': 'application/json',
                     },
                     body: {
-                        password
-                    }
+                        password,
+                    },
                 }).then(res => {
                     return update(() => {
                         $('#changePasswordModal').modal('hide')
 
-                        $('#changePasswordModal').on('hidden.bs.modal', function (e) {
+                        $('#changePasswordModal').on('hidden.bs.modal', function(e) {
                             // do something...
 
                             if (document.querySelector('.modal-backdrop')) document.querySelector('.modal-backdrop').remove()
@@ -220,12 +213,12 @@ const user = (() => {
                     }, `dark`)
                 })
             }
-        });
+        })
     }
 
     return {
         //public var/functions
-        changePassword: handleFormPassword
+        changePassword: handleFormPassword,
     }
 })()
 

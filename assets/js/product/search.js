@@ -2,86 +2,86 @@ const vtexAccountName = `woodprime`
 const vtexEnvironment = `vtexcommercestable`
 
 const searching = (() => {
-   //private var/functions
-   const putOnResults = products => {
-      const containerPartial = document.querySelector('.productsFound')
+    //private var/functions
+    const putOnResults = products => {
+        const containerPartial = document.querySelector('.productsFound')
 
-      containerPartial.classList.add('show')
+        containerPartial.classList.add('show')
 
-      containerPartial.innerHTML = ``
+        containerPartial.innerHTML = ``
 
-      products.map(prod => {
-         const produto = product(prod)
+        products.map(prod => {
+            const produto = product(prod)
 
-         containerPartial.append(produto)
-      })
-   }
+            containerPartial.append(produto)
+        })
+    }
 
-   const custromDestroy = option => {
-      option.addEventListener('click', async e => {
-         try {
-            e.preventDefault()
+    const custromDestroy = option => {
+        option.addEventListener('click', async e => {
+            try {
+                e.preventDefault()
 
-            option.closest('.col-6.col-md-3').style.display = `none`
+                option.closest('.col-6.col-md-3').style.display = `none`
 
-            const option_id = option.dataset.id
+                const option_id = option.dataset.id
 
-            const product_id = option.closest('.productFind').dataset.id
+                const product_id = option.closest('.productFind').dataset.id
 
-            //remove from product
-            await request({
-               url: `/api/product_opt`,
-               method: 'POST',
-               headers: {
-                  'content-type': 'application/json',
-               },
-               body: { option_id, product_id },
-            })
+                //remove from product
+                await request({
+                    url: `/api/product_opt`,
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    body: { option_id, product_id },
+                })
 
-            //remove from list
+                //remove from list
 
-            option.closest('.col-6.col-md-3').remove()
-         } catch (error) {
-            option.closest('.col-6.col-md-3').style.display = `flex`
-            console.log(error)
-         }
-      })
-   }
+                option.closest('.col-6.col-md-3').remove()
+            } catch (error) {
+                option.closest('.col-6.col-md-3').style.display = `flex`
+                console.log(error)
+            }
+        })
+    }
 
-   const productDesctroy = button => {
-      button.addEventListener('click', async e => {
-         try {
-            e.preventDefault()
+    const productDesctroy = button => {
+        button.addEventListener('click', async e => {
+            try {
+                e.preventDefault()
 
-            button.closest('.productFind').style.display = `none`
+                button.closest('.productFind').style.display = `none`
 
-            const id = button.dataset.id
+                const id = button.dataset.id
 
-            await request({
-               url: `/api/product/${id}`,
-               method: 'DELETE',
-               headers: {
-                  'content-type': 'application/json',
-               },
-            })
+                await request({
+                    url: `/api/product/${id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                })
 
-            return button.closest('.productFind').remove()
-         } catch (error) {
-            button.closest('.productFind').style.display = `flex`
-            console.log(error)
-         }
-      })
-   }
+                return button.closest('.productFind').remove()
+            } catch (error) {
+                button.closest('.productFind').style.display = `flex`
+                console.log(error)
+            }
+        })
+    }
 
-   const listCustom = customList => {
-      const custons = customList.map(custom => {
-         const list = document.createElement('div')
+    const listCustom = customList => {
+        const custons = customList.map(custom => {
+            const list = document.createElement('div')
 
-         list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
+            list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
 
-         list.dataset.id = custom.id
+            list.dataset.id = custom.id
 
-         list.innerHTML = `
+            list.innerHTML = `
          <div class="card">
             <img class="card-img-top" src="${custom.image}" alt="Card image cap">
             <div class="card-body">
@@ -91,24 +91,24 @@ const searching = (() => {
          </div>
          `
 
-         custromDestroy(list)
+            custromDestroy(list)
 
-         return list
-      })
+            return list
+        })
 
-      return custons
-   }
+        return custons
+    }
 
-   const productStrong = infos => {
-      const { name, id, image, code, custom } = infos
+    const productStrong = infos => {
+        const { name, id, image, code, custom } = infos
 
-      const product = document.createElement('div')
+        const product = document.createElement('div')
 
-      product.classList.add('col-12', 'productFind')
+        product.classList.add('col-12', 'productFind')
 
-      product.dataset.id = id
+        product.dataset.id = id
 
-      product.innerHTML = `
+        product.innerHTML = `
       <div class="row">
          <div class="col-md-4">
          <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
@@ -134,28 +134,28 @@ const searching = (() => {
          </div>
       </div>
       `
-      const btnDestroy = product.querySelector('.destrProduct')
+        const btnDestroy = product.querySelector('.destrProduct')
 
-      if (btnDestroy) productDesctroy(btnDestroy)
+        if (btnDestroy) productDesctroy(btnDestroy)
 
-      const custons = [...listCustom(custom)]
+        const custons = [...listCustom(custom)]
 
-      custons.map(custom => {
-         product.querySelector('.productCustoms > .row').append(custom)
-      })
+        custons.map(custom => {
+            product.querySelector('.productCustoms > .row').append(custom)
+        })
 
-      return product
-   }
+        return product
+    }
 
-   const product = infos => {
-      const { id, image, name } = infos
-      const div = document.createElement('div')
+    const product = infos => {
+        const { id, image, name } = infos
+        const div = document.createElement('div')
 
-      div.classList.add('col-12')
+        div.classList.add('col-12')
 
-      div.dataset.id = id
+        div.dataset.id = id
 
-      div.innerHTML = `
+        div.innerHTML = `
       <div class="row">
          <img src="${image}" alt="produto" width="40px" class="img-thumbnail">
          <!--name of product -->
@@ -163,103 +163,103 @@ const searching = (() => {
       </div>
       `
 
-      select(div)
+        select(div)
 
-      return div
-   }
+        return div
+    }
 
-   const request = options => {
-      return new Promise((resolve, reject) => {
-         const { url, headers, method, body } = options
+    const request = options => {
+        return new Promise((resolve, reject) => {
+            const { url, headers, method, body } = options
 
-         const opt = { method }
+            const opt = { method }
 
-         if (headers) opt.headers = headers
-         if (body) opt.body = JSON.stringify(body)
+            if (headers) opt.headers = headers
+            if (body) opt.body = JSON.stringify(body)
 
-         fetch(url, opt)
-            .then(r => r.json())
-            .then(res => resolve(res))
-            .catch(error => reject(error))
-      })
-   }
+            fetch(url, opt)
+                .then(r => r.json())
+                .then(res => resolve(res))
+                .catch(error => reject(error))
+        })
+    }
 
-   const delay_method = (label, callback, time) => {
-      if (typeof window.delayed_methods == 'undefined') {
-         window.delayed_methods = {}
-      }
-      delayed_methods[label] = Date.now()
-      var t = delayed_methods[label]
+    const delay_method = (label, callback, time) => {
+        if (typeof window.delayed_methods == 'undefined') {
+            window.delayed_methods = {}
+        }
+        delayed_methods[label] = Date.now()
+        var t = delayed_methods[label]
 
-      setTimeout(function() {
-         if (delayed_methods[label] != t) {
-            return
-         } else {
-            console.log(arguments)
-            delayed_methods[label] = ''
-            callback()
-         }
-      }, time || 500)
-   }
+        setTimeout(function() {
+            if (delayed_methods[label] != t) {
+                return
+            } else {
+                console.log(arguments)
+                delayed_methods[label] = ''
+                callback()
+            }
+        }, time || 500)
+    }
 
-   const search = input => {
-      input.addEventListener('keyup', e => {
-         const containerPartial = document.querySelector('.productsFound')
+    const search = input => {
+        input.addEventListener('keyup', e => {
+            const containerPartial = document.querySelector('.productsFound')
 
-         if (!input.value.length) {
-            return containerPartial.classList.remove('show')
-         }
+            if (!input.value.length) {
+                return containerPartial.classList.remove('show')
+            }
 
-         if (input.value && input.value.length > 3) {
-            delay_method('check date parallel', async () => {
-               try {
-                  const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if (input.value && input.value.length > 3) {
+                delay_method('check date parallel', async () => {
+                    try {
+                        const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
-                  const products = await request({
-                     url: `/api/product_search/${find}`,
-                     method: 'GET',
-                     headers: {
-                        'content-type': 'application/json',
-                     },
-                  })
+                        const products = await request({
+                            url: `/api/product_search/${find}`,
+                            method: 'GET',
+                            headers: {
+                                'content-type': 'application/json',
+                            },
+                        })
 
-                  if (products.length) return putOnResults(products)
-               } catch (error) {
-                  console.log(error)
-               }
+                        if (products.length) return putOnResults(products)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                })
+            }
+        })
+    }
+
+    const select = button => {
+        const productContainer = document.querySelector('.listProduct')
+        button.addEventListener('click', async e => {
+            e.preventDefault()
+
+            const id = button.dataset.id
+
+            const product = await request({
+                url: `/api/product/${id}`,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json',
+                },
             })
-         }
-      })
-   }
 
-   const select = button => {
-      const productContainer = document.querySelector('.listProduct')
-      button.addEventListener('click', async e => {
-         e.preventDefault()
+            //esconde a pesquisa
+            button.closest('.productsFound').classList.remove('show')
 
-         const id = button.dataset.id
+            productContainer.innerHTML = ``
 
-         const product = await request({
-            url: `/api/product/${id}`,
-            method: 'GET',
-            headers: {
-               'content-type': 'application/json',
-            },
-         })
+            if (productContainer) productContainer.append(productStrong(product))
+        })
+    }
 
-         //esconde a pesquisa
-         button.closest('.productsFound').classList.remove('show')
-
-         productContainer.innerHTML = ``
-
-         if (productContainer) productContainer.append(productStrong(product))
-      })
-   }
-
-   return {
-      //public var/functions
-      search,
-   }
+    return {
+        //public var/functions
+        search,
+    }
 })()
 
 const inputSearch = document.querySelector('.productParamSearch')
@@ -267,19 +267,19 @@ const inputSearch = document.querySelector('.productParamSearch')
 if (inputSearch) searching.search(inputSearch)
 
 const createProductBySearch = object => {
-   return new Promise((resolve, reject) => {
-      const { name, code, image, options, id } = object
+    return new Promise((resolve, reject) => {
+        const { name, code, image, options, id } = object
 
-      const div = document.createElement('div')
+        const div = document.createElement('div')
 
-      let productOptions = ``
-      if (options.length) {
-         options.forEach(opt => {
-            const { id, option } = opt
+        let productOptions = ``
+        if (options.length) {
+            options.forEach(opt => {
+                const { id, option } = opt
 
-            const customName = option.customization ? `(${option.customization.name})` : ``
+                const customName = option.customization ? `(${option.customization.name})` : ``
 
-            productOptions += `
+                productOptions += `
             <tr class="text-left optionProduct">
                <th scope="row" class="px-1 productOptionName">
                   ${option.name} ${customName}
@@ -293,12 +293,12 @@ const createProductBySearch = object => {
                </td>
             </tr>
             `
-         })
-      }
+            })
+        }
 
-      div.classList.add('col-4', 'productItem', 'my-2')
+        div.classList.add('col-4', 'productItem', 'my-2')
 
-      div.innerHTML = `
+        div.innerHTML = `
       <div class="card border-primary mb-3 cardProduct item" data-id="${id}">
          <div class="card-header text-center searchProductName">
             ${name}
@@ -324,233 +324,237 @@ const createProductBySearch = object => {
       </div>
       `
 
-      //remove option
-      const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
+        //remove option
+        const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
 
-      Array.from(linkRemoveOption).forEach(link => {
-         actionRemoveOption(link)
-      })
+        Array.from(linkRemoveOption).forEach(link => {
+            actionRemoveOption(link)
+        })
 
-      //remove product
-      const btnsDestroyProduct = div.querySelector('.productDestroy')
+        //remove product
+        const btnsDestroyProduct = div.querySelector('.productDestroy')
 
-      product.destroy(btnsDestroyProduct)
+        product.destroy(btnsDestroyProduct)
 
-      return resolve(div)
-   })
+        return resolve(div)
+    })
 }
 
 const searchProduct = slug => {
-   update(1, `dark`)
-   fetch(`/api/product_search/${slug}`, {
-      method: 'GET',
-      headers: {
-         'content-type': 'application/json',
-      },
-   })
-      .then(response => response.json())
-      .then(res => {
-         update(() => {
-            return res.forEach(product => {
-               document.querySelector('.listProduct').innerHTML = ``
-               return createProductBySearch(product).then(res => {
-                  return document.querySelector('.listProduct').append(res)
-               })
+    update(1, `dark`)
+    fetch(`/api/product_search/${slug}`, {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                return res.forEach(product => {
+                    document.querySelector('.listProduct').innerHTML = ``
+                    return createProductBySearch(product).then(res => {
+                        return document.querySelector('.listProduct').append(res)
+                    })
+                })
+            }, `dark`)
+        })
+        .catch(err => {
+            return Swal.fire({
+                title: err,
+                icon: 'error',
+                showCloseButton: true,
             })
-         }, `dark`)
-      })
-      .catch(err => {
-         return Swal.fire({
-            title: err,
-            icon: 'error',
-            showCloseButton: true,
-         })
-      })
+        })
 }
 
 const indexProducts = () => {
-   update(1, `dark`)
-   fetch(`/api/product`, {
-      method: 'GET',
-      headers: {
-         'content-type': 'application/json',
-      },
-   })
-      .then(response => response.json())
-      .then(res => {
-         update(() => {
-            return res.forEach(product => {
-               document.querySelector('.listProduct').innerHTML = ``
-               return createProductBySearch(product).then(res => {
-                  return document.querySelector('.listProduct').append(res)
-               })
+    update(1, `dark`)
+    fetch(`/api/product`, {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                return res.forEach(product => {
+                    document.querySelector('.listProduct').innerHTML = ``
+                    return createProductBySearch(product).then(res => {
+                        return document.querySelector('.listProduct').append(res)
+                    })
+                })
+            }, `dark`)
+        })
+        .catch(err => {
+            return Swal.fire({
+                title: err,
+                icon: 'error',
+                showCloseButton: true,
             })
-         }, `dark`)
-      })
-      .catch(err => {
-         return Swal.fire({
-            title: err,
-            icon: 'error',
-            showCloseButton: true,
-         })
-      })
+        })
 }
 
 const btnSearchProductInternal = document.querySelector('.searchProductInternal')
 
 btnSearchProductInternal.addEventListener('click', function(e) {
-   e.preventDefault()
-   const inputParamSearch = document.querySelector('.productParamSearch')
+    e.preventDefault()
+    const inputParamSearch = document.querySelector('.productParamSearch')
 
-   if (inputParamSearch.value) {
-      return searchProduct(inputParamSearch.value)
-   } else {
-      return indexProducts()
-   }
+    if (inputParamSearch.value) {
+        return searchProduct(inputParamSearch.value)
+    } else {
+        return indexProducts()
+    }
 })
 
 const internalRequest = id => {
-   return new Promise((resolve, reject) => {
-      fetch(`/api/${productResource}/${id}`, {
-         method: 'GET',
-         headers: {
-            'content-type': 'application/json',
-         },
-      })
-         .then(response => response.json())
-         .then(res => {
-            if (!res) return reject(`Não há produtos`)
+    return new Promise((resolve, reject) => {
+        fetch(`/api/${productResource}/${id}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(res => {
+                if (!res) return reject(`Não há produtos`)
 
-            const { name, code: id, image } = res
-            const retorno = {
-               name,
-               id,
-               image,
-            }
-         })
-   })
+                const { name, code: id, image } = res
+                const retorno = {
+                    name,
+                    id,
+                    image,
+                }
+            })
+    })
 }
 
 const getVtexProduct = skuProduct => {
-   return new Promise((resolve, reject) => {
-      if (!skuProduct.value) return reject('Informe o sku do produto')
-      const sku = skuProduct.value
-      const URLSKU = `https://sistema.moveispracasa.com.br/api/admin/products/${sku}`
+    return new Promise((resolve, reject) => {
+        if (!skuProduct.value) return reject('Informe o sku do produto')
+        const sku = skuProduct.value
+        const URLSKU = `https://sistema.moveispracasa.com.br/api/admin/products/${sku}`
 
-      var myHeaders = new Headers({
-         Host: '*',
-      })
+        var myHeaders = new Headers({
+            Host: '*',
+        })
 
-      fetch(URLSKU, {
-         method: 'GET',
-         headers: {
-            'content-type': 'application/json',
-            accept: 'application/json',
-         },
-      })
-         .then(response => response.json())
-         .then(data => {
-            console.log(data)
-            const { product } = data
-            if (!product) return reject(`Produto não encontrado`)
+        fetch(URLSKU, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                const { product } = data
+                if (!product) return reject(`Produto não encontrado`)
 
-            //check ative
-            const { isActiveOnVtex } = product
+                //check ative
+                const { isActiveOnVtex } = product
 
-            if (!isActiveOnVtex) return reject(`Este produto está inativo na Vtex`)
+                if (!isActiveOnVtex) return reject(`Este produto está inativo na Vtex`)
 
-            //vtexData.itemMetadata.items
-            const { product_name, id, productName, productId } = product.vtexData
+                //vtexData.itemMetadata.items
+                const { product_name, id, productName, productId } = product.vtexData
 
-            let items
+                let items
 
-            if (product.vtexData.itemMetadata) {
-               items = product.vtexData.itemMetadata.items
-            } else {
-               items = product.vtexData.items
-            }
+                if (product.vtexData.itemMetadata) {
+                    items = product.vtexData.itemMetadata.items
+                } else {
+                    items = product.vtexData.items
+                }
 
-            if (!items.length) return reject(`Não há itens`)
+                if (!items.length) return reject(`Não há itens`)
 
-            const retorno = {
-               name: product_name || productName,
-               id: id || productId,
-            }
+                const retorno = {
+                    name: product_name || productName,
+                    id: id || productId,
+                }
 
-            if (product.vtexData.items.length) {
-               retorno.skus = product.vtexData.items
-            }
+                if (product.vtexData.items.length) {
+                    retorno.skus = product.vtexData.items
+                }
 
-            if (items[0] && items[0].MainImage) {
-               const { MainImage } = items[0]
-               retorno.image = MainImage
-            } else {
-               const { images } = items[0]
+                if (items[0] && items[0].MainImage) {
+                    const { MainImage } = items[0]
+                    retorno.image = MainImage
+                } else {
+                    const { images } = items[0]
 
-               if (!images) return reject(`Não há imagem no produto`)
+                    if (!images) return reject(`Não há imagem no produto`)
 
-               retorno.image = images[0].imageUrl
-            }
+                    retorno.image = images[0].imageUrl
+                }
 
-            return resolve(retorno)
-         })
-         .catch(err => reject(err))
-   })
+                return resolve(retorno)
+            })
+            .catch(err => reject(err))
+    })
 }
 
 const putValues = object => {
-   const { name, code, image } = object
-   document.querySelector('.nameProduct').value = name
-   document.querySelector('.codeProduct').value = code
-   document.querySelector('.productNameInsert').innerHTML = name
-   document.querySelector('.productCodeInsert b').innerHTML = `Código do produto: ${code}`
-   document.querySelector('.productImageInsert').setAttribute(`src`, image)
+    const { name, code, image } = object
+    document.querySelector('.nameProduct').value = name
+    document.querySelector('.codeProduct').value = code
+    document.querySelector('.productNameInsert').innerHTML = name
+    document.querySelector('.productCodeInsert b').innerHTML = `Código do produto: ${code}`
+    document.querySelector('.productImageInsert').setAttribute(`src`, image)
 }
 
 const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
 btnSearchProduct.addEventListener('click', e => {
-   e.preventDefault()
-   let inputSkuProduct = document.querySelector('.skuProduct')
-   const olderText = btnSearchProduct.innerHTML
-   btnSearchProduct.innerHTML = ``
-   btnSearchProduct.append(spinner(`ligth`, 'small'))
-   getVtexProduct(inputSkuProduct)
-      .then(res => {
-         console.log(res)
-         const { name, id: code, image, skus } = res
+    e.preventDefault()
+    let inputSkuProduct = document.querySelector('.skuProduct')
+    const olderText = btnSearchProduct.innerHTML
+    btnSearchProduct.innerHTML = ``
+    btnSearchProduct.append(spinner(`ligth`, 'small'))
+    getVtexProduct(inputSkuProduct)
+        .then(res => {
+            console.log(res)
+            const { name, id: code, image, skus } = res
 
-         //subitens
-         if (skus) {
-            const subProducts = document.querySelector('.subProducts')
-            if (subProducts) subProducts.innerHTML = ``
-            skus.map(sku => {
-               const subProduct = document.createElement('div')
+            //subitens
+            if (skus) {
+                const subProducts = document.querySelector('.subProducts')
+                if (subProducts) subProducts.innerHTML = ``
+                skus.map(sku => {
+                    const subProduct = document.createElement('div')
 
-               subProduct.classList.add('col-md-2', 'mt-3')
+                    subProduct.classList.add('col-md-2', 'mt-3')
 
-               subProduct.innerHTML = `
-               <div class="card">
-                  <img class="card-img-top" src="${sku.images[0].imageUrl}" alt="Card image cap">
-                  <div class="card-body text-center" style="border-top: 1px solid rgba(0,0,0,.125)">
-                     <h6 class="card-title">${sku.name}</h6>
-                  </div>
-               </div>
-               `
+                    subProduct.innerHTML = `
+                     <div class="card">
+                        <img class="card-img-top" src="${sku.images[0].imageUrl}" alt="Card image cap">
+                        <div class="card-body text-center" style="border-top: 1px solid rgba(0,0,0,.125)">
+                           <h6 class="card-title">${sku.name}</h6>
+                        </div>
+                     </div>
+                     `
 
-               if (subProducts) subProducts.append(subProduct)
+                    document
+                        .querySelector('.informationProduct')
+                        .append(custom.handleChildForm({ id: sku.id || sku.itemId, name: sku.name, nameProduct: name }))
+
+                    if (subProducts) subProducts.append(subProduct)
+                })
+            }
+
+            document.querySelector('.resultProduct').classList.add('full')
+            btnSearchProduct.innerHTML = olderText
+            return putValues({ name, code, image })
+        })
+        .catch(res => {
+            return Swal.fire({
+                title: res,
+                icon: 'error',
+                showCloseButton: true,
             })
-         }
-
-         document.querySelector('.resultProduct').classList.add('full')
-         btnSearchProduct.innerHTML = olderText
-         return putValues({ name, code, image })
-      })
-      .catch(res => {
-         return Swal.fire({
-            title: res,
-            icon: 'error',
-            showCloseButton: true,
-         })
-      })
+        })
 })

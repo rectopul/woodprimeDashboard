@@ -26,7 +26,7 @@
             </div> <!-- Personalização.// -->
 
             <div class="tab-pane fade" id="v-pills-product" role="tabpanel" aria-labelledby="v-pills-product-tab">
-                @include('components.products')
+                @include('components.products', ['customTypes', $customTypes])
             </div> <!-- Produto.// -->
 
             <div class="tab-pane fade" id="v-pills-searchCustomization" role="tabpanel"

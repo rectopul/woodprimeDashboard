@@ -7,12 +7,22 @@
                 &, & h3
                     color: #CF423C !important
 
+.listOptionstoSelect
+    & > div
+        &.selected
+            opacity .7
+            & > .card
+                border-color: #CF423C !important
+                &, & h5
+                    color: #CF423C !important
+
+
 .productCustonsNv1
     & .listCustomByType
         & > div
             & .card-body
                 cursor pointer
-            &.selected
+            &.show
                 opacity .7
                 & > .card
                     border-color: #CF423C !important

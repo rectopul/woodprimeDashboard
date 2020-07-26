@@ -44,7 +44,14 @@ const product = (() => {
 
                     Array.from(formRows).forEach(div => div.remove())
 
-                    //SweetAlert
+                    if (typeof res === `object`) {
+                        return Swal.fire({
+                            title: `Produto ${res[0].name} cadastrado`,
+                            icon: 'success',
+                            showCloseButton: true,
+                        })
+                    }
+
                     return Swal.fire({
                         title: `Produto ${res.name} cadastrado`,
                         icon: 'success',

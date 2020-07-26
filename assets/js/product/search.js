@@ -521,7 +521,7 @@ btnSearchProduct.addEventListener('click', e => {
             const { name, id: code, image, skus } = res
 
             //subitens
-            if (skus) {
+            if (skus && skus.length > 1) {
                 const subProducts = document.querySelector('.subProducts')
                 if (subProducts) subProducts.innerHTML = ``
                 skus.map(sku => {

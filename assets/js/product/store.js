@@ -36,9 +36,12 @@ const product = (() => {
 
                     //remove as opcoes
                     const formRows = document.querySelectorAll(`.formInsertProduct .form-row`)
+                    const showClass = document.querySelectorAll(`.listCustomByType .show`)
 
                     //Limpa opções listOptionstoSelect
                     const listOptions = document.querySelectorAll(`.listOptionstoSelect .selected`)
+
+                    if (showClass) Array.from(showClass).forEach(option => option.classList.remove('show'))
 
                     if (listOptions) Array.from(listOptions).forEach(option => option.classList.remove('selected'))
 

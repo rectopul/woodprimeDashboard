@@ -511,6 +511,7 @@ const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
 btnSearchProduct.addEventListener('click', e => {
     e.preventDefault()
+    custom.handleResetForm()
     let inputSkuProduct = document.querySelector('.skuProduct')
     const olderText = btnSearchProduct.innerHTML
     btnSearchProduct.innerHTML = ``

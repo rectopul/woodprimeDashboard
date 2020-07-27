@@ -218,6 +218,16 @@ const custom = (() => {
         return card
     }
 
+    const handleResetForm = () => {
+        //excludes.options = []
+        const dynamicElements = document.querySelectorAll('.informationProduct .form-row')
+
+        const subProducts = document.querySelectorAll('.subProducts > div')
+
+        if (subProducts) Array.from(subProducts).forEach(field => field.remove())
+        if (dynamicElements) Array.from(dynamicElements).forEach(field => field.remove())
+    }
+
     const handleSelectOption = object => {
         const { name, id } = object
 
@@ -863,6 +873,7 @@ const custom = (() => {
         showOptions: clickCard,
         createCard: createCardCustom,
         cardCustom: insertCardCustom,
+        handleResetForm,
         changeLevel,
         closeCustom,
         allTypes: selectAllTypes,
@@ -2195,6 +2206,7 @@ const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
 btnSearchProduct.addEventListener('click', e => {
     e.preventDefault()
+    custom.handleResetForm()
     let inputSkuProduct = document.querySelector('.skuProduct')
     const olderText = btnSearchProduct.innerHTML
     btnSearchProduct.innerHTML = ``

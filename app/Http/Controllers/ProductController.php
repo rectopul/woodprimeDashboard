@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customization;
 use App\Models\Option;
 use App\Models\Product;
 use App\Models\ProductOption;
@@ -324,6 +325,58 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function getOptions($code)
+    {
+        $messages = [];
+
+        $products = Product::where('code', '=', $code)
+            ->with('options')
+            ->first();
+
+        $messages['error']  = 'product not found';
+
+        if (!$products)
+            return response()->json($messages, 200);
+
+        $customizations = Customization::with('type')->get();
+
+        $excluded = [];
+        $returned = [];
+
+
+        foreach ($products->options as $option) {
+            $excluded[] = $option->option_id;
+        }
+
+        //Get all options of not in excluded
+        $productOption = Option::whereNotIn('id', $excluded)
+            ->with('customization')->get();
+
+        $products->custom = $productOption;
+
+        //list customizations
+        foreach ($customizations as $customization) {
+
+            $options = [];
+
+            foreach ($products->custom as $custom) {
+                if ($custom->customization_id == $customization->id) {
+                    $options[] = $custom;
+                }
+            }
+
+            $customization->options = $options;
+
+            if (!empty($options)) $returned[] = $customization;
+        }
+
+        return response()->json($returned);
+    }
+
+    /**
+     * Get options by product id
+     * in Shop Woodprime
+     */
     public function show($id)
     {
         $products = Product::where('id', '=', $id)
@@ -338,7 +391,7 @@ class ProductController extends Controller
         }
 
         $productOption = Option::whereNotIn('id', $excluded)
-            ->with('customization')->get();
+            ->with('customization.type')->get();
 
         $products->custom = $productOption;
 
@@ -347,7 +400,7 @@ class ProductController extends Controller
             return response()->json($products);
         }
 
-        return response()->json('', 200);
+        return response()->json('Product not exist', 200);
     }
 
     /**

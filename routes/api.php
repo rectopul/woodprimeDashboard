@@ -45,3 +45,6 @@ Route::resource('type', 'TypeController');
 Route::get('/custon/search/{find}', 'CustomizationController@find')->name('findcustom');
 // nao associado
 Route::get('custon/relate/index', 'CustomizationController@relate')->name('CustomUnrelated');
+//get product in store
+//Route::get('custon/option/{id}', 'CustomizationController@options');
+Route::get('v1/product/{code}', 'ProductController@getOptions')->name('getOptions');

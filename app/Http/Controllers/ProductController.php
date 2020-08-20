@@ -367,7 +367,7 @@ class ProductController extends Controller
 
             $customization->options = $options;
 
-            if (!empty($options)) $returned[] = $customization;
+            if (!empty($options) && $customization->type_id > 1) $returned[] = $customization;
         }
 
         return response()->json($returned);

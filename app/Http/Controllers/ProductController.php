@@ -167,6 +167,8 @@ class ProductController extends Controller
 
                 foreach ($childs as $children) {
 
+                    //create Product
+
                     //check if product exist 
 
                     $check_product = Product::where('name', '=', $children['name'])->first();
@@ -177,6 +179,7 @@ class ProductController extends Controller
                         $childrenProduct->description = $children['description'];
                         $childrenProduct->image = $children['image'];
                         $childrenProduct->code = $children['code'];
+                        $childrenProduct->parent_id = $product->id;
 
                         $childrenProduct->save();
 
@@ -276,6 +279,7 @@ class ProductController extends Controller
                     $childrenProduct->description = $children['description'];
                     $childrenProduct->image = $children['image'];
                     $childrenProduct->code = $children['code'];
+                    $childrenProduct->parent_id = $product->id;
 
                     $childrenProduct->save();
 
@@ -331,6 +335,7 @@ class ProductController extends Controller
 
         $products = Product::where('code', '=', $code)
             ->with('options')
+            ->with('child')
             ->first();
 
         $messages['error']  = 'product not found';
@@ -370,7 +375,7 @@ class ProductController extends Controller
             if (!empty($options) && $customization->type_id > 1) $returned[] = $customization;
         }
 
-        return response()->json($returned);
+        return response()->json(['custom' => $returned, 'child' => $products->child]);
     }
 
     /**

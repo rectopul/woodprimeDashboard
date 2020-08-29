@@ -191,6 +191,12 @@ class ProductController extends Controller
                         //Save Custom
                         $productCustomization->save();
                     } else {
+                        //update children product
+                        $check_product->name = $children['name'];
+                        $check_product->description = $children['description'];
+                        $check_product->image = $children['image'];
+                        $check_product->code = $children['code'];
+                        $check_product->parent_id = $product->id;
                         //option
                         $productCustomization = new ProductOption;
                         $productCustomization->option_id = $option_id;
@@ -198,11 +204,12 @@ class ProductController extends Controller
 
                         //Save Custom
                         $productCustomization->save();
+                        $check_product->save();
                     }
                 }
             }
 
-            $response = Product::where('code', '=', $request->input('code'))->with('options.option')->first();
+            $response = Product::where('code', '=', $request->input('code'))->with('options.option')->with('child')->first();
 
             return response()->json($response);
         }
@@ -291,17 +298,25 @@ class ProductController extends Controller
                     //Save Custom
                     $productCustomization->save();
                 } else {
+                    //update-childrens
+                    $check_product->name = $children['name'];
+                    $check_product->description = $children['description'];
+                    $check_product->image = $children['image'];
+                    $check_product->code = $children['code'];
+                    $check_product->parent_id = $product->id;
                     //option
                     $productCustomization = new ProductOption;
                     $productCustomization->option_id = $option_id;
                     $productCustomization->product_id = $check_product->id;
 
                     //Save Custom
+                    $check_product->save();
+                    $productCustomization->save();
                 }
             }
         }
 
-        $response = Product::where('code', '=', $request->input('code'))->with('options.option')->get();
+        $response = Product::where('code', '=', $request->input('code'))->with('options.option')->with('child')->get();
 
         return response()->json($response);
     }

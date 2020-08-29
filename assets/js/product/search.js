@@ -450,7 +450,6 @@ const getVtexProduct = skuProduct => {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 const { product } = data
                 if (!product) return reject(`Produto não encontrado`)
 

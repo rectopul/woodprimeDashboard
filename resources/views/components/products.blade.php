@@ -6,8 +6,7 @@
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="fas fa-shopping-cart"></i></div>
         </div>
-        <input type="text" class="form-control skuProduct" id="skuProduct" name="skuProduct"
-          placeholder="SKU do produto">
+        <input type="text" class="form-control skuProduct" id="skuProduct" name="skuProduct" placeholder="SKU do produto">
       </div>
     </div>
     <div class="col-auto">
@@ -43,8 +42,7 @@
               <div class="informationProduct">
                 <div class="form-group">
                   <label for="exampleFormControlTextarea1">Descrição</label>
-                  <textarea class="form-control descriptionProduct" rows="3" placeholder="Informe uma descrição"
-                    required></textarea>
+                  <textarea class="form-control descriptionProduct" rows="3" placeholder="Informe uma descrição" required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -68,6 +66,7 @@
                 <div class="row py-2 mb-4 listOptionstoSelect">
                   <!-- OPTIONS SELECTED -->
                   @foreach ($customTypes as $type)
+
                   <!--custom // -->
                   @foreach ($type->customization as $custom)
                   <div class="col-md-3 mb-3">
@@ -77,6 +76,10 @@
                         <p class="card-text">{{$custom->description}}</p>
                         <a href="#" class="btn btn-primary" data-id="{{$custom->id}}">Selecionar Opções</a>
                       </div>
+                    </div>
+
+                    <div class="card-footer text-center">
+                      <input type="checkbox" name="custom" id="selectAllCustom" value="{{$custom->id}}">
                     </div>
                   </div>
                   @endforeach

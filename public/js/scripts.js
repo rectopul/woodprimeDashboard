@@ -867,7 +867,21 @@ const custom = (() => {
         })
     }
 
+    //add custom from excludes
+    function selectCustom(id) {
+        return excludes.custons.push(parseInt(id))
+    }
+
+    //remove custom from excludes
+    function removeCustom(id) {
+        const filtered = excludes.custons.filter(x => x != id)
+
+        return (excludes.custons = filtered)
+    }
+
     return {
+        selectCustom,
+        removeCustom,
         create: createCustom,
         destroy: destroyCustom,
         showOptions: clickCard,
@@ -1538,12 +1552,14 @@ const showOptions = id => {
 
                 if (!options.length) {
                     return (document.querySelector('.optionsContainer').innerHTML =
-                        'Não há opções dacastradas para esta customização')
+                        'Não há opções castradas para esta customização')
                 }
 
                 options.forEach(option => {
                     let divOption = document.createElement('div')
+
                     divOption.classList.add('col-6', 'col-lg-4', 'option')
+
                     divOption.innerHTML = `
                      <div class="card border-primary mb-3 cardOption" data-id="${option.id}">
                         <div class="card-header">
@@ -2305,7 +2321,7 @@ const product = (() => {
 
                     if (typeof res === `object`) {
                         return Swal.fire({
-                            title: `Produto ${res[0].name} cadastrado`,
+                            title: `Produto ${res[0] ? res[0].name : null} cadastrado`,
                             icon: 'success',
                             showCloseButton: true,
                         })
@@ -2448,12 +2464,27 @@ const product = (() => {
         })
     }
 
+    function customInsert(input) {
+        input.addEventListener('change', function(e) {
+            e.preventDefault()
+
+            if (input.checked !== true) return custom.removeCustom(input.value)
+
+            custom.selectCustom(input.value)
+        })
+    }
+
     return {
         // declare public variables and/or functions
+        customInsert,
         create: insertProduct,
         destroy: clickDestroyProduct,
     }
 })()
+
+const allCheckCustom = [...document.querySelectorAll('#selectAllCustom')]
+
+if (allCheckCustom) allCheckCustom.map(product.customInsert)
 
 //modal
 $('#modalProductOptions').on('hidden.bs.modal', function(e) {
@@ -2549,6 +2580,7 @@ const optionInsert = object => {
 
     //remove
     const btnDel = div.querySelector(`.optionSelectDel`)
+
     btnDel.addEventListener('click', e => {
         const id = btnDel.dataset.id
 
@@ -2666,35 +2698,35 @@ if (formInsertProduct) product.create(formInsertProduct)
 const typeResource = `type`
 
 let type = (() => {
-   //private vars or function
-   const request = options => {
-      return new Promise((resolve, reject) => {
-         const { url, headers, method, body } = options
+    //private vars or function
+    const request = options => {
+        return new Promise((resolve, reject) => {
+            const { url, headers, method, body } = options
 
-         const opt = { method }
+            const opt = { method }
 
-         if (headers) opt.headers = headers
-         if (body) opt.body = JSON.stringify(body)
+            if (headers) opt.headers = headers
+            if (body) opt.body = JSON.stringify(body)
 
-         fetch(url, opt)
-            .then(r => r.json())
-            .then(res => resolve(res))
-            .catch(error => reject(error))
-      })
-   }
+            fetch(url, opt)
+                .then(r => r.json())
+                .then(res => resolve(res))
+                .catch(error => reject(error))
+        })
+    }
 
-   //Create new card type and return this
-   const cardType = object => {
-      const { id, name } = object
-      const newType = document.createElement('div')
+    //Create new card type and return this
+    const cardType = object => {
+        const { id, name } = object
+        const newType = document.createElement('div')
 
-      newType.classList.add('card', 'mb-3', 'card-type')
+        newType.classList.add('card', 'mb-3', 'card-type')
 
-      newType.id = `type-${id}`
+        newType.id = `type-${id}`
 
-      newType.style.flex = `0 0 calc(33.333333% - 10px)`
-      newType.style.margin = `0 5px`
-      newType.innerHTML = `
+        newType.style.flex = `0 0 calc(33.333333% - 10px)`
+        newType.style.margin = `0 5px`
+        newType.innerHTML = `
          <div class="card-body text-center">
             <h6 class="card-title mb-0">${name}</h6>
          </div>
@@ -2707,198 +2739,198 @@ let type = (() => {
             </button>
          </div>`
 
-      //event on click for select type
-      newType.querySelector('.select-type').addEventListener('click', e => {
-         e.preventDefault()
-         selectType(newType.querySelector('.select-type'))
-      })
+        //event on click for select type
+        newType.querySelector('.select-type').addEventListener('click', e => {
+            e.preventDefault()
+            selectType(newType.querySelector('.select-type'))
+        })
 
-      //event remove type
-      const btnDelType = newType.querySelector('.del-type')
+        //event remove type
+        const btnDelType = newType.querySelector('.del-type')
 
-      btnDelType.addEventListener('click', e => {
-         e.preventDefault()
-         destroyType(btnDelType)
-      })
+        btnDelType.addEventListener('click', e => {
+            e.preventDefault()
+            destroyType(btnDelType)
+        })
 
-      return newType
-   }
+        return newType
+    }
 
-   //insert card in data-base and put in container
-   const insertType = input => {
-      if (!input.value) return alert('Informe o nome do tipo de customização')
-      update(1, `dark`)
-      fetch(`/api/${typeResource}`, {
-         method: 'POST',
-         headers: {
-            'content-type': 'application/json',
-         },
-         body: JSON.stringify({
-            name: input.value,
-         }),
-      })
-         .then(response => {
-            update(2, `dark`)
-            response
-               .json()
-               .then(res => {
-                  //insert card to modal
-                  const newType = cardType({ id: res.id, name: res.name })
-                  const typeContainer = document.querySelector('.typesContainer')
+    //insert card in data-base and put in container
+    const insertType = input => {
+        if (!input.value) return alert('Informe o nome do tipo de customização')
+        update(1, `dark`)
+        fetch(`/api/${typeResource}`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: input.value,
+            }),
+        })
+            .then(response => {
+                update(2, `dark`)
+                response
+                    .json()
+                    .then(res => {
+                        //insert card to modal
+                        const newType = cardType({ id: res.id, name: res.name })
+                        const typeContainer = document.querySelector('.typesContainer')
 
-                  input.value = ``
+                        input.value = ``
 
-                  return update(() => typeContainer.prepend(newType), `dark`)
-               })
-               .catch(err => console.log(err))
-         })
-         .catch(err => {
-            console.log(err)
-         })
-   }
-
-   //Destroy type in data-base and remove of container
-   const destroyType = input => {
-      const inputAction = document.querySelector('.actionConfirm')
-      const btnAceptAction = document.querySelector('.aceptAction')
-
-      inputAction.value = `TypeDestroy`
-
-      btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
-
-      $('.modal.types').on('hidden.bs.modal', function(e) {
-         // do something...
-         $('.modalActionConfirm').modal('show')
-         $(this).off('hidden.bs.modal')
-      })
-
-      $('.modal.types').modal('hide')
-
-      btnAceptAction.addEventListener('click', e => {
-         if (inputAction.value == `TypeDestroy`) {
-            const id = btnAceptAction.dataset.id
-
-            $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
-               // do something...
-               $('.modal.types').modal('show')
-               $(this).off('hidden.bs.modal')
+                        return update(() => typeContainer.prepend(newType), `dark`)
+                    })
+                    .catch(err => console.log(err))
             })
-
-            update(1, `dark`)
-
-            fetch(`/api/${typeResource}/${id}`, {
-               method: 'DELETE',
+            .catch(err => {
+                console.log(err)
             })
-               .then(response => {
-                  update(2, `dark`)
-                  response
-                     .json()
-                     .then(res => {
-                        //Delete card to modal
+    }
 
-                        return update(() => {
-                           //tabTypeRemove(id)
-                           return input.closest('.card').remove()
+    //Destroy type in data-base and remove of container
+    const destroyType = input => {
+        const inputAction = document.querySelector('.actionConfirm')
+        const btnAceptAction = document.querySelector('.aceptAction')
+
+        inputAction.value = `TypeDestroy`
+
+        btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
+
+        $('.modal.types').on('hidden.bs.modal', function(e) {
+            // do something...
+            $('.modalActionConfirm').modal('show')
+            $(this).off('hidden.bs.modal')
+        })
+
+        $('.modal.types').modal('hide')
+
+        btnAceptAction.addEventListener('click', e => {
+            if (inputAction.value == `TypeDestroy`) {
+                const id = btnAceptAction.dataset.id
+
+                $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
+                    // do something...
+                    $('.modal.types').modal('show')
+                    $(this).off('hidden.bs.modal')
+                })
+
+                update(1, `dark`)
+
+                fetch(`/api/${typeResource}/${id}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => {
+                        update(2, `dark`)
+                        response
+                            .json()
+                            .then(res => {
+                                //Delete card to modal
+
+                                return update(() => {
+                                    //tabTypeRemove(id)
+                                    return input.closest('.card').remove()
+                                }, `dark`)
+                            })
+                            .catch(err => console.log(err))
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        update(() => {
+                            Swal.fire({
+                                title: `Tivemos um erro de sistema`,
+                                icon: 'error',
+                                showCloseButton: true,
+                            })
                         }, `dark`)
-                     })
-                     .catch(err => console.log(err))
-               })
-               .catch(err => {
-                  console.log(err)
-                  update(() => {
-                     Swal.fire({
-                        title: `Tivemos um erro de sistema`,
-                        icon: 'error',
-                        showCloseButton: true,
-                     })
-                  }, `dark`)
-               })
-         }
-      })
-   }
-
-   //select type and put in form value
-   const selectType = element => {
-      //Pegar id do type
-      const idType = element.getAttribute('type-id')
-
-      const inputTypeCustom = document.querySelector('.typeCustom')
-
-      inputTypeCustom.value = idType
-
-      const nameType = element.closest('.card-type').querySelector('.card-title')
-
-      document.querySelector('.btn-modal-types').classList.remove('btn-primary')
-
-      document.querySelector('.btn-modal-types').classList.add('btn-success')
-
-      return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
-   }
-
-   const removeAllType = input => {
-      input.addEventListener('change', async e => {
-         try {
-            if (input.checked == true) {
-               const id = input.value
-
-               await request({
-                  url: `/api/types/exclude/${id}`,
-                  method: 'POST',
-                  headers: {
-                     'content-type': 'application/json',
-                  },
-               })
-
-               input.closest('.card.border-primary').classList.add('exclude')
+                    })
             }
-         } catch (error) {}
-      })
-   }
+        })
+    }
 
-   return {
-      //public functions or vars
-      insertTab: item => {
-         //Criando a TAB
-         const newType = document.createElement('a')
+    //select type and put in form value
+    const selectType = element => {
+        //Pegar id do type
+        const idType = element.getAttribute('type-id')
 
-         const { id, name } = item
+        const inputTypeCustom = document.querySelector('.typeCustom')
 
-         newType.classList.add('list-group-item', 'list-group-item-action')
+        inputTypeCustom.value = idType
 
-         newType.setAttribute('id', `list-type-${id}-list`)
-         //add role
-         newType.setAttribute('role', `tab`)
-         //add aria-selected
-         newType.setAttribute('aria-selected', `false`)
-         //add aria-controls
-         newType.setAttribute('aria-controls', `list-type-${id}`)
-         //add href
-         newType.setAttribute('href', `#list-type-${id}`)
+        const nameType = element.closest('.card-type').querySelector('.card-title')
 
-         newType.dataset.toggle = `list`
+        document.querySelector('.btn-modal-types').classList.remove('btn-primary')
 
-         newType.innerHTML = name
+        document.querySelector('.btn-modal-types').classList.add('btn-success')
 
-         //Criando o content
-         const pane = document.createElement('div')
+        return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
+    }
 
-         //Adicionar as classes
-         pane.classList.add(`tab-pane`, `fade`)
+    const removeAllType = input => {
+        input.addEventListener('change', async e => {
+            try {
+                if (input.checked == true) {
+                    const id = input.value
 
-         //Adicionando id
-         pane.setAttribute('id', `list-type-${id}`)
-         //add Role
-         pane.setAttribute('role', `tabpanel`)
-         //add aria-labely
-         pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
+                    await request({
+                        url: `/api/types/exclude/${id}`,
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json',
+                        },
+                    })
 
-         //CRIANDO PAGINAÇÃO
-         const createPagination = () => {
-            const pagination = document.createElement('div')
+                    input.closest('.card.border-primary').classList.add('exclude')
+                }
+            } catch (error) {}
+        })
+    }
 
-            pagination.classList.add('row')
+    return {
+        //public functions or vars
+        insertTab: item => {
+            //Criando a TAB
+            const newType = document.createElement('a')
 
-            pagination.innerHTML = `<div class="col-12">
+            const { id, name } = item
+
+            newType.classList.add('list-group-item', 'list-group-item-action')
+
+            newType.setAttribute('id', `list-type-${id}-list`)
+            //add role
+            newType.setAttribute('role', `tab`)
+            //add aria-selected
+            newType.setAttribute('aria-selected', `false`)
+            //add aria-controls
+            newType.setAttribute('aria-controls', `list-type-${id}`)
+            //add href
+            newType.setAttribute('href', `#list-type-${id}`)
+
+            newType.dataset.toggle = `list`
+
+            newType.innerHTML = name
+
+            //Criando o content
+            const pane = document.createElement('div')
+
+            //Adicionar as classes
+            pane.classList.add(`tab-pane`, `fade`)
+
+            //Adicionando id
+            pane.setAttribute('id', `list-type-${id}`)
+            //add Role
+            pane.setAttribute('role', `tabpanel`)
+            //add aria-labely
+            pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
+
+            //CRIANDO PAGINAÇÃO
+            const createPagination = () => {
+                const pagination = document.createElement('div')
+
+                pagination.classList.add('row')
+
+                pagination.innerHTML = `<div class="col-12">
                <nav aria-label="..." class="paginate-type-${id}" data-resource="type">
                   <ul class="pagination">
                   <li class="page-item disabled">
@@ -2917,81 +2949,76 @@ let type = (() => {
                </nav>
             </div> <!-- Paginação // -->`
 
-            return pagination
-         }
+                return pagination
+            }
 
-         //container of content
-         const container = document.createElement('div')
+            //container of content
+            const container = document.createElement('div')
 
-         container.classList.add('row', `container-type-${id}`)
+            container.classList.add('row', `container-type-${id}`)
 
-         document.querySelector('.tabContentTypes').append(pane)
+            document.querySelector('.tabContentTypes').append(pane)
 
-         pane.append(createPagination())
-         pane.append(container)
-         pane.append(createPagination())
+            pane.append(createPagination())
+            pane.append(container)
+            pane.append(createPagination())
 
-         return document.querySelector('.tabTypes').append(newType)
-      },
-      removeTab: id => {
-         document.querySelector(`#list-type-${id}-list`).remove()
-         document.querySelector(`#list-type-${id}`).remove()
-      },
-      create: insertType,
-      destroy: destroyType,
-      select: selectType,
-   }
+            return document.querySelector('.tabTypes').append(newType)
+        },
+        removeTab: id => {
+            document.querySelector(`#list-type-${id}-list`).remove()
+            document.querySelector(`#list-type-${id}`).remove()
+        },
+        create: insertType,
+        destroy: destroyType,
+        select: selectType,
+    }
 })()
 
 //Create new Type
 const btnInsertType = document.querySelector('.insertType')
 
 btnInsertType.addEventListener('click', e => {
-   e.preventDefault()
-   return type.create(document.querySelector('.typeName'))
-   //insertType(document.querySelector('.typeName'))
+    e.preventDefault()
+    return type.create(document.querySelector('.typeName'))
+    //insertType(document.querySelector('.typeName'))
 })
 
 //Delete types
 const btnDeleteType = document.querySelectorAll('.del-type')
 
 Array.from(btnDeleteType).forEach(el => {
-   el.addEventListener('click', e => {
-      e.preventDefault()
-      //return console.log(el)
-      return type.destroy(el)
-   })
+    el.addEventListener('click', e => {
+        e.preventDefault()
+        //return console.log(el)
+        return type.destroy(el)
+    })
 })
 
 //Select type form create custom
 let btnSelect = document.querySelectorAll('.select-type')
 
 Array.from(btnSelect).forEach(el => {
-   el.addEventListener('click', function(e) {
-      return type.select(el)
-   })
+    el.addEventListener('click', function(e) {
+        return type.select(el)
+    })
 })
 
 const customUpdate = object => {
-    const {
-        id,
-        name,
-        description,
-        type_id
-    } = object
+    const { id, name, description, type_id } = object
 
     update(1, `dark`)
     fetch(`/api/${custonResource}/${id}`, {
-            method: 'PUT',
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-                description,
-                type_id
-            }),
-        })
+        method: 'PUT',
+        headers: {
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+            name,
+            description,
+            type_id,
+        }),
+    })
         .then(response => {
             update(() => {
                 console.log(response)

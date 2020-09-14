@@ -207,12 +207,14 @@ const showOptions = id => {
 
                 if (!options.length) {
                     return (document.querySelector('.optionsContainer').innerHTML =
-                        'Não há opções dacastradas para esta customização')
+                        'Não há opções castradas para esta customização')
                 }
 
                 options.forEach(option => {
                     let divOption = document.createElement('div')
+
                     divOption.classList.add('col-6', 'col-lg-4', 'option')
+
                     divOption.innerHTML = `
                      <div class="card border-primary mb-3 cardOption" data-id="${option.id}">
                         <div class="card-header">

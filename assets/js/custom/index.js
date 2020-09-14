@@ -712,7 +712,21 @@ const custom = (() => {
         })
     }
 
+    //add custom from excludes
+    function selectCustom(id) {
+        return excludes.custons.push(parseInt(id))
+    }
+
+    //remove custom from excludes
+    function removeCustom(id) {
+        const filtered = excludes.custons.filter(x => x != id)
+
+        return (excludes.custons = filtered)
+    }
+
     return {
+        selectCustom,
+        removeCustom,
         create: createCustom,
         destroy: destroyCustom,
         showOptions: clickCard,

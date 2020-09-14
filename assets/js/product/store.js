@@ -192,12 +192,27 @@ const product = (() => {
         })
     }
 
+    function customInsert(input) {
+        input.addEventListener('change', function(e) {
+            e.preventDefault()
+
+            if (input.checked !== true) return custom.removeCustom(input.value)
+
+            custom.selectCustom(input.value)
+        })
+    }
+
     return {
         // declare public variables and/or functions
+        customInsert,
         create: insertProduct,
         destroy: clickDestroyProduct,
     }
 })()
+
+const allCheckCustom = [...document.querySelectorAll('#selectAllCustom')]
+
+if (allCheckCustom) allCheckCustom.map(product.customInsert)
 
 //modal
 $('#modalProductOptions').on('hidden.bs.modal', function(e) {
@@ -293,6 +308,7 @@ const optionInsert = object => {
 
     //remove
     const btnDel = div.querySelector(`.optionSelectDel`)
+
     btnDel.addEventListener('click', e => {
         const id = btnDel.dataset.id
 

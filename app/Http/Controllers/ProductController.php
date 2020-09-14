@@ -105,6 +105,9 @@ class ProductController extends Controller
         if ($check > 0) {
             $product = Product::where('code', '=', $request->input('code'))->first();
 
+            //destroy all custom
+            ProductOption::where('product_id', '=', $product->id)->delete();
+
             //get all options in this custom
             $customizations = Option::whereNotIn('customization_id', $excludes['custons'])->get();
 
@@ -123,17 +126,14 @@ class ProductController extends Controller
             }
 
             foreach ($allExceptions as $key => $thisOption) {
-                //check
-                $check = ProductOption::where('option_id', '=', $thisOption->id)->count();
 
-                if ($check == 0) {
-                    $productCustomization = new ProductOption;
-                    $productCustomization->option_id = $thisOption->id;
-                    $productCustomization->product_id = $product->id;
+                //create exclusion in product
+                $productCustomization = new ProductOption;
+                $productCustomization->option_id = $thisOption->id;
+                $productCustomization->product_id = $product->id;
 
-                    //Save Custom
-                    $productCustomization->save();
-                }
+                //Save Custom
+                $productCustomization->save();
 
                 //children
 
@@ -143,7 +143,7 @@ class ProductController extends Controller
 
                     //check if product exist 
 
-                    $check_product = Product::where('name', '=', $children['name'])->first();
+                    $check_product = Product::where('code', '=', $children['code'])->first();
 
                     if ($check_product === null) {
                         $childrenProduct = new Product;
@@ -223,7 +223,7 @@ class ProductController extends Controller
 
             foreach ($childs as $children) {
 
-                $check_product = Product::where('name', '=', $children['name'])->first();
+                $check_product = Product::where('code', '=', $children['code'])->first();
 
 
                 //check if children exist

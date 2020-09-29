@@ -124,13 +124,7 @@ const clickUpdateOption = button => {
         //get image
         const image = button.closest('.cardOption').querySelector('.card-text > img').src
         //get price
-        const price = parseFloat(
-            button
-                .closest('.cardOption')
-                .querySelector('.priceOption')
-                .innerText.replace('R$', '')
-                .replace(',', '.')
-        )
+        const price = 0
 
         const openFormOption = document.querySelector('.insertOption')
 

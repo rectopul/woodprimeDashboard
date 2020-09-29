@@ -1469,13 +1469,7 @@ const clickUpdateOption = button => {
         //get image
         const image = button.closest('.cardOption').querySelector('.card-text > img').src
         //get price
-        const price = parseFloat(
-            button
-                .closest('.cardOption')
-                .querySelector('.priceOption')
-                .innerText.replace('R$', '')
-                .replace(',', '.')
-        )
+        const price = 0
 
         const openFormOption = document.querySelector('.insertOption')
 
@@ -1714,22 +1708,22 @@ const vtexEnvironment = `vtexcommercestable`
 
 const searching = (() => {
     //private var/functions
-    const putOnResults = products => {
+    const putOnResults = (products) => {
         const containerPartial = document.querySelector('.productsFound')
 
         containerPartial.classList.add('show')
 
         containerPartial.innerHTML = ``
 
-        products.map(prod => {
+        products.map((prod) => {
             const produto = product(prod)
 
             containerPartial.append(produto)
         })
     }
 
-    const custromDestroy = option => {
-        option.addEventListener('click', async e => {
+    const custromDestroy = (option) => {
+        option.addEventListener('click', async (e) => {
             try {
                 e.preventDefault()
 
@@ -1759,8 +1753,8 @@ const searching = (() => {
         })
     }
 
-    const productDesctroy = button => {
-        button.addEventListener('click', async e => {
+    const productDesctroy = (button) => {
+        button.addEventListener('click', async (e) => {
             try {
                 e.preventDefault()
 
@@ -1784,8 +1778,8 @@ const searching = (() => {
         })
     }
 
-    const listCustom = customList => {
-        const custons = customList.map(custom => {
+    const listCustom = (customList) => {
+        const custons = customList.map((custom) => {
             const list = document.createElement('div')
 
             list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
@@ -1810,7 +1804,7 @@ const searching = (() => {
         return custons
     }
 
-    const productStrong = infos => {
+    const productStrong = (infos) => {
         const { name, id, image, code, custom } = infos
 
         const product = document.createElement('div')
@@ -1851,14 +1845,14 @@ const searching = (() => {
 
         const custons = [...listCustom(custom)]
 
-        custons.map(custom => {
+        custons.map((custom) => {
             product.querySelector('.productCustoms > .row').append(custom)
         })
 
         return product
     }
 
-    const product = infos => {
+    const product = (infos) => {
         const { id, image, name } = infos
         const div = document.createElement('div')
 
@@ -1879,7 +1873,7 @@ const searching = (() => {
         return div
     }
 
-    const request = options => {
+    const request = (options) => {
         return new Promise((resolve, reject) => {
             const { url, headers, method, body } = options
 
@@ -1889,9 +1883,9 @@ const searching = (() => {
             if (body) opt.body = JSON.stringify(body)
 
             fetch(url, opt)
-                .then(r => r.json())
-                .then(res => resolve(res))
-                .catch(error => reject(error))
+                .then((r) => r.json())
+                .then((res) => resolve(res))
+                .catch((error) => reject(error))
         })
     }
 
@@ -1902,7 +1896,7 @@ const searching = (() => {
         delayed_methods[label] = Date.now()
         var t = delayed_methods[label]
 
-        setTimeout(function() {
+        setTimeout(function () {
             if (delayed_methods[label] != t) {
                 return
             } else {
@@ -1913,8 +1907,8 @@ const searching = (() => {
         }, time || 500)
     }
 
-    const search = input => {
-        input.addEventListener('keyup', e => {
+    const search = (input) => {
+        input.addEventListener('keyup', (e) => {
             const containerPartial = document.querySelector('.productsFound')
 
             if (!input.value.length) {
@@ -1943,9 +1937,9 @@ const searching = (() => {
         })
     }
 
-    const select = button => {
+    const select = (button) => {
         const productContainer = document.querySelector('.listProduct')
-        button.addEventListener('click', async e => {
+        button.addEventListener('click', async (e) => {
             e.preventDefault()
 
             const id = button.dataset.id
@@ -1977,7 +1971,7 @@ const inputSearch = document.querySelector('.productParamSearch')
 
 if (inputSearch) searching.search(inputSearch)
 
-const createProductBySearch = object => {
+const createProductBySearch = (object) => {
     return new Promise((resolve, reject) => {
         const { name, code, image, options, id } = object
 
@@ -1985,7 +1979,7 @@ const createProductBySearch = object => {
 
         let productOptions = ``
         if (options.length) {
-            options.forEach(opt => {
+            options.forEach((opt) => {
                 const { id, option } = opt
 
                 const customName = option.customization ? `(${option.customization.name})` : ``
@@ -2038,7 +2032,7 @@ const createProductBySearch = object => {
         //remove option
         const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
 
-        Array.from(linkRemoveOption).forEach(link => {
+        Array.from(linkRemoveOption).forEach((link) => {
             actionRemoveOption(link)
         })
 
@@ -2051,7 +2045,7 @@ const createProductBySearch = object => {
     })
 }
 
-const searchProduct = slug => {
+const searchProduct = (slug) => {
     update(1, `dark`)
     fetch(`/api/product_search/${slug}`, {
         method: 'GET',
@@ -2059,18 +2053,18 @@ const searchProduct = slug => {
             'content-type': 'application/json',
         },
     })
-        .then(response => response.json())
-        .then(res => {
+        .then((response) => response.json())
+        .then((res) => {
             update(() => {
-                return res.forEach(product => {
+                return res.forEach((product) => {
                     document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then(res => {
+                    return createProductBySearch(product).then((res) => {
                         return document.querySelector('.listProduct').append(res)
                     })
                 })
             }, `dark`)
         })
-        .catch(err => {
+        .catch((err) => {
             return Swal.fire({
                 title: err,
                 icon: 'error',
@@ -2087,18 +2081,18 @@ const indexProducts = () => {
             'content-type': 'application/json',
         },
     })
-        .then(response => response.json())
-        .then(res => {
+        .then((response) => response.json())
+        .then((res) => {
             update(() => {
-                return res.forEach(product => {
+                return res.forEach((product) => {
                     document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then(res => {
+                    return createProductBySearch(product).then((res) => {
                         return document.querySelector('.listProduct').append(res)
                     })
                 })
             }, `dark`)
         })
-        .catch(err => {
+        .catch((err) => {
             return Swal.fire({
                 title: err,
                 icon: 'error',
@@ -2107,20 +2101,7 @@ const indexProducts = () => {
         })
 }
 
-const btnSearchProductInternal = document.querySelector('.searchProductInternal')
-
-btnSearchProductInternal.addEventListener('click', function(e) {
-    e.preventDefault()
-    const inputParamSearch = document.querySelector('.productParamSearch')
-
-    if (inputParamSearch.value) {
-        return searchProduct(inputParamSearch.value)
-    } else {
-        return indexProducts()
-    }
-})
-
-const internalRequest = id => {
+const internalRequest = (id) => {
     return new Promise((resolve, reject) => {
         fetch(`/api/${productResource}/${id}`, {
             method: 'GET',
@@ -2128,8 +2109,8 @@ const internalRequest = id => {
                 'content-type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(res => {
+            .then((response) => response.json())
+            .then((res) => {
                 if (!res) return reject(`Não há produtos`)
 
                 const { name, code: id, image } = res
@@ -2142,7 +2123,7 @@ const internalRequest = id => {
     })
 }
 
-const getVtexProduct = skuProduct => {
+const getVtexProduct = (skuProduct) => {
     return new Promise((resolve, reject) => {
         if (!skuProduct.value) return reject('Informe o sku do produto')
         const sku = skuProduct.value
@@ -2159,8 +2140,8 @@ const getVtexProduct = skuProduct => {
                 accept: 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
+            .then((response) => response.json())
+            .then((data) => {
                 const { product } = data
                 if (!product) return reject(`Produto não encontrado`)
 
@@ -2204,11 +2185,11 @@ const getVtexProduct = skuProduct => {
 
                 return resolve(retorno)
             })
-            .catch(err => reject(err))
+            .catch((err) => reject(err))
     })
 }
 
-const putValues = object => {
+const putValues = (object) => {
     const { name, code, image } = object
     document.querySelector('.nameProduct').value = name
     document.querySelector('.codeProduct').value = code
@@ -2219,7 +2200,7 @@ const putValues = object => {
 
 const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
-btnSearchProduct.addEventListener('click', e => {
+btnSearchProduct.addEventListener('click', (e) => {
     e.preventDefault()
     custom.handleResetForm()
     let inputSkuProduct = document.querySelector('.skuProduct')
@@ -2227,7 +2208,7 @@ btnSearchProduct.addEventListener('click', e => {
     btnSearchProduct.innerHTML = ``
     btnSearchProduct.append(spinner(`ligth`, 'small'))
     getVtexProduct(inputSkuProduct)
-        .then(res => {
+        .then((res) => {
             console.log(res)
             const { name, id: code, image, skus } = res
 
@@ -2235,7 +2216,7 @@ btnSearchProduct.addEventListener('click', e => {
             if (skus && skus.length > 1) {
                 const subProducts = document.querySelector('.subProducts')
                 if (subProducts) subProducts.innerHTML = ``
-                skus.map(sku => {
+                skus.map((sku) => {
                     const subProduct = document.createElement('div')
 
                     subProduct.classList.add('col-md-2', 'mt-3')
@@ -2261,7 +2242,7 @@ btnSearchProduct.addEventListener('click', e => {
             btnSearchProduct.innerHTML = olderText
             return putValues({ name, code, image })
         })
-        .catch(res => {
+        .catch((res) => {
             return Swal.fire({
                 title: res,
                 icon: 'error',
@@ -2321,7 +2302,7 @@ const product = (() => {
 
                     if (typeof res === `object`) {
                         return Swal.fire({
-                            title: `Produto ${res[0] ? res[0].name : null} cadastrado`,
+                            title: `Produto ${res[0].name} cadastrado`,
                             icon: 'success',
                             showCloseButton: true,
                         })
@@ -2698,35 +2679,35 @@ if (formInsertProduct) product.create(formInsertProduct)
 const typeResource = `type`
 
 let type = (() => {
-    //private vars or function
-    const request = options => {
-        return new Promise((resolve, reject) => {
-            const { url, headers, method, body } = options
+   //private vars or function
+   const request = options => {
+      return new Promise((resolve, reject) => {
+         const { url, headers, method, body } = options
 
-            const opt = { method }
+         const opt = { method }
 
-            if (headers) opt.headers = headers
-            if (body) opt.body = JSON.stringify(body)
+         if (headers) opt.headers = headers
+         if (body) opt.body = JSON.stringify(body)
 
-            fetch(url, opt)
-                .then(r => r.json())
-                .then(res => resolve(res))
-                .catch(error => reject(error))
-        })
-    }
+         fetch(url, opt)
+            .then(r => r.json())
+            .then(res => resolve(res))
+            .catch(error => reject(error))
+      })
+   }
 
-    //Create new card type and return this
-    const cardType = object => {
-        const { id, name } = object
-        const newType = document.createElement('div')
+   //Create new card type and return this
+   const cardType = object => {
+      const { id, name } = object
+      const newType = document.createElement('div')
 
-        newType.classList.add('card', 'mb-3', 'card-type')
+      newType.classList.add('card', 'mb-3', 'card-type')
 
-        newType.id = `type-${id}`
+      newType.id = `type-${id}`
 
-        newType.style.flex = `0 0 calc(33.333333% - 10px)`
-        newType.style.margin = `0 5px`
-        newType.innerHTML = `
+      newType.style.flex = `0 0 calc(33.333333% - 10px)`
+      newType.style.margin = `0 5px`
+      newType.innerHTML = `
          <div class="card-body text-center">
             <h6 class="card-title mb-0">${name}</h6>
          </div>
@@ -2739,198 +2720,198 @@ let type = (() => {
             </button>
          </div>`
 
-        //event on click for select type
-        newType.querySelector('.select-type').addEventListener('click', e => {
-            e.preventDefault()
-            selectType(newType.querySelector('.select-type'))
-        })
+      //event on click for select type
+      newType.querySelector('.select-type').addEventListener('click', e => {
+         e.preventDefault()
+         selectType(newType.querySelector('.select-type'))
+      })
 
-        //event remove type
-        const btnDelType = newType.querySelector('.del-type')
+      //event remove type
+      const btnDelType = newType.querySelector('.del-type')
 
-        btnDelType.addEventListener('click', e => {
-            e.preventDefault()
-            destroyType(btnDelType)
-        })
+      btnDelType.addEventListener('click', e => {
+         e.preventDefault()
+         destroyType(btnDelType)
+      })
 
-        return newType
-    }
+      return newType
+   }
 
-    //insert card in data-base and put in container
-    const insertType = input => {
-        if (!input.value) return alert('Informe o nome do tipo de customização')
-        update(1, `dark`)
-        fetch(`/api/${typeResource}`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: input.value,
-            }),
-        })
-            .then(response => {
-                update(2, `dark`)
-                response
-                    .json()
-                    .then(res => {
-                        //insert card to modal
-                        const newType = cardType({ id: res.id, name: res.name })
-                        const typeContainer = document.querySelector('.typesContainer')
+   //insert card in data-base and put in container
+   const insertType = input => {
+      if (!input.value) return alert('Informe o nome do tipo de customização')
+      update(1, `dark`)
+      fetch(`/api/${typeResource}`, {
+         method: 'POST',
+         headers: {
+            'content-type': 'application/json',
+         },
+         body: JSON.stringify({
+            name: input.value,
+         }),
+      })
+         .then(response => {
+            update(2, `dark`)
+            response
+               .json()
+               .then(res => {
+                  //insert card to modal
+                  const newType = cardType({ id: res.id, name: res.name })
+                  const typeContainer = document.querySelector('.typesContainer')
 
-                        input.value = ``
+                  input.value = ``
 
-                        return update(() => typeContainer.prepend(newType), `dark`)
-                    })
-                    .catch(err => console.log(err))
+                  return update(() => typeContainer.prepend(newType), `dark`)
+               })
+               .catch(err => console.log(err))
+         })
+         .catch(err => {
+            console.log(err)
+         })
+   }
+
+   //Destroy type in data-base and remove of container
+   const destroyType = input => {
+      const inputAction = document.querySelector('.actionConfirm')
+      const btnAceptAction = document.querySelector('.aceptAction')
+
+      inputAction.value = `TypeDestroy`
+
+      btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
+
+      $('.modal.types').on('hidden.bs.modal', function(e) {
+         // do something...
+         $('.modalActionConfirm').modal('show')
+         $(this).off('hidden.bs.modal')
+      })
+
+      $('.modal.types').modal('hide')
+
+      btnAceptAction.addEventListener('click', e => {
+         if (inputAction.value == `TypeDestroy`) {
+            const id = btnAceptAction.dataset.id
+
+            $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
+               // do something...
+               $('.modal.types').modal('show')
+               $(this).off('hidden.bs.modal')
             })
-            .catch(err => {
-                console.log(err)
+
+            update(1, `dark`)
+
+            fetch(`/api/${typeResource}/${id}`, {
+               method: 'DELETE',
             })
-    }
+               .then(response => {
+                  update(2, `dark`)
+                  response
+                     .json()
+                     .then(res => {
+                        //Delete card to modal
 
-    //Destroy type in data-base and remove of container
-    const destroyType = input => {
-        const inputAction = document.querySelector('.actionConfirm')
-        const btnAceptAction = document.querySelector('.aceptAction')
-
-        inputAction.value = `TypeDestroy`
-
-        btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
-
-        $('.modal.types').on('hidden.bs.modal', function(e) {
-            // do something...
-            $('.modalActionConfirm').modal('show')
-            $(this).off('hidden.bs.modal')
-        })
-
-        $('.modal.types').modal('hide')
-
-        btnAceptAction.addEventListener('click', e => {
-            if (inputAction.value == `TypeDestroy`) {
-                const id = btnAceptAction.dataset.id
-
-                $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
-                    // do something...
-                    $('.modal.types').modal('show')
-                    $(this).off('hidden.bs.modal')
-                })
-
-                update(1, `dark`)
-
-                fetch(`/api/${typeResource}/${id}`, {
-                    method: 'DELETE',
-                })
-                    .then(response => {
-                        update(2, `dark`)
-                        response
-                            .json()
-                            .then(res => {
-                                //Delete card to modal
-
-                                return update(() => {
-                                    //tabTypeRemove(id)
-                                    return input.closest('.card').remove()
-                                }, `dark`)
-                            })
-                            .catch(err => console.log(err))
-                    })
-                    .catch(err => {
-                        console.log(err)
-                        update(() => {
-                            Swal.fire({
-                                title: `Tivemos um erro de sistema`,
-                                icon: 'error',
-                                showCloseButton: true,
-                            })
+                        return update(() => {
+                           //tabTypeRemove(id)
+                           return input.closest('.card').remove()
                         }, `dark`)
-                    })
+                     })
+                     .catch(err => console.log(err))
+               })
+               .catch(err => {
+                  console.log(err)
+                  update(() => {
+                     Swal.fire({
+                        title: `Tivemos um erro de sistema`,
+                        icon: 'error',
+                        showCloseButton: true,
+                     })
+                  }, `dark`)
+               })
+         }
+      })
+   }
+
+   //select type and put in form value
+   const selectType = element => {
+      //Pegar id do type
+      const idType = element.getAttribute('type-id')
+
+      const inputTypeCustom = document.querySelector('.typeCustom')
+
+      inputTypeCustom.value = idType
+
+      const nameType = element.closest('.card-type').querySelector('.card-title')
+
+      document.querySelector('.btn-modal-types').classList.remove('btn-primary')
+
+      document.querySelector('.btn-modal-types').classList.add('btn-success')
+
+      return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
+   }
+
+   const removeAllType = input => {
+      input.addEventListener('change', async e => {
+         try {
+            if (input.checked == true) {
+               const id = input.value
+
+               await request({
+                  url: `/api/types/exclude/${id}`,
+                  method: 'POST',
+                  headers: {
+                     'content-type': 'application/json',
+                  },
+               })
+
+               input.closest('.card.border-primary').classList.add('exclude')
             }
-        })
-    }
+         } catch (error) {}
+      })
+   }
 
-    //select type and put in form value
-    const selectType = element => {
-        //Pegar id do type
-        const idType = element.getAttribute('type-id')
+   return {
+      //public functions or vars
+      insertTab: item => {
+         //Criando a TAB
+         const newType = document.createElement('a')
 
-        const inputTypeCustom = document.querySelector('.typeCustom')
+         const { id, name } = item
 
-        inputTypeCustom.value = idType
+         newType.classList.add('list-group-item', 'list-group-item-action')
 
-        const nameType = element.closest('.card-type').querySelector('.card-title')
+         newType.setAttribute('id', `list-type-${id}-list`)
+         //add role
+         newType.setAttribute('role', `tab`)
+         //add aria-selected
+         newType.setAttribute('aria-selected', `false`)
+         //add aria-controls
+         newType.setAttribute('aria-controls', `list-type-${id}`)
+         //add href
+         newType.setAttribute('href', `#list-type-${id}`)
 
-        document.querySelector('.btn-modal-types').classList.remove('btn-primary')
+         newType.dataset.toggle = `list`
 
-        document.querySelector('.btn-modal-types').classList.add('btn-success')
+         newType.innerHTML = name
 
-        return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
-    }
+         //Criando o content
+         const pane = document.createElement('div')
 
-    const removeAllType = input => {
-        input.addEventListener('change', async e => {
-            try {
-                if (input.checked == true) {
-                    const id = input.value
+         //Adicionar as classes
+         pane.classList.add(`tab-pane`, `fade`)
 
-                    await request({
-                        url: `/api/types/exclude/${id}`,
-                        method: 'POST',
-                        headers: {
-                            'content-type': 'application/json',
-                        },
-                    })
+         //Adicionando id
+         pane.setAttribute('id', `list-type-${id}`)
+         //add Role
+         pane.setAttribute('role', `tabpanel`)
+         //add aria-labely
+         pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
 
-                    input.closest('.card.border-primary').classList.add('exclude')
-                }
-            } catch (error) {}
-        })
-    }
+         //CRIANDO PAGINAÇÃO
+         const createPagination = () => {
+            const pagination = document.createElement('div')
 
-    return {
-        //public functions or vars
-        insertTab: item => {
-            //Criando a TAB
-            const newType = document.createElement('a')
+            pagination.classList.add('row')
 
-            const { id, name } = item
-
-            newType.classList.add('list-group-item', 'list-group-item-action')
-
-            newType.setAttribute('id', `list-type-${id}-list`)
-            //add role
-            newType.setAttribute('role', `tab`)
-            //add aria-selected
-            newType.setAttribute('aria-selected', `false`)
-            //add aria-controls
-            newType.setAttribute('aria-controls', `list-type-${id}`)
-            //add href
-            newType.setAttribute('href', `#list-type-${id}`)
-
-            newType.dataset.toggle = `list`
-
-            newType.innerHTML = name
-
-            //Criando o content
-            const pane = document.createElement('div')
-
-            //Adicionar as classes
-            pane.classList.add(`tab-pane`, `fade`)
-
-            //Adicionando id
-            pane.setAttribute('id', `list-type-${id}`)
-            //add Role
-            pane.setAttribute('role', `tabpanel`)
-            //add aria-labely
-            pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
-
-            //CRIANDO PAGINAÇÃO
-            const createPagination = () => {
-                const pagination = document.createElement('div')
-
-                pagination.classList.add('row')
-
-                pagination.innerHTML = `<div class="col-12">
+            pagination.innerHTML = `<div class="col-12">
                <nav aria-label="..." class="paginate-type-${id}" data-resource="type">
                   <ul class="pagination">
                   <li class="page-item disabled">
@@ -2949,76 +2930,81 @@ let type = (() => {
                </nav>
             </div> <!-- Paginação // -->`
 
-                return pagination
-            }
+            return pagination
+         }
 
-            //container of content
-            const container = document.createElement('div')
+         //container of content
+         const container = document.createElement('div')
 
-            container.classList.add('row', `container-type-${id}`)
+         container.classList.add('row', `container-type-${id}`)
 
-            document.querySelector('.tabContentTypes').append(pane)
+         document.querySelector('.tabContentTypes').append(pane)
 
-            pane.append(createPagination())
-            pane.append(container)
-            pane.append(createPagination())
+         pane.append(createPagination())
+         pane.append(container)
+         pane.append(createPagination())
 
-            return document.querySelector('.tabTypes').append(newType)
-        },
-        removeTab: id => {
-            document.querySelector(`#list-type-${id}-list`).remove()
-            document.querySelector(`#list-type-${id}`).remove()
-        },
-        create: insertType,
-        destroy: destroyType,
-        select: selectType,
-    }
+         return document.querySelector('.tabTypes').append(newType)
+      },
+      removeTab: id => {
+         document.querySelector(`#list-type-${id}-list`).remove()
+         document.querySelector(`#list-type-${id}`).remove()
+      },
+      create: insertType,
+      destroy: destroyType,
+      select: selectType,
+   }
 })()
 
 //Create new Type
 const btnInsertType = document.querySelector('.insertType')
 
 btnInsertType.addEventListener('click', e => {
-    e.preventDefault()
-    return type.create(document.querySelector('.typeName'))
-    //insertType(document.querySelector('.typeName'))
+   e.preventDefault()
+   return type.create(document.querySelector('.typeName'))
+   //insertType(document.querySelector('.typeName'))
 })
 
 //Delete types
 const btnDeleteType = document.querySelectorAll('.del-type')
 
 Array.from(btnDeleteType).forEach(el => {
-    el.addEventListener('click', e => {
-        e.preventDefault()
-        //return console.log(el)
-        return type.destroy(el)
-    })
+   el.addEventListener('click', e => {
+      e.preventDefault()
+      //return console.log(el)
+      return type.destroy(el)
+   })
 })
 
 //Select type form create custom
 let btnSelect = document.querySelectorAll('.select-type')
 
 Array.from(btnSelect).forEach(el => {
-    el.addEventListener('click', function(e) {
-        return type.select(el)
-    })
+   el.addEventListener('click', function(e) {
+      return type.select(el)
+   })
 })
 
 const customUpdate = object => {
-    const { id, name, description, type_id } = object
+    const {
+        id,
+        name,
+        description,
+        type_id
+    } = object
 
     update(1, `dark`)
     fetch(`/api/${custonResource}/${id}`, {
-        method: 'PUT',
-        headers: {
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-            name,
-            description,
-            type_id,
-        }),
-    })
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                description,
+                type_id
+            }),
+        })
         .then(response => {
             update(() => {
                 console.log(response)

@@ -1346,7 +1346,7 @@ if (formChangePassword) user.changePassword(formChangePassword)
 const optionResource = `option`
 
 const editCard = object => {
-    const { id, name, price, image } = object
+    const { id, name, image } = object
 
     const theCard = document.querySelector(`.cardOption[data-id="${id}"]`)
 
@@ -1356,12 +1356,7 @@ const editCard = object => {
     theCard.querySelector('.optionTitle').innerHTML = name
 
     //set image
-    theCard.querySelector('.card-body img').src = image
-
-    const intPrice = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price)
-
-    //set price
-    return (theCard.querySelector('.priceOption').innerHTML = intPrice)
+    return (theCard.querySelector('.card-body img').src = image)
 }
 
 //Cancel form option cancelSaveOption
@@ -1420,7 +1415,7 @@ const updateOption = () => {
         headers: {
             'content-type': 'application/json',
         },
-        body: JSON.stringify({ name, image, price }),
+        body: JSON.stringify({ name, image }),
     })
         .then(response => {
             update(() => {
@@ -1433,7 +1428,7 @@ const updateOption = () => {
                 formOption.querySelector('.optionImage').value = ``
 
                 //change card
-                editCard({ id, name, image, price })
+                editCard({ id, name, image })
 
                 $('#formOptions').modal('hide')
 

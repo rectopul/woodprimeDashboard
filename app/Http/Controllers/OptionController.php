@@ -98,7 +98,6 @@ class OptionController extends Controller
 
         $option->name = $request->input('name');
         $option->image = $request->input('image');
-        $option->price = $request->input('price');
 
         $option->save();
     }

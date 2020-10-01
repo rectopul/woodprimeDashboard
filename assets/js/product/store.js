@@ -47,7 +47,7 @@ const product = (() => {
 
                     Array.from(formRows).forEach(div => div.remove())
 
-                    if (typeof res === `object`) {
+                    if (res[0]) {
                         return Swal.fire({
                             title: `Produto ${res[0].name} cadastrado`,
                             icon: 'success',

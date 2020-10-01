@@ -181,6 +181,39 @@ class ProductController extends Controller
                 }
             }
 
+            //insert children if not has options
+            if (empty($allExceptions)) {
+                foreach ($childs as $children) {
+
+                    $check_product = Product::where('code', '=', $children['code'])->first();
+
+
+                    //check if children exist
+                    if ($check_product === null) {
+
+                        $childrenProduct = new Product;
+                        $childrenProduct->name = $children['name'];
+                        $childrenProduct->description = $children['description'];
+                        $childrenProduct->image = $children['image'];
+                        $childrenProduct->code = $children['code'];
+                        $childrenProduct->parent_id = $product->id;
+
+                        $childrenProduct->save();
+                    } else {
+                        //update-childrens
+                        $check_product->name = $children['name'];
+                        $check_product->description = $children['description'];
+                        $check_product->image = $children['image'];
+                        $check_product->code = $children['code'];
+                        $check_product->parent_id = $product->id;
+                        //option
+
+                        //Save Custom
+                        $check_product->save();
+                    }
+                }
+            }
+
             $response = Product::where('code', '=', $request->input('code'))->with('options.option')->with('child')->first();
 
             return response()->json($response);

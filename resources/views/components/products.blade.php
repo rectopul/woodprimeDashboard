@@ -42,12 +42,12 @@
               <div class="informationProduct">
                 <div class="form-group">
                   <label for="exampleFormControlTextarea1">Descrição</label>
-                  <textarea class="form-control descriptionProduct" rows="3" placeholder="Informe uma descrição" required></textarea>
+                  <textarea class="form-control descriptionProduct" rows="3" placeholder="Informe uma descrição"></textarea>
                 </div>
 
                 <div class="form-group">
                   <label for="exampleFormControlInput1">Imagem</label>
-                  <input type="text" class="form-control imageProduct" placeholder="http://www.image.com" required>
+                  <input type="text" class="form-control imageProduct" placeholder="http://www.image.com">
                 </div>
               </div>
 

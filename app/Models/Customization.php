@@ -7,7 +7,7 @@ use App\Models\Option;
 
 class Customization extends Model
 {
-    protected $fillable = ['type_id', 'name', 'description'];
+    protected $fillable = ['type_id', 'name', 'description', 'order'];
 
     public function type()
     {

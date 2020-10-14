@@ -59,6 +59,43 @@ function update(callback, theme) {
 }
 
 const util = (() => {
+    //serialize forms
+    const serialize = (form) => {
+        const inputs = [...form.elements]
+
+        const object = {}
+
+        inputs.map((input, key) => {
+            //console.dir(input)
+            if (input.type == `radio`) {
+                if (input.checked) return (object[input.name] = input.value)
+                else return
+            }
+
+            if (input.name) object[input.name] = input.value
+        })
+
+        return object
+    }
+
+    function get(url) {
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+                .then(r => r.json())
+                .then(response => {
+                    if(response.error) return reject(response.error)
+
+                    return resolve(response)
+                })
+                .catch(error => console.log(error))
+        })
+        
+    }
     //private var/functions
     const request = options => {
         return new Promise((resolve, reject) => {
@@ -86,6 +123,8 @@ const util = (() => {
     return {
         //public var/functions
         request,
+        serialize,
+        get
     }
 })()
 

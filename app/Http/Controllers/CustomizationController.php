@@ -30,6 +30,19 @@ class CustomizationController extends Controller
 
         return response()->json($unrelated);
     }
+
+    /**
+     * Get single custom
+     */
+    public function get($id)
+    {
+        $custom = Customization::find($id);
+
+        if (empty($custom)) return response()->json(['error' => 'Customização não encontrada']);
+
+        return response()->json($custom);
+    }
+
     /**
      * Find or search custom
      * @return \Illuminate\Http\Response
@@ -85,10 +98,17 @@ class CustomizationController extends Controller
      */
     public function store(Request $request)
     {
+        $order = $request->input('order');
+
+        if (empty($order)) {
+            return response()->json(['error' => 'Informe a ordem da customização']);
+        }
+
         $custom = new Customization;
         $custom->name = $request->input('name');
         $custom->description = $request->input('description');
         $custom->type_id = $request->input('type_id');
+        $custom->order = $request->input('order');
 
         $custom->save();
 
@@ -146,9 +166,12 @@ class CustomizationController extends Controller
 
         $custom->name = $request->input('name');
         $custom->description = $request->input('description');
+        $custom->order = $request->input('order');
         $custom->type_id = $request->input('type_id');
 
         $custom->save();
+
+        return response()->json($custom);
     }
 
     /**
@@ -164,9 +187,15 @@ class CustomizationController extends Controller
 
         $custom->name = $request->input('name');
         $custom->description = $request->input('description');
-        $custom->type_id = $request->input('type_id');
+        $custom->order = $request->input('order');
+
+        if (!empty($request->input('type_id'))) {
+            $custom->type_id = $request->input('type_id');
+        }
 
         $custom->save();
+
+        return response()->json($custom);
     }
 
     /**

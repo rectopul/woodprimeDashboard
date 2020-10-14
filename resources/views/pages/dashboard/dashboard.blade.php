@@ -13,6 +13,7 @@
 @include('components.newUser')
 @include('components.modalConfirmDestroy')
 @include('components.modals.changePassword', ['user' => $user])
+@include('components.modals.changeCustom')
 
 
 <div class="row justify-content-center mt-5">
@@ -20,8 +21,7 @@
 
     <div class="col-9 pl-3">
         <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="v-pills-customization" role="tabpanel"
-                aria-labelledby="v-pills-customization-tab">
+            <div class="tab-pane fade show active" id="v-pills-customization" role="tabpanel" aria-labelledby="v-pills-customization-tab">
                 @yield('custom', View::make('components.customform'))
             </div> <!-- Personalização.// -->
 
@@ -29,13 +29,11 @@
                 @include('components.products', ['customTypes', $customTypes])
             </div> <!-- Produto.// -->
 
-            <div class="tab-pane fade" id="v-pills-searchCustomization" role="tabpanel"
-                aria-labelledby="v-pills-searchCustomization-tab">
+            <div class="tab-pane fade" id="v-pills-searchCustomization" role="tabpanel" aria-labelledby="v-pills-searchCustomization-tab">
                 @include('components.findCustom', ['customTypes', $customTypes])
             </div> <!-- Buscar personalização.// -->
 
-            <div class="tab-pane fade" id="v-pills-searchProduct" role="tabpanel"
-                aria-labelledby="v-pills-searchProduct-tab">
+            <div class="tab-pane fade" id="v-pills-searchProduct" role="tabpanel" aria-labelledby="v-pills-searchProduct-tab">
                 @include('components.searchProduct', ['products', $products])
             </div> <!-- Buscar produto.// -->
 

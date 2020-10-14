@@ -362,49 +362,52 @@ class ProductController extends Controller
     {
         $messages = [];
 
-        $products = Product::where('code', '=', $code)
+        $product = Product::where('code', '=', $code)
             ->with('options')
             ->with('child')
             ->first();
 
+
         $messages['error']  = 'product not found';
 
-        if (!$products)
+        if (!$product)
             return response()->json($messages, 200);
 
-        $customizations = Customization::with('type')->get();
+        $product = $product->toArray();
 
-        $excluded = [];
-        $returned = [];
+        //get all custom
+        $customizations = Customization::orderBy('order', 'ASC')->with('options.customization')->with('type')->get()->toArray();
+
+        $customClean = [];
 
 
-        foreach ($products->options as $option) {
-            $excluded[] = $option->option_id;
-        }
 
-        //Get all options of not in excluded
-        $productOption = Option::whereNotIn('id', $excluded)
-            ->with('customization')->get();
+        //list custons
+        foreach ($customizations as $i => $custom) {
 
-        $products->custom = $productOption;
-
-        //list customizations
-        foreach ($customizations as $customization) {
-
-            $options = [];
-
-            foreach ($products->custom as $custom) {
-                if ($custom->customization_id == $customization->id) {
-                    $options[] = $custom;
+            //foreach options of this custom
+            foreach ($customizations[$i]['options'] as $_i => &$option) {
+                # code...
+                if (in_array($option['id'], array_column($product['options'], 'option_id'))) {
+                    array_splice($customizations[$i]['options'], $_i, 1);
+                    //unset($customizations[$i]['options'][$_i]);
                 }
+
+                unset($option);
             }
-
-            $customization->options = $options;
-
-            if (!empty($options) && $customization->type_id > 1) $returned[] = $customization;
         }
 
-        return response()->json(['custom' => $returned, 'child' => $products->child]);
+        foreach ($customizations as $key => &$custom) {
+            if (empty($custom['options']) || empty($custom['type_id'])) {
+                array_splice($customizations, $key, 1);
+            }
+            unset($custom);
+        }
+
+
+
+        //array_search(0, array_column($options, 'option_id'))
+        return response()->json(['custom' => $customizations, 'child' => $product['child']]);
     }
 
     /**

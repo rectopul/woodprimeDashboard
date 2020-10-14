@@ -43,6 +43,8 @@ Route::resource('type', 'TypeController');
 
 //Search customizations
 Route::get('/custon/search/{find}', 'CustomizationController@find')->name('findcustom');
+//Search customizations
+Route::get('/custom/{id}', 'CustomizationController@get')->name('getCustom');
 // nao associado
 Route::get('custon/relate/index', 'CustomizationController@relate')->name('CustomUnrelated');
 //get product in store

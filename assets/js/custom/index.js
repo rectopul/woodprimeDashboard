@@ -19,13 +19,13 @@ const custom = (() => {
          <div class="form-group col-12 mt-4">
             <hr>
             <label for="descriptionChildren-${id}">Descrição ${name}</label>
-            <textarea class="form-control" id="descriptionChildren-${id}" rows="3" placeholder="Informe uma descrição" required></textarea>
+            <textarea class="form-control" id="descriptionChildren-${id}" rows="3" placeholder="Informe uma descrição"></textarea>
             <input type="hidden" id="nameChildren-${id}" value="${nameProduct} - ${name}" required>
             <input type="hidden" id="codeChildren-${id}" value="${id}" required>
          </div>
          <div class="form-group col-12">
             <label for="imageChildren-${id}">Imagem ${name}</label>
-            <input type="text" class="form-control" id="imageChildren-${id}" placeholder="https://www.image.com" required>
+            <input type="text" class="form-control" id="imageChildren-${id}" placeholder="https://www.image.com">
          </div>
        `
 
@@ -235,6 +235,45 @@ const custom = (() => {
         })
     }
 
+    function handleDeleteCustom() {
+        const btnAcceptAction = document.querySelector('.aceptAction')
+        const inputAction = document.querySelector('.actionConfirm')
+
+        btnAcceptAction.addEventListener('click', function (e) {
+            const id = btnAcceptAction.dataset.id
+
+            if(!id) return
+
+            if (inputAction.value == `customDestroy`) {
+                return requestDestroyCustom(id)
+                    .then(response => {
+                        console.log(response)
+                        return update(() => {
+                            const theCustomCard = document.querySelector(`.card-custom-${id}`);
+
+                            if (theCustomCard) theCustomCard.remove()
+
+                            return Swal.fire({
+                                title: response,
+                                icon: 'success',
+                                showCloseButton: true,
+                            })
+                        }, `dark`)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        return update(() => {
+                            Swal.fire({
+                                title: error,
+                                icon: 'error',
+                                showCloseButton: true,
+                            })
+                        }, `dark`)
+                    })
+            }
+        });
+    }
+
     //request Delete Custom
     const requestDestroyCustom = id => {
         return new Promise((resolve, reject) => {
@@ -260,6 +299,8 @@ const custom = (() => {
 
     //Destroy card custom
     const destroyCustom = btn => {
+
+
         btn.addEventListener('click', e => {
             e.preventDefault()
 
@@ -272,38 +313,6 @@ const custom = (() => {
             btnAceptAction.dataset.id = btn.dataset.id
 
             $('.modalActionConfirm').modal('show')
-
-            btnAceptAction.addEventListener('click', e => {
-                const id = btnAceptAction.dataset.id
-
-                if (inputAction.value == `customDestroy`) {
-                    return requestDestroyCustom(id)
-                        .then(response => {
-                            return update(() => {
-                                btn.closest('.col-3').remove()
-
-                                const inProdDestroy = document.querySelector(`.productCustonsBody .product-option-${id}`)
-
-                                if (inProdDestroy) inProdDestroy.remove()
-
-                                return Swal.fire({
-                                    title: response,
-                                    icon: 'success',
-                                    showCloseButton: true,
-                                })
-                            }, `dark`)
-                        })
-                        .catch(error => {
-                            return update(() => {
-                                Swal.fire({
-                                    title: error,
-                                    icon: 'error',
-                                    showCloseButton: true,
-                                })
-                            }, `dark`)
-                        })
-                }
-            })
         })
     }
 
@@ -384,7 +393,7 @@ const custom = (() => {
     //request createCustom
     const requestCreateCustom = object => {
         return new Promise((resolve, reject) => {
-            const { name, description, type_id } = object
+            const { name, description, typeCustom : type_id , order } = object
             //Request
             update(1, `dark`)
             fetch(`/api/${custonResource}`, {
@@ -392,13 +401,18 @@ const custom = (() => {
                 headers: {
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ name, description, type_id }),
+                body: JSON.stringify({ name, description, type_id, order }),
             })
                 .then(response => {
                     if (!response.ok) return reject(`Não foi possível cadastrar a customização`)
                     return response.json()
                 })
                 .then(res => {
+
+                    if(res.error) {
+                        return reject(res.error)
+                    }
+
                     return resolve(res)
                 })
                 .catch(err => {
@@ -484,6 +498,12 @@ const custom = (() => {
         const inputNameCustom = document.querySelector('.nameCustom')
         const inputDescriptionCustom = document.querySelector('.descCustom')
 
+        const form = document.querySelector('.formCreateCustom');
+
+        const fields = util.serialize(form)
+
+        console.log(fields);
+
         return validateCustom([
             { input: inputTypeCustom, msg: 'Informe o nome da customização' },
             { input: inputNameCustom, msg: 'Informe uma descrição para a customização' },
@@ -494,11 +514,7 @@ const custom = (() => {
                 document.querySelector('.loaderInsertCustom').classList.add('show')
 
                 //Send request
-                const customValues = {
-                    name: inputNameCustom.value,
-                    description: inputDescriptionCustom.value,
-                    type_id: inputTypeCustom.value,
-                }
+                const customValues = util.serialize(form)
 
                 return requestCreateCustom(customValues)
                     .then(res => {
@@ -724,6 +740,119 @@ const custom = (() => {
         return (excludes.custons = filtered)
     }
 
+    function get(id) {
+        return new Promise((resolve, reject) => {
+            util.get(`/api/custom/${id}`).then(resolve).catch(reject)
+        })
+    }
+
+    function change(object) {
+        return new Promise((resolve, reject) => {
+            const { id, name, description, order} = object
+
+            fetch(`/api/custon/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({name, description, order}),
+            })
+                .then(e => e.json())
+                .then(res => {
+                    if(res.error) return reject(res.error)
+
+                    return resolve(res)
+                })
+                .catch(error => console.log(error))
+        })
+    }
+
+    function handleModalChangeCustom(object) {
+        const { name, description, id, order } = object
+
+        const form = document.querySelector('#changeCustomModal form');
+
+        form.elements['name'].value = name
+        form.elements['description'].value = description
+        form.elements['order'].value = order
+
+        form.dataset.id = id
+
+        return $('#changeCustomModal').modal('show')
+    }
+
+    function handleChangeCustom(btn) {
+        btn.addEventListener('click', function (e) {
+            // body
+            const id = btn.dataset.id
+
+            if(!id) return 
+
+            return get(id).then(handleModalChangeCustom).catch(console.log)
+        });
+    }
+
+    function changeCardCustom(object) {
+        const { id, name, description } = object
+
+        const card = document.querySelector(`.card-custom-${id}`);
+
+        if(!card) return
+
+        //change title
+        card.querySelector('.card-header > span').innerHTML = name
+
+        //change description
+        card.querySelector('.card-body > p').innerHTML = description
+    }
+
+    function handleFormChangeCustom(form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault()
+
+            const id = form.dataset.id
+
+            if(!id) return
+
+            const values = util.serialize(form)
+
+            values.id = id
+
+            return change(values).then(res => {
+                changeCardCustom(res)
+
+                $('#changeCustomModal').modal('hide')
+
+                $('#changeCustomModal').on('hidden.bs.modal', function (e) {
+                    Swal.fire({
+                        title: `Customização ${res.name} alterada com sucesso!`,
+                        icon: 'success',
+                        showCloseButton: true,
+                    })
+
+                    $(this).off('#changeCustomModal')
+                })
+
+                
+            }).catch(err => {
+                return Swal.fire({
+                    title: err,
+                    icon: 'error',
+                    showCloseButton: true,
+                })
+            })
+        });
+    }
+
+    function changeCustom(target) {
+        const elements = [...document.querySelectorAll(target)];
+
+        //get all elements
+        if(elements) {
+            elements.map(handleChangeCustom)
+        }
+    }
+
     return {
         selectCustom,
         removeCustom,
@@ -740,8 +869,20 @@ const custom = (() => {
         getOptions,
         handleChild: ({ name, description, image }) => excludes.childs.push({ name, description, image }),
         handleChildForm,
+        changeCustom,
+        handleFormChangeCustom,
+        handleDeleteCustom
     }
 })()
+
+custom.handleDeleteCustom()
+//change custom
+custom.changeCustom('.btnChangeCustom')
+
+const formChangeCustom = document.querySelector('#changeCustomModal form')
+
+if(formChangeCustom) custom.handleFormChangeCustom(formChangeCustom)
+
 //List options in product
 const btnGetOptions = document.querySelectorAll('.listOptionstoSelect > div a.btn')
 

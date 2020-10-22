@@ -413,10 +413,30 @@ class ProductController extends Controller
             unset($custom);
         }
 
+        function search_array_compact($data, $key)
+        {
+            $compact = [];
+            foreach ($data as $row) {
+                if (!in_array($row[$key], $compact)) {
+                    $compact[] = $row;
+                }
+            }
+            return $compact;
+        }
+
+        foreach ($customizations as $key => &$custom) {
+            if (empty($custom['options']) || empty($custom['type_id'])) {
+                array_splice($customizations, $key, 1);
+            }
+            unset($custom);
+        }
+
+        $compactArray = search_array_compact($customizations, 'name');
+
 
 
         //array_search(0, array_column($options, 'option_id'))
-        return response()->json(['custom' => $customizations, 'child' => $product['child']]);
+        return response()->json(['custom' => $compactArray, 'child' => $product['child']]);
     }
 
     /**

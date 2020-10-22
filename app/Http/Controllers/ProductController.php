@@ -431,7 +431,7 @@ class ProductController extends Controller
             unset($custom);
         }
 
-        $compactArray = search_array_compact($customizations, 'name');
+        $compactArray = search_array_compact($customizations, 'id');
 
 
 

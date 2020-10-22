@@ -125,6 +125,8 @@ class ProductController extends Controller
                 $allExceptions[] = $exception;
             }
 
+            //return response()->json($allExceptions);
+
             foreach ($allExceptions as $key => $thisOption) {
 
                 //create exclusion in product
@@ -136,6 +138,13 @@ class ProductController extends Controller
                 $productCustomization->save();
 
                 //children
+
+                // exclude all options in children product
+                foreach ($childs as $children) {
+                    $check_product = Product::where('code', '=', $children['code'])->first();
+                    // exclude all options in children product
+                    ProductOption::where('product_id', '=', $check_product->id)->where('option_id', '=', $thisOption->id)->delete();
+                }
 
                 foreach ($childs as $children) {
 

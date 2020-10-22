@@ -327,16 +327,43 @@ const custom = (() => {
         card.dataset.category = `type-${type}`
         card.dataset.id = id
 
+        /**
+         * <div class="card border-primary mb-3 cardCustom item" data-id="1">
+                    <div class="card-header">
+                        <span>Personalização teste</span>
+                        <button type="button" class="btn btn-danger btn-sm btnDeleteCustom" data-id="1">
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                        </button>
+
+                        <!--  change custom -->
+                        <button type="button" class="btn btn-primary btn-sm btnChangeCustom" data-id="1">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-body text-primary">
+                        <p class="card-text">Este é um teste de personalização</p>
+                        <button type="button" class="btn btn-primary btnShowOptionsCustom" data-custom="1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Visualizar opções">
+                            <i class="far fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+         */
         card.innerHTML = `
        <div class="card border-primary mb-3 cardCustom" data-id="${id}">
             <div class="card-header">
-               ${name}
+               <span>${name}</span>
                <button type="button" 
                   class="btn btn-danger btn-sm btnDeleteCustom" 
                   data-id="${id}"
                >
                   <i class="fas fa-trash-alt"></i>
                </button>
+
+               <!--  change custom -->
+                <button type="button" class="btn btn-primary btn-sm btnChangeCustom" data-id="${id}">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                </button>
             </div>
            <div class="card-body text-primary">
                <p class="card-text">${description}</p>
@@ -355,6 +382,8 @@ const custom = (() => {
         const btnDeleteCstom = card.querySelector('.btnDeleteCustom')
 
         destroyCustom(btnDeleteCstom)
+
+        handleChangeCustom(card.querySelector('.btnChangeCustom'))
 
         return card
     }

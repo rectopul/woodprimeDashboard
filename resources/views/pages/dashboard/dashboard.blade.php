@@ -41,7 +41,7 @@
                 @include('components.users', ['users', $users])
             </div> <!-- Buscar Usuários.// -->
 
-            <div class="tab-pane fade" id="v-pills-unrelated" role="tabpanel" aria-labelledby="v-pills-unrelated">
+            <div class="tab-pane fade" id="v-pills-unrelated" role="tabpanel" aria-labelledby="v-pills-unrelated-tab">
                 @include('components.unrelated', ['unrelated', $unrelated])
             </div> <!-- Buscar Usuários.// -->
         </div>

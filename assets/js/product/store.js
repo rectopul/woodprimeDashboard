@@ -52,14 +52,24 @@ const product = (() => {
                             title: `Produto ${res[0].name} cadastrado`,
                             icon: 'success',
                             showCloseButton: true,
-                        })
+                        }).then((result) => {
+                            /* Read more about isConfirmed, isDenied below */
+                            if (result.isConfirmed) {
+                              document.location.reload(true)
+                            }
+                          })
                     }
 
                     return Swal.fire({
                         title: `Produto ${res.name} cadastrado`,
                         icon: 'success',
                         showCloseButton: true,
-                    })
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            document.location.reload(true)
+                        }
+                      })
                 }, `dark`)
             })
             .catch(err => {

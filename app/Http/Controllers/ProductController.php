@@ -387,9 +387,11 @@ class ProductController extends Controller
         //get all custom
         $customizations = Customization::orderBy('order', 'ASC')->with('options.customization')->with('type')->get()->toArray();
 
-        $customClean = [];
+        //$customClean = [];
 
-
+        if (empty($product['options'])) {
+            return response()->json(['custom' => [], 'child' => $product['child']]);
+        }
 
         //list custons
         foreach ($customizations as $i => $custom) {

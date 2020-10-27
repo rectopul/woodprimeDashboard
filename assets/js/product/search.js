@@ -206,11 +206,29 @@ const searching = (() => {
         input.addEventListener('keyup', (e) => {
             const containerPartial = document.querySelector('.productsFound')
 
+            const containerInput = input.closest('div')
+
+            const spinnerExist = containerInput.querySelector('.spinner-border');
+
+            if(!spinnerExist) {
+
+                const spinner = document.createElement('div')
+    
+                spinner.classList.add('spinner-border', 'text-success')
+    
+                spinner.setAttribute('role', 'status')
+    
+                spinner.innerHTML = `<span class="sr-only">Loading...</span>`
+    
+                input.closest('div').append(spinner)
+            }
+
+
             if (!input.value.length) {
                 return containerPartial.classList.remove('show')
             }
 
-            if (input.value && input.value.length > 1) {
+            if (input.value && input.value.length > 0) {
                 delay_method('check date parallel', async () => {
                     try {
                         const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -222,6 +240,8 @@ const searching = (() => {
                                 'content-type': 'application/json',
                             },
                         })
+
+                        containerInput.querySelector('.spinner-border').remove()
 
                         if (products.length) return putOnResults(products)
                     } catch (error) {

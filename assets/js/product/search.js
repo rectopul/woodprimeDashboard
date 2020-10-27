@@ -210,7 +210,7 @@ const searching = (() => {
                 return containerPartial.classList.remove('show')
             }
 
-            if (input.value && input.value.length > 3) {
+            if (input.value && input.value.length > 0) {
                 delay_method('check date parallel', async () => {
                     try {
                         const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')

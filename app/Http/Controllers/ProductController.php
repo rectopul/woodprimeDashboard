@@ -456,21 +456,22 @@ class ProductController extends Controller
 
         $excluded = [];
 
+        if (!$products) return response()->json('Product not exist', 200);
+
+
+
+        //return response()->json($products);
+
         foreach ($products->options as $option) {
             $excluded[] = $option->option_id;
         }
 
-        $productOption = Option::whereNotIn('id', $excluded)
+        $productOption = Option::whereNotIn('id', $excluded)->where('customization_id', '!=', null)
             ->with('customization.type')->get();
 
         $products->custom = $productOption;
 
-        if ($products) {
-            //return json_encode($productOption);
-            return response()->json($products);
-        }
-
-        return response()->json('Product not exist', 200);
+        return response()->json($products);
     }
 
     /**

@@ -380,9 +380,11 @@ class ProductController extends Controller
         $messages['error']  = 'product not found';
 
         if (!$product)
-            return response()->json($messages, 200);
+            return response()->json($messages, 201);
 
         $product = $product->toArray();
+
+        //return response()->json($product);
 
         //get all custom
         $customizations = Customization::orderBy('order', 'ASC')->with('options.customization')->with('type')->get()->toArray();

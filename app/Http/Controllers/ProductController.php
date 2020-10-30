@@ -96,6 +96,8 @@ class ProductController extends Controller
     {
         $check = Product::where('code', '=', $request->input('code'))->count();
 
+        return response()->json($check);
+
         $excludes =  $request->input('excludes');
 
         $childs = $request->input('children');

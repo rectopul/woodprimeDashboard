@@ -125,7 +125,7 @@ class CustomizationController extends Controller
      */
     public function show($id)
     {
-        $custom = Customization::where('id', $id)->with('type')->first();
+        $custom = Customization::where('id', $id)->with('type')->with('options')->first();
 
 
         if ($custom) {

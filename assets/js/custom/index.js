@@ -182,12 +182,16 @@ const custom = (() => {
     }
 
     const selectAllCustom = check => {
+        
         check.addEventListener('change', e => {
             const id = check.value
             const name = check.closest('.card').querySelector('h6').textContent
             const card = check.closest('.col-md-4')
 
             if (check.checked == true) {
+
+                console.log(`mostra algo`);
+
                 excludes.custons.push(id)
 
                 card.classList.add('selected')
@@ -205,9 +209,22 @@ const custom = (() => {
         })
     }
 
+    function handleRemoveOption(id, custom) {
+
+        let filter
+
+        if(custom) {
+            filter = excludes.options.filter(x => x.custom != custom)
+        }else{
+            filter = excludes.options.filter(x => x.id != id)
+        }
+
+        excludes.options = filter
+    }
+
     const selectOptions = check => {
         check.addEventListener('click', e => {
-            const id = check.dataset.id
+            const id = parseInt(check.dataset.id)
             const name = check.querySelector('h5').textContent
 
             const card = document.querySelector('.listOptionstoSelect > .active')
@@ -217,20 +234,24 @@ const custom = (() => {
             check.classList.toggle('show')
 
             if (check.classList.contains('show')) {
-                excludes.options.push(id)
+                
 
-                console.log(excludes)
-
-                if (optionsSelected) optionsSelected.append(handleSelectOption({ id, name }))
-            } else {
-                excludes.options.splice(excludes.options.indexOf(id), 1)
-
-                console.log(excludes)
+                handleRemoveOption(id)
 
                 if (!check.closest('.listCustomByType').querySelector('.show')) card.classList.remove('selected')
 
                 //remove option from list
                 if (optionsSelected) optionsSelected.querySelector(`.optionSelected-${id}`).remove()
+
+                
+            } else {
+                //excludes.options.push({ id, custom: card.querySelector('#selectAllCustom').value})
+
+                console.log(excludes)
+
+                if (optionsSelected) optionsSelected.append(handleSelectOption({ id, name }))
+
+                
             }
         })
     }
@@ -757,6 +778,14 @@ const custom = (() => {
         })
     }
 
+    function insertOption(object) {
+
+        const check = excludes.options.filter(x => x.id === object.id)
+
+        if(!check.length) excludes.options.push(object)
+        
+    }
+
     //add custom from excludes
     function selectCustom(id) {
         return excludes.custons.push(parseInt(id))
@@ -883,6 +912,8 @@ const custom = (() => {
     }
 
     return {
+        handleRemoveOption,
+        insertOption,
         selectCustom,
         removeCustom,
         create: createCustom,

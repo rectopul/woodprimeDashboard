@@ -203,12 +203,32 @@ const product = (() => {
     }
 
     function customInsert(input) {
-        input.addEventListener('change', function(e) {
+        input.addEventListener('change', async function(e) {
             e.preventDefault()
 
-            if (input.checked !== true) return custom.removeCustom(input.value)
+            try {
+                if (input.checked !== true) {
+                    return custom.handleRemoveOption(custom = input.value)
+                }
 
-            custom.selectCustom(input.value)
+                const customization = await util.request({
+                    url: `/api/custon/${input.value}`,
+                        headers: {
+                            'content-type': `application/json`,
+                    },
+                })
+
+                if(customization.options) {
+                    customization.options.map(option => {
+                        custom.insertOption({id: option.id, custom: option.customization_id})
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+
+
+            
         })
     }
 

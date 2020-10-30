@@ -237,10 +237,10 @@ class ProductController extends Controller
         $product->save();
 
         //get all options in this custom
-        $customizations = Option::whereNotIn('customization_id', $excludes['custons'])->get();
+        $customizations = Option::whereIn('id', $excludes['options'])->whereNotIn('customization_id', $excludes['custons'])->get();
 
         //get all options if id has in list
-        $exceptions = Option::whereIn('id', $excludes['options'])->get();
+        //$exceptions = Option::whereIn('id', $excludes['options'])->get();
 
         $allExceptions = [];
 
@@ -249,9 +249,9 @@ class ProductController extends Controller
             $allExceptions[] = $custom;
         }
 
-        foreach ($exceptions as $exception) {
-            $allExceptions[] = $exception;
-        }
+        // foreach ($exceptions as $exception) {
+        //     $allExceptions[] = $exception;
+        // }
 
 
         //insert exclusions and children

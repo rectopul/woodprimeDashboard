@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Customization;
 use App\Models\Option;
+use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Http\Request;
 
 class OptionController extends Controller
@@ -54,8 +56,20 @@ class OptionController extends Controller
         $option->image = $request->input('image');
         $option->price = $request->input('price');
 
+
         $option->save();
 
+        // Assign this option in all products
+        $products = Product::get();
+
+        foreach ($products as $product) {
+            $productOption = new ProductOption;
+            $productOption->option_id = $option->id;
+            $productOption->product_id = $product->id;
+            $productOption->save();
+        }
+
+        //response this request
         return response()->json($option);
     }
 

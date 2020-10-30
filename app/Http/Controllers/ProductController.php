@@ -338,7 +338,7 @@ class ProductController extends Controller
             }
         }
 
-        $response = Product::where('code', '=', $request->input('code'))->with('options.option')->with('child')->get();
+        $response = Product::where('code', '=', $request->input('code'))->with('child')->get();
 
         return response()->json($response);
     }

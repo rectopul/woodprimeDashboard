@@ -111,13 +111,20 @@ class ProductController extends Controller
             ProductOption::where('product_id', '=', $product->id)->delete();
 
             //get all options in this custom
-            $customizations = Option::whereIn('id', $excludes['options'])->whereNotIn('customization_id', $excludes['custons'])->get();
+            $customizations = Option::whereNotIn('customization_id', $excludes['custons'])->get();
+
+            //get all options if id has in list
+            $exceptions = Option::whereIn('id', $excludes['options'])->get();
 
             $allExceptions = [];
 
             //merge all options
             foreach ($customizations as $custom) {
                 $allExceptions[] = $custom;
+            }
+
+            foreach ($exceptions as $exception) {
+                $allExceptions[] = $exception;
             }
 
             //return response()->json($allExceptions);
@@ -232,10 +239,10 @@ class ProductController extends Controller
         $product->save();
 
         //get all options in this custom
-        $customizations = Option::whereIn('id', $excludes['options'])->whereNotIn('customization_id', $excludes['custons'])->get();
+        $customizations = Option::whereNotIn('customization_id', $excludes['custons'])->get();
 
         //get all options if id has in list
-        //$exceptions = Option::whereIn('id', $excludes['options'])->get();
+        $exceptions = Option::whereIn('id', $excludes['options'])->get();
 
         $allExceptions = [];
 
@@ -244,9 +251,9 @@ class ProductController extends Controller
             $allExceptions[] = $custom;
         }
 
-        // foreach ($exceptions as $exception) {
-        //     $allExceptions[] = $exception;
-        // }
+        foreach ($exceptions as $exception) {
+            $allExceptions[] = $exception;
+        }
 
 
         //insert exclusions and children

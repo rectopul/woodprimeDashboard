@@ -26,11 +26,11 @@ class DashboardController extends Controller
         $unrelated = Customization::whereNull('type_id')->get();
         $products = Product::with('options.option')->get();
 
-        $customTypes = Type::get();
+        $customTypes = Type::with('customization')->get();
 
-        foreach ($customTypes as $customType) {
-            $customType->setRelation('customization', $customType->customization()->paginate(10));
-        }
+        // foreach ($customTypes as $customType) {
+        //     $customType->setRelation('customization', $customType->customization()->paginate(10));
+        // }
 
         //dd($types);
         return view('pages.dashboard.dashboard', compact('types', 'user', 'count', 'customTypes', 'customizationsCount', 'users', 'unrelated', 'products'));

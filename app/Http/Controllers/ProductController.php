@@ -96,7 +96,7 @@ class ProductController extends Controller
     {
         $check = Product::where('code', '=', $request->input('code'))->count();
 
-        return response()->json($check);
+        //return response()->json($check);
 
         $excludes =  $request->input('excludes');
 
@@ -111,20 +111,13 @@ class ProductController extends Controller
             ProductOption::where('product_id', '=', $product->id)->delete();
 
             //get all options in this custom
-            $customizations = Option::whereNotIn('customization_id', $excludes['custons'])->get();
-
-            //get all options if id has in list
-            $exceptions = Option::whereIn('id', $excludes['options'])->get();
+            $customizations = Option::whereIn('id', $excludes['options'])->whereNotIn('customization_id', $excludes['custons'])->get();
 
             $allExceptions = [];
 
             //merge all options
             foreach ($customizations as $custom) {
                 $allExceptions[] = $custom;
-            }
-
-            foreach ($exceptions as $exception) {
-                $allExceptions[] = $exception;
             }
 
             //return response()->json($allExceptions);
@@ -225,7 +218,7 @@ class ProductController extends Controller
                 }
             }
 
-            $response = Product::where('code', '=', $request->input('code'))->with('options.option')->with('child')->first();
+            $response = Product::where('code', '=', $request->input('code'))->with('child')->first();
 
             return response()->json($response);
         }

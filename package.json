@@ -5,6 +5,8 @@
    "license": "MIT",
    "scripts": {
       "gulp": "gulp",
+      "server": "php artisan serve",
+      "start": "concurrently \"php artisan serve\" \"gulp\"",
       "dev": "npm run development",
       "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
       "watch": "npm run development -- --watch",

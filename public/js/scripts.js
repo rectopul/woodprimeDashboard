@@ -275,6 +275,7 @@ const custom = (() => {
         card.classList.add('col-md-3', `optionSelected-${id}`)
 
         card.dataset.id = id
+        card.dataset.custom = object.customization_id
 
         card.innerHTML = `
       <div class="card">
@@ -414,6 +415,15 @@ const custom = (() => {
         }
 
         excludes.options = filter
+
+        console.log(excludes);
+    }
+
+    function handleInsertOption(object) {
+        const { id, custom} = object
+        excludes.options.push({id, custom})
+
+        return excludes.options
     }
 
     const selectOptions = check => {
@@ -428,7 +438,7 @@ const custom = (() => {
             check.classList.toggle('show')
 
             if (check.classList.contains('show')) {
-                
+                //quando é uma opcao removida
 
                 handleRemoveOption(id)
 
@@ -436,17 +446,17 @@ const custom = (() => {
 
                 //remove option from list
                 if (optionsSelected) optionsSelected.querySelector(`.optionSelected-${id}`).remove()
-
+                //excludes.options.push({ id, custom: card.querySelector('#selectAllCustom').value})
                 
             } else {
-                //excludes.options.push({ id, custom: card.querySelector('#selectAllCustom').value})
-
-                console.log(excludes)
 
                 if (optionsSelected) optionsSelected.append(handleSelectOption({ id, name }))
 
+                handleInsertOption({id, custom: parseInt(check.dataset.custom)})
                 
             }
+
+            console.log(`Selecionei aqui`, excludes);
         })
     }
 
@@ -854,21 +864,24 @@ const custom = (() => {
 
         card.classList.add('col-md-3')
 
-        if (excludes.options.indexOf(`${id}`) != -1) card.classList.add('show')
+        const check = excludes.options.filter(x => x.id === id)
+
+        if (!check.length) card.classList.add('show')
 
         card.dataset.id = object.id
+        card.dataset.custom = object.customization_id
 
         card.innerHTML = `
-      <div class="card border-primary mb-3 cardOption" data-id="${id}">
-         <div class="card-header">
-            <h5>${name}</h5>
-         </div>
-         <div class="card-body text-primary">
-            <p class="card-text">
-               <img src="${image}" class="img-thumbnail">
-            </p>
-         </div>
-      </div>
+        <div class="card border-primary mb-3 cardOption" data-id="${id}">
+            <div class="card-header">
+                <h5>${name}</h5>
+            </div>
+            <div class="card-body text-primary">
+                <p class="card-text">
+                <img src="${image}" class="img-thumbnail">
+                </p>
+            </div>
+        </div>
       `
 
         //selectOptions
@@ -2523,15 +2536,16 @@ const product = (() => {
             },
             body: JSON.stringify({ name, code, description, image, options, excludes, children }),
         })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(res => {
                 update(() => {
-                    if (res.error)
+                    if (res.error) {
                         return Swal.fire({
                             title: res.error,
                             icon: 'warning',
                             showCloseButton: true,
                         })
+                    }
 
                     //reset Form
                     optionsProduct = []
@@ -2716,7 +2730,8 @@ const product = (() => {
 
             try {
                 if (input.checked !== true) {
-                    return custom.handleRemoveOption(custom = input.value)
+                    input.closest('.selected').classList.remove('selected')
+                    return custom.handleRemoveOption(null, input.value)
                 }
 
                 const customization = await util.request({

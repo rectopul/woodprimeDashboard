@@ -15,15 +15,16 @@ const product = (() => {
             },
             body: JSON.stringify({ name, code, description, image, options, excludes, children }),
         })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(res => {
                 update(() => {
-                    if (res.error)
+                    if (res.error) {
                         return Swal.fire({
                             title: res.error,
                             icon: 'warning',
                             showCloseButton: true,
                         })
+                    }
 
                     //reset Form
                     optionsProduct = []
@@ -208,7 +209,8 @@ const product = (() => {
 
             try {
                 if (input.checked !== true) {
-                    return custom.handleRemoveOption(custom = input.value)
+                    input.closest('.selected').classList.remove('selected')
+                    return custom.handleRemoveOption(null, input.value)
                 }
 
                 const customization = await util.request({

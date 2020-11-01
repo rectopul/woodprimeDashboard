@@ -226,12 +226,27 @@ class ProductController extends Controller
 
         $product = $product->toArray();
 
+        $theOptions = array_column($product['options'], 'option_id');
+
+        //return response()->json($theOptions, 200);
+
         //get all custom
         $customizations = Customization::orderBy('order', 'ASC')
-            ->with('options.customization')
+            ->with(['options' => function ($q) use ($theOptions) {
+                return $q->whereIn('id', $theOptions)->with('customization');
+            }])
             ->with('type')
             ->get()
             ->toArray();
+
+        foreach ($customizations as $key => &$custom) {
+            if (empty($custom['options']) || empty($custom['type_id'])) {
+                array_splice($customizations, $key, 1);
+            }
+            unset($custom);
+        }
+
+        return response()->json(['custom' => $customizations, 'child' => $product['child']]);
 
         //$customClean = [];
 

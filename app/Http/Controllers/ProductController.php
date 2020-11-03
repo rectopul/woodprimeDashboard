@@ -322,7 +322,7 @@ class ProductController extends Controller
             $excluded[] = $option->option_id;
         }
 
-        $productOption = Option::whereNotIn('id', $excluded)->where('customization_id', '!=', null)
+        $productOption = Option::whereIn('id', $excluded)->where('customization_id', '!=', null)
             ->with('customization.type')->get();
 
         $products->custom = $productOption;

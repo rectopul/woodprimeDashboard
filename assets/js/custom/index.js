@@ -410,6 +410,10 @@ const custom = (() => {
            </div>
        </div>`
 
+       const btnShowOptions = card.querySelector('.btnShowOptionsCustom');
+
+       clickCard(btnShowOptions)
+
         const btnDeleteCstom = card.querySelector('.btnDeleteCustom')
 
         destroyCustom(btnDeleteCstom)

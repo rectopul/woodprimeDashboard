@@ -107,10 +107,10 @@ class ProductController extends Controller
         $product;
 
         if ($check) {
-            $check->name = $name;
-            $check->description = $description;
+            $check->name = $request->input('name');
+            $check->description = $request->input('description');
             $check->image = $request->input('image');
-            $check->code = $code;
+            $check->code = $request->input('code');
             $check->save();
 
             $product = $check;

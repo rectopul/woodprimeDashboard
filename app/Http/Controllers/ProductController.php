@@ -154,7 +154,7 @@ class ProductController extends Controller
                     # code...
                     $productCustomization = new ProductOption;
                     $productCustomization->option_id = $option['id'];
-                    $productCustomization->product_id = $theChild->id;
+                    $productCustomization->product_id = $product->id;
 
                     //Save Custom
                     $productCustomization->save();

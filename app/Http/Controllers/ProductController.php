@@ -107,6 +107,12 @@ class ProductController extends Controller
         $product;
 
         if ($check) {
+            $check->name = $name;
+            $check->description = $description;
+            $check->image = $request->input('image');
+            $check->code = $code;
+            $check->save();
+
             $product = $check;
         } else {
             $product = new Product;

@@ -59,16 +59,6 @@ class OptionController extends Controller
 
         $option->save();
 
-        // Assign this option in all products
-        $products = Product::get();
-
-        foreach ($products as $product) {
-            $productOption = new ProductOption;
-            $productOption->option_id = $option->id;
-            $productOption->product_id = $product->id;
-            $productOption->save();
-        }
-
         //response this request
         return response()->json($option);
     }

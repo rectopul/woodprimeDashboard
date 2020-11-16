@@ -3,22 +3,22 @@ const vtexEnvironment = `vtexcommercestable`
 
 const searching = (() => {
     //private var/functions
-    const putOnResults = (products) => {
+    const putOnResults = products => {
         const containerPartial = document.querySelector('.productsFound')
 
         containerPartial.classList.add('show')
 
         containerPartial.innerHTML = ``
 
-        products.map((prod) => {
+        products.map(prod => {
             const produto = product(prod)
 
             containerPartial.append(produto)
         })
     }
 
-    const custromDestroy = (option) => {
-        option.addEventListener('click', async (e) => {
+    const custromDestroy = option => {
+        option.addEventListener('click', async e => {
             try {
                 e.preventDefault()
 
@@ -48,8 +48,8 @@ const searching = (() => {
         })
     }
 
-    const productDesctroy = (button) => {
-        button.addEventListener('click', async (e) => {
+    const productDesctroy = button => {
+        button.addEventListener('click', async e => {
             try {
                 e.preventDefault()
 
@@ -73,20 +73,23 @@ const searching = (() => {
         })
     }
 
-    const listCustom = (customList) => {
-        const custons = customList.map((custom) => {
+    const listCustom = customList => {
+        console.log(`custons`, customList)
+        const custons = customList.map(custom => {
+            const { name, image, customization, id } = custom.option
+
             const list = document.createElement('div')
 
             list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
 
-            list.dataset.id = custom.id
+            list.dataset.id = id
 
             list.innerHTML = `
          <div class="card">
-            <img class="card-img-top" src="${custom.image}" alt="Card image cap">
+            <img class="card-img-top" src="${image}" alt="Card image cap">
             <div class="card-body">
-               <h5 class="card-title">${custom.name}</h5>
-               <small>${custom.customization ? custom.customization.name : ``}</small>
+               <h5 class="card-title">${name}</h5>
+               <small>${customization ? customization.name : ``}</small>
             </div>
          </div>
          `
@@ -99,8 +102,9 @@ const searching = (() => {
         return custons
     }
 
-    const productStrong = (infos) => {
-        const { name, id, image, code, custom } = infos
+    const productStrong = infos => {
+        console.log(`infos`, infos)
+        const { name, id, image, code, custom, options } = infos
 
         const product = document.createElement('div')
 
@@ -138,16 +142,16 @@ const searching = (() => {
 
         if (btnDestroy) productDesctroy(btnDestroy)
 
-        const custons = [...listCustom(custom)]
+        const custons = [...listCustom(options)]
 
-        custons.map((custom) => {
+        custons.map(custom => {
             product.querySelector('.productCustoms > .row').append(custom)
         })
 
         return product
     }
 
-    const product = (infos) => {
+    const product = infos => {
         const { id, image, name } = infos
         const div = document.createElement('div')
 
@@ -168,7 +172,7 @@ const searching = (() => {
         return div
     }
 
-    const request = (options) => {
+    const request = options => {
         return new Promise((resolve, reject) => {
             const { url, headers, method, body } = options
 
@@ -178,9 +182,9 @@ const searching = (() => {
             if (body) opt.body = JSON.stringify(body)
 
             fetch(url, opt)
-                .then((r) => r.json())
-                .then((res) => resolve(res))
-                .catch((error) => reject(error))
+                .then(r => r.json())
+                .then(res => resolve(res))
+                .catch(error => reject(error))
         })
     }
 
@@ -191,7 +195,7 @@ const searching = (() => {
         delayed_methods[label] = Date.now()
         var t = delayed_methods[label]
 
-        setTimeout(function () {
+        setTimeout(function() {
             if (delayed_methods[label] != t) {
                 return
             } else {
@@ -202,27 +206,25 @@ const searching = (() => {
         }, time || 500)
     }
 
-    const search = (input) => {
-        input.addEventListener('keyup', (e) => {
+    const search = input => {
+        input.addEventListener('keyup', e => {
             const containerPartial = document.querySelector('.productsFound')
 
             const containerInput = input.closest('div')
 
-            const spinnerExist = containerInput.querySelector('.spinner-border');
+            const spinnerExist = containerInput.querySelector('.spinner-border')
 
-            if(!spinnerExist) {
-
+            if (!spinnerExist) {
                 const spinner = document.createElement('div')
-    
+
                 spinner.classList.add('spinner-border', 'text-success')
-    
+
                 spinner.setAttribute('role', 'status')
-    
+
                 spinner.innerHTML = `<span class="sr-only">Loading...</span>`
-    
+
                 input.closest('div').append(spinner)
             }
-
 
             if (!input.value.length) {
                 return containerPartial.classList.remove('show')
@@ -252,9 +254,9 @@ const searching = (() => {
         })
     }
 
-    const select = (button) => {
+    const select = button => {
         const productContainer = document.querySelector('.listProduct')
-        button.addEventListener('click', async (e) => {
+        button.addEventListener('click', async e => {
             e.preventDefault()
 
             const id = button.dataset.id
@@ -286,7 +288,7 @@ const inputSearch = document.querySelector('.productParamSearch')
 
 if (inputSearch) searching.search(inputSearch)
 
-const createProductBySearch = (object) => {
+const createProductBySearch = object => {
     return new Promise((resolve, reject) => {
         const { name, code, image, options, id } = object
 
@@ -294,7 +296,7 @@ const createProductBySearch = (object) => {
 
         let productOptions = ``
         if (options.length) {
-            options.forEach((opt) => {
+            options.forEach(opt => {
                 const { id, option } = opt
 
                 const customName = option.customization ? `(${option.customization.name})` : ``
@@ -347,7 +349,7 @@ const createProductBySearch = (object) => {
         //remove option
         const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
 
-        Array.from(linkRemoveOption).forEach((link) => {
+        Array.from(linkRemoveOption).forEach(link => {
             actionRemoveOption(link)
         })
 
@@ -360,7 +362,7 @@ const createProductBySearch = (object) => {
     })
 }
 
-const searchProduct = (slug) => {
+const searchProduct = slug => {
     update(1, `dark`)
     fetch(`/api/product_search/${slug}`, {
         method: 'GET',
@@ -368,18 +370,18 @@ const searchProduct = (slug) => {
             'content-type': 'application/json',
         },
     })
-        .then((response) => response.json())
-        .then((res) => {
+        .then(response => response.json())
+        .then(res => {
             update(() => {
-                return res.forEach((product) => {
+                return res.forEach(product => {
                     document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then((res) => {
+                    return createProductBySearch(product).then(res => {
                         return document.querySelector('.listProduct').append(res)
                     })
                 })
             }, `dark`)
         })
-        .catch((err) => {
+        .catch(err => {
             return Swal.fire({
                 title: err,
                 icon: 'error',
@@ -396,18 +398,18 @@ const indexProducts = () => {
             'content-type': 'application/json',
         },
     })
-        .then((response) => response.json())
-        .then((res) => {
+        .then(response => response.json())
+        .then(res => {
             update(() => {
-                return res.forEach((product) => {
+                return res.forEach(product => {
                     document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then((res) => {
+                    return createProductBySearch(product).then(res => {
                         return document.querySelector('.listProduct').append(res)
                     })
                 })
             }, `dark`)
         })
-        .catch((err) => {
+        .catch(err => {
             return Swal.fire({
                 title: err,
                 icon: 'error',
@@ -416,7 +418,7 @@ const indexProducts = () => {
         })
 }
 
-const internalRequest = (id) => {
+const internalRequest = id => {
     return new Promise((resolve, reject) => {
         fetch(`/api/${productResource}/${id}`, {
             method: 'GET',
@@ -424,8 +426,8 @@ const internalRequest = (id) => {
                 'content-type': 'application/json',
             },
         })
-            .then((response) => response.json())
-            .then((res) => {
+            .then(response => response.json())
+            .then(res => {
                 if (!res) return reject(`Não há produtos`)
 
                 const { name, code: id, image } = res
@@ -438,7 +440,7 @@ const internalRequest = (id) => {
     })
 }
 
-const getVtexProduct = (skuProduct) => {
+const getVtexProduct = skuProduct => {
     return new Promise((resolve, reject) => {
         if (!skuProduct.value) return reject('Informe o sku do produto')
         const sku = skuProduct.value
@@ -455,8 +457,8 @@ const getVtexProduct = (skuProduct) => {
                 accept: 'application/json',
             },
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then(response => response.json())
+            .then(data => {
                 const { product } = data
                 if (!product) return reject(`Produto não encontrado`)
 
@@ -500,11 +502,11 @@ const getVtexProduct = (skuProduct) => {
 
                 return resolve(retorno)
             })
-            .catch((err) => reject(err))
+            .catch(err => reject(err))
     })
 }
 
-const putValues = (object) => {
+const putValues = object => {
     const { name, code, image } = object
     document.querySelector('.nameProduct').value = name
     document.querySelector('.codeProduct').value = code
@@ -515,7 +517,7 @@ const putValues = (object) => {
 
 const btnSearchProduct = document.querySelector('.btnGetProductVtex')
 
-btnSearchProduct.addEventListener('click', (e) => {
+btnSearchProduct.addEventListener('click', e => {
     e.preventDefault()
     custom.handleResetForm()
     let inputSkuProduct = document.querySelector('.skuProduct')
@@ -523,7 +525,7 @@ btnSearchProduct.addEventListener('click', (e) => {
     btnSearchProduct.innerHTML = ``
     btnSearchProduct.append(spinner(`ligth`, 'small'))
     getVtexProduct(inputSkuProduct)
-        .then((res) => {
+        .then(res => {
             console.log(res)
             const { name, id: code, image, skus } = res
 
@@ -531,7 +533,7 @@ btnSearchProduct.addEventListener('click', (e) => {
             if (skus && skus.length > 1) {
                 const subProducts = document.querySelector('.subProducts')
                 if (subProducts) subProducts.innerHTML = ``
-                skus.map((sku) => {
+                skus.map(sku => {
                     const subProduct = document.createElement('div')
 
                     subProduct.classList.add('col-md-2', 'mt-3')
@@ -557,7 +559,7 @@ btnSearchProduct.addEventListener('click', (e) => {
             btnSearchProduct.innerHTML = olderText
             return putValues({ name, code, image })
         })
-        .catch((res) => {
+        .catch(res => {
             return Swal.fire({
                 title: res,
                 icon: 'error',

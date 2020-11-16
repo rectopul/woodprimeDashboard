@@ -193,14 +193,16 @@ class ProductController extends Controller
             return response()->json(['error' => 'This product not exist'], 400);
         }
 
-        $productCustomization = new ProductOption;
-        $productCustomization->option_id = $request->input('option_id');
-        $productCustomization->product_id = $request->input('product_id');
+        $productOption = ProductOption::where('option_id', '=', $request->input('option_id'))
+            ->where('product_id', '=', $request->input('product_id'));
 
-        //Save Custom
-        $productCustomization->save();
+        if (!empty($productOption)) {
+            $productOption->delete();
 
-        return response()->json($productCustomization);
+            return response()->json($productOption);
+        } else {
+            return response()->json(['error' => 'produto não encontrado!'], 400);
+        }
     }
 
     /**
@@ -306,7 +308,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $products = Product::where('id', '=', $id)
-            ->with('options')
+            ->with('options.option.customization.type')
             ->first();
 
 
@@ -315,17 +317,14 @@ class ProductController extends Controller
         if (!$products) return response()->json('Product not exist', 200);
 
 
+        // foreach ($products->options as $option) {
+        //     $excluded[] = $option->option_id;
+        // }
 
-        //return response()->json($products);
+        // $productOption = Option::whereIn('id', $excluded)->where('customization_id', '!=', null)
+        //     ->with('customization.type')->get();
 
-        foreach ($products->options as $option) {
-            $excluded[] = $option->option_id;
-        }
-
-        $productOption = Option::whereIn('id', $excluded)->where('customization_id', '!=', null)
-            ->with('customization.type')->get();
-
-        $products->custom = $productOption;
+        // $products->custom = $productOption;
 
         return response()->json($products);
     }

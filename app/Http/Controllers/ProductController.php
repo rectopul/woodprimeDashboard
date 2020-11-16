@@ -137,8 +137,14 @@ class ProductController extends Controller
 
         //clean childs
         foreach ($childs as $child) {
-            # code...
-            $theChild = Product::where('code', '=', $child['code'])->first();
+
+
+            $code = $child['code'];
+            $description = $child['description'];
+            $image = $child['image'];
+            $name = $child['name'];
+
+            $theChild = Product::where('code', '=', $code)->first();
 
             if ($theChild) {
                 ProductOption::where('product_id', '=', $theChild->id)->delete();
@@ -154,25 +160,22 @@ class ProductController extends Controller
                     $productCustomization->save();
                 }
             } else {
-                $theChild = Product::where('code', '=', $child['code'])->get();
 
-                $theChild = new Product;
-                $theChild->name = $child['name'];
-                $theChild->description = $child['description'];
-                $theChild->image = $child['image'] ? $child['image'] : $request->input('image');
-                $theChild->code = $child['code'];
-                $theChild->parent_id = $product->id;
+                $children = new Product;
+                $children->name = $name;
+                $children->description = $description;
+                $children->image = $image ? $image : $request->input('image');
+                $children->code = $code;
+                $children->parent_id = $product->id;
 
-                $theChild->save();
-
-                ProductOption::where('product_id', '=', $theChild->code)->delete();
+                $children->save();
 
                 //insert custons in children
                 foreach ($excludes['options'] as $option) {
                     # code...
                     $productCustomization = new ProductOption;
                     $productCustomization->option_id = $option['id'];
-                    $productCustomization->product_id = $theChild->id;
+                    $productCustomization->product_id = $children->id;
 
                     //Save Custom
                     $productCustomization->save();

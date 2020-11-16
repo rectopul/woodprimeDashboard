@@ -149,12 +149,20 @@ class ProductController extends Controller
             if ($theChild) {
                 ProductOption::where('product_id', '=', $theChild->id)->delete();
 
+                $theChild->name = $name;
+                $theChild->description = $description;
+                $theChild->image = $image ? $image : $request->input('image');
+                $theChild->code = $code;
+                $theChild->parent_id = $product->id;
+
+                $theChild->save();
+
                 //insert custons in children
                 foreach ($excludes['options'] as $option) {
                     # code...
                     $productCustomization = new ProductOption;
                     $productCustomization->option_id = $option['id'];
-                    $productCustomization->product_id = $product->id;
+                    $productCustomization->product_id = $theChild->id;
 
                     //Save Custom
                     $productCustomization->save();

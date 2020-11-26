@@ -18,6 +18,7 @@ class OptionController extends Controller
     public function index(Request $request)
     {
         $custonId = $request->query('custom');
+
         if ($custonId) {
             $custom = Customization::where('id', $custonId)->with('options')->first();
             //$options = Option::get();

@@ -28,6 +28,7 @@
 <body>
     @include('components.modalOptions')
     @include('components.formOption')
+    @include('components.modals.selectOptions')
     <div class="container">
         @yield('content')
     </div>

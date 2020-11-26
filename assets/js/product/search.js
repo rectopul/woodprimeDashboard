@@ -113,31 +113,31 @@ const searching = (() => {
         product.dataset.id = id
 
         product.innerHTML = `
-      <div class="row">
-         <div class="col-md-4">
-         <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
-         </div>
+        <div class="row">
+            <div class="col-md-4">
+            <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
+            </div>
 
-         <div class="col-md">
-            <h4>${name}</h4>
+            <div class="col-md">
+                <h4>${name}</h4>
 
-            <p>${code}</p>
-         </div>
+                <p>${code}</p>
+            </div>
 
-         <div class="col-2 text-right">
-            <button type="button" class="btn btn-danger destrProduct" data-id="${id}">Deletar</button>
-         </div>
-      </div>
+            <div class="col-2 text-right">
+                <button type="button" class="btn btn-danger destrProduct" data-id="${id}">Deletar</button>
+            </div>
+        </div>
 
-      <hr>
+        <hr>
 
-      <div class="row">
-         <h1 class="text-center mx-auto mb-4">Customizações</h1>
-         <div class="col-12 productCustoms">
-            <div class="row"></div>
-         </div>
-      </div>
-      `
+        <div class="row">
+            <h1 class="text-center mx-auto mb-4">Customizações</h1>
+            <div class="col-12 productCustoms">
+                <div class="row"></div>
+            </div>
+        </div>
+        `
         const btnDestroy = product.querySelector('.destrProduct')
 
         if (btnDestroy) productDesctroy(btnDestroy)
@@ -147,6 +147,8 @@ const searching = (() => {
         custons.map(custom => {
             product.querySelector('.productCustoms > .row').append(custom)
         })
+
+        edit.structure(product.querySelector('.productCustoms'), id)
 
         return product
     }

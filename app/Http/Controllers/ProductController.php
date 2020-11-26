@@ -354,7 +354,7 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        return response()->json('editar', 200);
     }
 
     /**
@@ -366,7 +366,35 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $options = $request->input('options');
+        $excludes = $request->input('exclude');
+        $product = $request->input('id');
+
+        foreach ($excludes as $exclude) {
+            $option = ProductOption::where('option_id', $exclude['id'])->where('product_id', $product);
+
+            if ($option) $option->delete();
+        }
+
+        foreach ($options as $option) {
+
+            //check if already exist
+            $theOptions = ProductOption::where('option_id', '=', $option['id'])->where('product_id', $product);
+
+            if ($theOptions->count()) {
+            } else {
+                # code...
+                $productOption = new ProductOption;
+                $productOption->option_id = $option['id'];
+                $productOption->product_id = $product;
+
+                //Save Custom
+                $productOption->save();
+            }
+        }
+
+
+        return response()->json($options, 200);
     }
 
     /**

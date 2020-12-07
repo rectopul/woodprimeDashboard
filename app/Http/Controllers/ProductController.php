@@ -43,19 +43,6 @@ class ProductController extends Controller
             ->with('options.option.customization')
             ->get();
 
-        $productOption = [];
-
-        foreach ($products as $product) {
-            $excluded = [];
-            foreach ($product->options as $option) {
-                $excluded[] = $option->option_id;
-            }
-
-            $productOption = Option::whereNotIn('id', $excluded)
-                ->with('customization')->get();
-
-            $product->custom = $productOption;
-        }
 
         if ($products) {
             //return json_encode($productOption);

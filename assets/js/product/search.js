@@ -201,7 +201,6 @@ const searching = (() => {
             if (delayed_methods[label] != t) {
                 return
             } else {
-                console.log(arguments)
                 delayed_methods[label] = ''
                 callback()
             }

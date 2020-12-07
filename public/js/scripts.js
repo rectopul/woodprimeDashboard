@@ -2517,7 +2517,6 @@ const searching = (() => {
             if (delayed_methods[label] != t) {
                 return
             } else {
-                console.log(arguments)
                 delayed_methods[label] = ''
                 callback()
             }
@@ -2941,24 +2940,24 @@ const product = (() => {
                             title: `Produto ${res[0].name} cadastrado`,
                             icon: 'success',
                             showCloseButton: true,
-                        }).then((result) => {
+                        }).then(result => {
                             /* Read more about isConfirmed, isDenied below */
                             if (result.isConfirmed) {
-                              document.location.reload(true)
+                                document.location.reload(true)
                             }
-                          })
+                        })
                     }
 
                     return Swal.fire({
                         title: `Produto ${res.name} cadastrado`,
                         icon: 'success',
                         showCloseButton: true,
-                    }).then((result) => {
+                    }).then(result => {
                         /* Read more about isConfirmed, isDenied below */
                         if (result.isConfirmed) {
                             document.location.reload(true)
                         }
-                      })
+                    })
                 }, `dark`)
             })
             .catch(err => {
@@ -3097,28 +3096,28 @@ const product = (() => {
 
             try {
                 if (input.checked !== true) {
-                    input.closest('.selected').classList.remove('selected')
+                    const parent = input.closest('.selected')
+
+                    if (parent) return parent.remove('selected')
+
                     return custom.handleRemoveOption(null, input.value)
                 }
 
                 const customization = await util.request({
                     url: `/api/custon/${input.value}`,
-                        headers: {
-                            'content-type': `application/json`,
+                    headers: {
+                        'content-type': `application/json`,
                     },
                 })
 
-                if(customization.options) {
+                if (customization.options) {
                     customization.options.map(option => {
-                        custom.insertOption({id: option.id, custom: option.customization_id})
+                        custom.insertOption({ id: option.id, custom: option.customization_id })
                     })
                 }
             } catch (error) {
                 console.log(error)
             }
-
-
-            
         })
     }
 

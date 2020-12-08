@@ -144,9 +144,9 @@ const searching = (() => {
 
         const custons = [...listCustom(options)]
 
-        custons.map(custom => {
-            product.querySelector('.productCustoms > .row').append(custom)
-        })
+        // custons.map(custom => {
+        //     product.querySelector('.productCustoms > .row').append(custom)
+        // })
 
         edit.structure(product.querySelector('.productCustoms'), id)
 

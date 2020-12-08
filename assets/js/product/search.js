@@ -74,7 +74,6 @@ const searching = (() => {
     }
 
     const listCustom = customList => {
-        console.log(`custons`, customList)
         const custons = customList.map(custom => {
             const { name, image, customization, id } = custom.option
 

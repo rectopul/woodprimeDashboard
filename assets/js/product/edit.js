@@ -308,6 +308,9 @@ const edit = (() => {
                         data-id="${custom.id}">
 
                 </div>
+                <div class="card-footer">
+                    <small>Clique no checkbox para marcar todos</small>
+                </div>
             </div>
             `
 

@@ -192,6 +192,1933 @@ window.addEventListener(
     false
 )
 
+const edit = (() => {
+    //private var/functions
+
+    const dataOptions = {
+        options: [],
+        custons: null,
+        childs: null,
+        exclude: [],
+        types: null,
+    }
+
+    function requestUpdate(id, data) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                url: `/api/product/${id}`,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            }
+
+            fetch(options.url, {
+                method: options.method,
+                headers: options.headers,
+                body: JSON.stringify(data),
+            })
+                .then(res => res.json())
+                .then(resolve)
+                .catch(reject)
+        })
+    }
+
+    async function handleUpdateProduct(button) {
+        try {
+            const id = button.dataset.id
+
+            if (!id) return
+
+            const data = dataOptions
+
+            data.id = id
+
+            const update = await requestUpdate(id, data)
+
+            Swal.fire({
+                title: 'Produto Atualizado',
+                icon: 'success',
+                showCloseButton: true,
+            })
+        } catch (error) {
+            Swal.fire({
+                title: error,
+                icon: 'warning',
+                showCloseButton: true,
+            })
+        }
+    }
+
+    function updateOption(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault()
+
+            handleUpdateProduct(button)
+        })
+    }
+
+    function checkHasOption(id, custom) {
+        const filterOptions = dataOptions.options.filter(x => {
+            if (x.id === id && x.custom === custom) return true
+        })
+
+        if (filterOptions.length) return false
+
+        return true
+    }
+
+    function handleInsertOption(id, custom) {
+        if (!custom || !id) return
+
+        if (checkHasOption(id, custom)) {
+            const exclude = dataOptions.exclude.filter(x => x.id != id)
+
+            dataOptions.exclude = exclude
+
+            return dataOptions.options.push({ id, custom })
+        }
+    }
+
+    function handleRemoveOption(id, custom) {
+        const exclude = dataOptions.options.filter(x => x.id != id)
+
+        dataOptions.options = exclude
+
+        dataOptions.exclude.push({ id, custom })
+    }
+
+    function insertOptions(modal) {
+        $(modal).on('hide.bs.modal', function(e) {
+            const itens = [...$(modal)[0].querySelectorAll('.optionItem')]
+
+            if (itens) {
+                itens.forEach(option => {
+                    if (!option.classList.contains('remove')) {
+                        const id = option.dataset.id
+                        const custom = option.dataset.custom
+
+                        return handleInsertOption(id, custom)
+                    }
+                })
+            }
+
+            $(this).off('hide.bs.modal')
+        })
+    }
+
+    function indexOptions(custom) {
+        const options = {
+            url: `/api/option?custom=${custom}`,
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        }
+
+        const { url, method, headers } = options
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method,
+                headers,
+            })
+                .then(res => res.json())
+                .then(resolve)
+                .catch(reject)
+        })
+    }
+
+    function toggleOption(e) {
+        e.preventDefault()
+
+        let target = e.target
+
+        if (!target.classList.contains('optionItem')) target = target.closest('.optionItem')
+
+        const id = target.dataset.id
+        const custom = target.dataset.custom
+
+        if (!target.classList.contains('remove')) {
+            const optionsFilter = dataOptions.options.filter(x => {
+                if (x.id != id && x.custom != custom) return true
+
+                return false
+            })
+
+            dataOptions.options = optionsFilter
+
+            dataOptions.exclude.push({ id, custom })
+        }
+
+        target.classList.toggle('remove')
+    }
+
+    async function listOptions(custom, options) {
+        const modal = document.querySelector('.modalOptionsList')
+
+        insertOptions(modal)
+
+        const container = modal.querySelector('.optionsListBySearch')
+
+        container.innerHTML = ``
+
+        const theCustom = await indexOptions(custom)
+
+        theCustom.options.forEach(option => {
+            const theOption = document.createElement('div')
+
+            theOption.classList.add('col-md-3', 'optionItem')
+
+            theOption.dataset.id = option.id
+            theOption.dataset.custom = option.customization_id
+
+            if (!hasOption(option.id, options)) theOption.classList.add('remove')
+
+            theOption.innerHTML = `<div class="card">
+                <div class="card-header">${option.name}</div>
+                <div class="card-body" style="height: 180px;">
+                    <figure>
+                        <img src="${option.image}" style='height: 100%; width: 100%; object-fit: contain'>
+                    </figure>
+                </div>
+            </div>`
+
+            theOption.addEventListener('click', toggleOption)
+
+            container.append(theOption)
+        })
+
+        $(modal).modal('show')
+    }
+
+    function getProduct(id) {
+        const options = {
+            url: `/api/product/${id}`,
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        }
+
+        const { url, method, headers } = options
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method,
+                headers,
+            })
+                .then(res => res.json())
+                .then(resolve)
+                .catch(reject)
+        })
+    }
+
+    function indexCustom(id) {
+        return new Promise((resolve, reject) => {
+            fetch(`/api/custon${id ? '/' + id : ''}`, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+                .then(res => res.json())
+                .then(resolve)
+                .catch(reject)
+        })
+    }
+
+    function hasOption(option, list) {
+        const check = list.filter(x => x.option.id == option)
+
+        if (dataOptions.options.length || dataOptions.exclude.length) {
+            const checkInternal = dataOptions.options.filter(x => parseInt(x.id) == option)
+
+            const exclude = dataOptions.exclude.filter(x => parseInt(x.id) == option)
+
+            if (exclude.length) return false
+
+            if (checkInternal.length) return true
+        }
+
+        if (check.length) {
+            return true
+        }
+
+        return false
+    }
+
+    function checkOptions(list, custom) {
+        const check = list.filter(x => x.option.customization_id == custom)
+
+        if (check.length) return true
+
+        return false
+    }
+
+    async function handleChangeCustom(id, remove) {
+        const custom = await indexCustom(id)
+
+        const { options } = custom
+
+        options.forEach(option => {
+            if (remove) return handleRemoveOption(option.id, option.customization_id)
+            else return handleInsertOption(option.id, option.customization_id)
+        })
+
+        console.log(dataOptions)
+    }
+
+    function checkCustom(element) {
+        element.addEventListener('change', function(e) {
+            const id = element.dataset.id
+
+            if (element.checked == false) {
+                handleChangeCustom(id, true)
+            } else {
+                handleChangeCustom(id)
+            }
+        })
+    }
+
+    function handleCustons(custons, product) {
+        const structure = document.createElement('div')
+
+        structure.classList.add('listCustonsBySearch__list', 'row', 'my-5')
+
+        structure.innerHTML = `<div class="col-12"> <h1>Editar customizações</h1></div>`
+
+        custons.forEach(custom => {
+            const element = document.createElement('div')
+
+            element.classList.add('col-md-3', 'my-3', 'listCustonsBySearch__item')
+
+            element.innerHTML = `
+            <div class="card">
+                <div class="card-header">${custom.name}</div>
+                <div class="card-body text-center">
+                    <input type="checkbox" class="includeThisCustom mx-auto"
+                        ${checkOptions(product.options, custom.id) ? 'checked' : ''} 
+                        data-id="${custom.id}">
+
+                </div>
+                <div class="card-footer">
+                    <small>Clique no checkbox para marcar todos</small>
+                </div>
+            </div>
+            `
+
+            const input = element.querySelector('input')
+
+            checkCustom(input)
+
+            element.querySelector('.card-header').addEventListener('click', function(e) {
+                return listOptions(custom.id, product.options)
+            })
+
+            structure.append(element)
+        })
+
+        return structure
+    }
+
+    async function structure(target, productID) {
+        const custons = await indexCustom()
+
+        const product = await getProduct(productID)
+
+        const structure = handleCustons(custons, product)
+
+        const button = document.createElement('div')
+
+        button.classList.add('col-12', 'the_button_update', 'my-5', 'px-0')
+
+        button.innerHTML = `<button type="button" class="btn btn-primary" data-id="${productID}">Salvar</button>`
+
+        const btnUpdate = button.querySelector('button')
+
+        updateOption(btnUpdate)
+
+        target.append(structure)
+
+        target.append(button)
+
+        //reset
+        dataOptions.options = []
+        dataOptions.exclude = []
+    }
+
+    return {
+        //public var/functions
+        structure,
+    }
+})()
+
+const vtexAccountName = `woodprime`
+const vtexEnvironment = `vtexcommercestable`
+
+const searching = (() => {
+    //private var/functions
+    const putOnResults = products => {
+        const containerPartial = document.querySelector('.productsFound')
+
+        containerPartial.classList.add('show')
+
+        containerPartial.innerHTML = ``
+
+        products.map(prod => {
+            const produto = product(prod)
+
+            containerPartial.append(produto)
+        })
+    }
+
+    const custromDestroy = option => {
+        option.addEventListener('click', async e => {
+            try {
+                e.preventDefault()
+
+                option.closest('.col-6.col-md-3').style.display = `none`
+
+                const option_id = option.dataset.id
+
+                const product_id = option.closest('.productFind').dataset.id
+
+                //remove from product
+                await request({
+                    url: `/api/product_opt`,
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    body: { option_id, product_id },
+                })
+
+                //remove from list
+
+                option.closest('.col-6.col-md-3').remove()
+            } catch (error) {
+                option.closest('.col-6.col-md-3').style.display = `flex`
+                console.log(error)
+            }
+        })
+    }
+
+    const productDesctroy = button => {
+        button.addEventListener('click', async e => {
+            try {
+                e.preventDefault()
+
+                button.closest('.productFind').style.display = `none`
+
+                const id = button.dataset.id
+
+                await request({
+                    url: `/api/product/${id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                })
+
+                return button.closest('.productFind').remove()
+            } catch (error) {
+                button.closest('.productFind').style.display = `flex`
+                console.log(error)
+            }
+        })
+    }
+
+    const listCustom = customList => {
+        console.log(`custons`, customList)
+        const custons = customList.map(custom => {
+            const { name, image, customization, id } = custom.option
+
+            const list = document.createElement('div')
+
+            list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
+
+            list.dataset.id = id
+
+            list.innerHTML = `
+         <div class="card">
+            <img class="card-img-top" src="${image}" alt="Card image cap">
+            <div class="card-body">
+               <h5 class="card-title">${name}</h5>
+               <small>${customization ? customization.name : ``}</small>
+            </div>
+         </div>
+         `
+
+            custromDestroy(list)
+
+            return list
+        })
+
+        return custons
+    }
+
+    const productStrong = infos => {
+        console.log(`infos`, infos)
+        const { name, id, image, code, custom, options } = infos
+
+        const product = document.createElement('div')
+
+        product.classList.add('col-12', 'productFind')
+
+        product.dataset.id = id
+
+        product.innerHTML = `
+        <div class="row">
+            <div class="col-md-4">
+            <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
+            </div>
+
+            <div class="col-md">
+                <h4>${name}</h4>
+
+                <p>${code}</p>
+            </div>
+
+            <div class="col-2 text-right">
+                <button type="button" class="btn btn-danger destrProduct" data-id="${id}">Deletar</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <h1 class="text-center mx-auto mb-4">Customizações</h1>
+            <div class="col-12 productCustoms">
+                <div class="row"></div>
+            </div>
+        </div>
+        `
+        const btnDestroy = product.querySelector('.destrProduct')
+
+        if (btnDestroy) productDesctroy(btnDestroy)
+
+        const custons = [...listCustom(options)]
+
+        custons.map(custom => {
+            product.querySelector('.productCustoms > .row').append(custom)
+        })
+
+        edit.structure(product.querySelector('.productCustoms'), id)
+
+        return product
+    }
+
+    const product = infos => {
+        const { id, image, name } = infos
+        const div = document.createElement('div')
+
+        div.classList.add('col-12')
+
+        div.dataset.id = id
+
+        div.innerHTML = `
+      <div class="row">
+         <img src="${image}" alt="produto" width="40px" class="img-thumbnail">
+         <!--name of product -->
+         <span>${name}</span>
+      </div>
+      `
+
+        select(div)
+
+        return div
+    }
+
+    const request = options => {
+        return new Promise((resolve, reject) => {
+            const { url, headers, method, body } = options
+
+            const opt = { method }
+
+            if (headers) opt.headers = headers
+            if (body) opt.body = JSON.stringify(body)
+
+            fetch(url, opt)
+                .then(r => r.json())
+                .then(res => resolve(res))
+                .catch(error => reject(error))
+        })
+    }
+
+    const delay_method = (label, callback, time) => {
+        if (typeof window.delayed_methods == 'undefined') {
+            window.delayed_methods = {}
+        }
+        delayed_methods[label] = Date.now()
+        var t = delayed_methods[label]
+
+        setTimeout(function() {
+            if (delayed_methods[label] != t) {
+                return
+            } else {
+                delayed_methods[label] = ''
+                callback()
+            }
+        }, time || 500)
+    }
+
+    const search = input => {
+        input.addEventListener('keyup', e => {
+            const containerPartial = document.querySelector('.productsFound')
+
+            const containerInput = input.closest('div')
+
+            const spinnerExist = containerInput.querySelector('.spinner-border')
+
+            if (!spinnerExist) {
+                const spinner = document.createElement('div')
+
+                spinner.classList.add('spinner-border', 'text-success')
+
+                spinner.setAttribute('role', 'status')
+
+                spinner.innerHTML = `<span class="sr-only">Loading...</span>`
+
+                input.closest('div').append(spinner)
+            }
+
+            if (!input.value.length) {
+                return containerPartial.classList.remove('show')
+            }
+
+            if (input.value && input.value.length > 0) {
+                delay_method('check date parallel', async () => {
+                    try {
+                        const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+                        const products = await request({
+                            url: `/api/product_search/${find}`,
+                            method: 'GET',
+                            headers: {
+                                'content-type': 'application/json',
+                            },
+                        })
+
+                        containerInput.querySelector('.spinner-border').remove()
+
+                        if (products.length) return putOnResults(products)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                })
+            }
+        })
+    }
+
+    const select = button => {
+        const productContainer = document.querySelector('.listProduct')
+        button.addEventListener('click', async e => {
+            e.preventDefault()
+
+            const id = button.dataset.id
+
+            const product = await request({
+                url: `/api/product/${id}`,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+
+            //esconde a pesquisa
+            button.closest('.productsFound').classList.remove('show')
+
+            productContainer.innerHTML = ``
+
+            if (productContainer) productContainer.append(productStrong(product))
+        })
+    }
+
+    return {
+        //public var/functions
+        search,
+    }
+})()
+
+const inputSearch = document.querySelector('.productParamSearch')
+
+if (inputSearch) searching.search(inputSearch)
+
+const createProductBySearch = object => {
+    return new Promise((resolve, reject) => {
+        const { name, code, image, options, id } = object
+
+        const div = document.createElement('div')
+
+        let productOptions = ``
+        if (options.length) {
+            options.forEach(opt => {
+                const { id, option } = opt
+
+                const customName = option.customization ? `(${option.customization.name})` : ``
+
+                productOptions += `
+            <tr class="text-left optionProduct">
+               <th scope="row" class="px-1 productOptionName">
+                  ${option.name} ${customName}
+               </th>
+               
+               <td>${option.price}</td>
+               <td class="text-right px-1 productRemoveO\ption">
+                  <a href="#" data-id="${id}">
+                  <i class="fas fa-trash-alt"></i>
+                  </a>
+               </td>
+            </tr>
+            `
+            })
+        }
+
+        div.classList.add('col-4', 'productItem', 'my-2')
+
+        div.innerHTML = `
+      <div class="card border-primary mb-3 cardProduct item" data-id="${id}">
+         <div class="card-header text-center searchProductName">
+            ${name}
+            <button type="button" class="btn btn-danger btn-sm productDestroy" data-id="${id}">
+               <i class="fas fa-trash-alt"></i>
+            </button>
+         </div>
+   
+         <div class="card-body text-primary searchProductOptionsBody text-center px-1">
+            <table class="table table-hover searchProductOptions mb-0">
+               <thead>
+                  <tr>
+                     <th scope="col" class="text-left px-1">Option</th>
+                     <th scope="col">Preço</th>
+                     <th scope="col" class="text-right px-1">Action</th>
+                  </tr>
+               </thead>
+   
+               <tbody> ${productOptions} </tbody>
+            </table>
+            <!-- TABLE // -->
+         </div>
+      </div>
+      `
+
+        //remove option
+        const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
+
+        Array.from(linkRemoveOption).forEach(link => {
+            actionRemoveOption(link)
+        })
+
+        //remove product
+        const btnsDestroyProduct = div.querySelector('.productDestroy')
+
+        product.destroy(btnsDestroyProduct)
+
+        return resolve(div)
+    })
+}
+
+const searchProduct = slug => {
+    update(1, `dark`)
+    fetch(`/api/product_search/${slug}`, {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                return res.forEach(product => {
+                    document.querySelector('.listProduct').innerHTML = ``
+                    return createProductBySearch(product).then(res => {
+                        return document.querySelector('.listProduct').append(res)
+                    })
+                })
+            }, `dark`)
+        })
+        .catch(err => {
+            return Swal.fire({
+                title: err,
+                icon: 'error',
+                showCloseButton: true,
+            })
+        })
+}
+
+const indexProducts = () => {
+    update(1, `dark`)
+    fetch(`/api/product`, {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                return res.forEach(product => {
+                    document.querySelector('.listProduct').innerHTML = ``
+                    return createProductBySearch(product).then(res => {
+                        return document.querySelector('.listProduct').append(res)
+                    })
+                })
+            }, `dark`)
+        })
+        .catch(err => {
+            return Swal.fire({
+                title: err,
+                icon: 'error',
+                showCloseButton: true,
+            })
+        })
+}
+
+const internalRequest = id => {
+    return new Promise((resolve, reject) => {
+        fetch(`/api/${productResource}/${id}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(res => {
+                if (!res) return reject(`Não há produtos`)
+
+                const { name, code: id, image } = res
+                const retorno = {
+                    name,
+                    id,
+                    image,
+                }
+            })
+    })
+}
+
+const getVtexProduct = skuProduct => {
+    return new Promise((resolve, reject) => {
+        if (!skuProduct.value) return reject('Informe o sku do produto')
+        const sku = skuProduct.value
+        const URLSKU = `https://sistema.moveispracasa.com.br/api/admin/products/${sku}`
+
+        var myHeaders = new Headers({
+            Host: '*',
+        })
+
+        fetch(URLSKU, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                const { product } = data
+                if (!product) return reject(`Produto não encontrado`)
+
+                //check ative
+                const { isActiveOnVtex } = product
+
+                if (!isActiveOnVtex) return reject(`Este produto está inativo na Vtex`)
+
+                //vtexData.itemMetadata.items
+                const { product_name, id, productName, productId } = product.vtexData
+
+                let items
+
+                if (product.vtexData.itemMetadata) {
+                    items = product.vtexData.itemMetadata.items
+                } else {
+                    items = product.vtexData.items
+                }
+
+                if (!items.length) return reject(`Não há itens`)
+
+                const retorno = {
+                    name: product_name || productName,
+                    id: id || productId,
+                }
+
+                if (product.vtexData.items.length) {
+                    retorno.skus = product.vtexData.items
+                }
+
+                if (items[0] && items[0].MainImage) {
+                    const { MainImage } = items[0]
+                    retorno.image = MainImage
+                } else {
+                    const { images } = items[0]
+
+                    if (!images) return reject(`Não há imagem no produto`)
+
+                    retorno.image = images[0].imageUrl
+                }
+
+                return resolve(retorno)
+            })
+            .catch(err => reject(err))
+    })
+}
+
+const putValues = object => {
+    const { name, code, image } = object
+    document.querySelector('.nameProduct').value = name
+    document.querySelector('.codeProduct').value = code
+    document.querySelector('.productNameInsert').innerHTML = name
+    document.querySelector('.productCodeInsert b').innerHTML = `Código do produto: ${code}`
+    document.querySelector('.productImageInsert').setAttribute(`src`, image)
+}
+
+const btnSearchProduct = document.querySelector('.btnGetProductVtex')
+
+btnSearchProduct.addEventListener('click', e => {
+    e.preventDefault()
+    custom.handleResetForm()
+    let inputSkuProduct = document.querySelector('.skuProduct')
+    const olderText = btnSearchProduct.innerHTML
+    btnSearchProduct.innerHTML = ``
+    btnSearchProduct.append(spinner(`ligth`, 'small'))
+    getVtexProduct(inputSkuProduct)
+        .then(res => {
+            console.log(res)
+            const { name, id: code, image, skus } = res
+
+            //subitens
+            if (skus && skus.length > 1) {
+                const subProducts = document.querySelector('.subProducts')
+                if (subProducts) subProducts.innerHTML = ``
+                skus.map(sku => {
+                    const subProduct = document.createElement('div')
+
+                    subProduct.classList.add('col-md-2', 'mt-3')
+
+                    subProduct.innerHTML = `
+                     <div class="card">
+                        <img class="card-img-top" src="${sku.images[0].imageUrl}" alt="Card image cap">
+                        <div class="card-body text-center" style="border-top: 1px solid rgba(0,0,0,.125)">
+                           <h6 class="card-title">${sku.name}</h6>
+                        </div>
+                     </div>
+                     `
+
+                    document
+                        .querySelector('.informationProduct')
+                        .append(custom.handleChildForm({ id: sku.id || sku.itemId, name: sku.name, nameProduct: name }))
+
+                    if (subProducts) subProducts.append(subProduct)
+                })
+            }
+
+            document.querySelector('.resultProduct').classList.add('full')
+            btnSearchProduct.innerHTML = olderText
+            return putValues({ name, code, image })
+        })
+        .catch(res => {
+            return Swal.fire({
+                title: res,
+                icon: 'error',
+                showCloseButton: true,
+            })
+        })
+})
+
+const productResource = `product`
+let optionsProduct = []
+
+const product = (() => {
+    // declare private variables and/or functions
+
+    //Send request from create product
+    const requestProduct = object => {
+        const { name, code, description, image, options, excludes, children } = object
+        update(1, `dark`)
+        fetch(`/api/${productResource}`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({ name, code, description, image, options, excludes, children }),
+        })
+            .then(r => r.json())
+            .then(res => {
+                update(() => {
+                    if (res.error) {
+                        return Swal.fire({
+                            title: res.error,
+                            icon: 'warning',
+                            showCloseButton: true,
+                        })
+                    }
+
+                    //reset Form
+                    optionsProduct = []
+                    document.querySelector('.nameProduct').value = ``
+                    document.querySelector('.codeProduct').value = ``
+                    document.querySelector('.descriptionProduct').value = ``
+                    document.querySelector('.imageProduct').value = ``
+                    document.querySelector('.skuProduct').value = ``
+                    document.querySelector('.resultProduct').classList.remove('full')
+
+                    //remove as opcoes
+                    const formRows = document.querySelectorAll(`.formInsertProduct .form-row`)
+                    const showClass = document.querySelectorAll(`.listCustomByType .show`)
+
+                    //Limpa opções listOptionstoSelect
+                    const listOptions = document.querySelectorAll(`.listOptionstoSelect .selected`)
+
+                    if (showClass) Array.from(showClass).forEach(option => option.classList.remove('show'))
+
+                    if (listOptions) Array.from(listOptions).forEach(option => option.classList.remove('selected'))
+
+                    Array.from(formRows).forEach(div => div.remove())
+
+                    if (res[0]) {
+                        return Swal.fire({
+                            title: `Produto ${res[0].name} cadastrado`,
+                            icon: 'success',
+                            showCloseButton: true,
+                        }).then(result => {
+                            /* Read more about isConfirmed, isDenied below */
+                            if (result.isConfirmed) {
+                                document.location.reload(true)
+                            }
+                        })
+                    }
+
+                    return Swal.fire({
+                        title: `Produto ${res.name} cadastrado`,
+                        icon: 'success',
+                        showCloseButton: true,
+                    }).then(result => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            document.location.reload(true)
+                        }
+                    })
+                }, `dark`)
+            })
+            .catch(err => {
+                update(() => {
+                    return Swal.fire({
+                        title: `Erro ao inserir novo produto`,
+                        icon: 'error',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+    }
+
+    //Create product and put in container
+    const insertProduct = form => {
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+
+            const nameProduct = document.querySelector('.nameProduct')
+            const codeProduct = document.querySelector('.codeProduct')
+            const descriptionProduct = document.querySelector('.descriptionProduct')
+            const imageProduct = document.querySelector('.imageProduct')
+
+            //validar formulário
+            if (form.checkValidity()) {
+                const inputs = [...form.elements]
+
+                const object = { children: [] }
+
+                inputs.map(input => {
+                    if (input.tagName != `BUTTON`) {
+                        const inputId = input.getAttribute('id')
+                        //Get product name
+                        if (input.classList.contains('nameProduct')) object.name = input.value
+
+                        //Get code of product
+                        if (input.classList.contains('codeProduct')) object.code = input.value
+
+                        //get description
+                        if (input.classList.contains('descriptionProduct')) object.description = input.value
+
+                        //get image
+                        if (input.classList.contains('imageProduct')) object.image = input.value
+
+                        //get children's of product
+                        if (inputId) {
+                            if (inputId.indexOf('descriptionChildren') !== -1) {
+                                object.children.push({
+                                    //get description of children
+                                    description: input.value,
+
+                                    //get name of children
+                                    name: input.closest('div').querySelector('input[id*="nameChildren"]').value,
+
+                                    //get code of children
+                                    code: input.closest('div').querySelector('input[id*="codeChildren"]').value,
+
+                                    //get image of children
+                                    image: input.closest('.form-row').querySelector('input[id*="imageChildren"]').value,
+                                })
+                            }
+                        }
+                    }
+                })
+
+                const excludes = custom.getExcludes()
+
+                const { name, description, code, image, children } = object
+
+                return requestProduct({
+                    name,
+                    code: parseFloat(code),
+                    description,
+                    image,
+                    options: excludes,
+                    excludes,
+                    children,
+                })
+            }
+        })
+    }
+
+    //Request from destroy product and remove card of container
+    const destroyProduct = id => {
+        return new Promise((resolve, reject) => {
+            update(1, `dark`)
+            fetch(`/api/product/${id}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (!response.ok) return reject(new Error('HTTP status ' + response.status))
+
+                    return resolve(`Produto excluído com sucesso!`)
+                })
+                .catch(err => {
+                    return reject(err)
+                })
+        })
+    }
+
+    //action from destroy product
+    const clickDestroyProduct = btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault()
+            const id = btn.dataset.id
+
+            return destroyProduct(id)
+                .then(res => {
+                    update(() => {
+                        const productDelete = document.querySelector(`.productDestroy[data-id="${id}"]`).closest('.productItem')
+
+                        productDelete.remove()
+                        return Swal.fire({
+                            title: res,
+                            icon: 'success',
+                            showCloseButton: true,
+                        })
+                    }, `dark`)
+                })
+                .catch(err => {
+                    update(() => {
+                        console.log(err)
+                        return Swal.fire({
+                            title: `Erro ao excluir produto!`,
+                            icon: 'warning',
+                            showCloseButton: true,
+                        })
+                    }, `dark`)
+                })
+        })
+    }
+
+    function customInsert(input) {
+        input.addEventListener('change', async function(e) {
+            e.preventDefault()
+
+            try {
+                if (input.checked !== true) {
+                    const parent = input.closest('.selected')
+
+                    if (parent) return parent.remove('selected')
+
+                    return custom.handleRemoveOption(null, input.value)
+                }
+
+                const customization = await util.request({
+                    url: `/api/custon/${input.value}`,
+                    headers: {
+                        'content-type': `application/json`,
+                    },
+                })
+
+                if (customization.options) {
+                    customization.options.map(option => {
+                        custom.insertOption({ id: option.id, custom: option.customization_id })
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        })
+    }
+
+    return {
+        // declare public variables and/or functions
+        customInsert,
+        create: insertProduct,
+        destroy: clickDestroyProduct,
+    }
+})()
+
+const allCheckCustom = [...document.querySelectorAll('#selectAllCustom')]
+
+if (allCheckCustom) allCheckCustom.map(product.customInsert)
+
+//modal
+$('#modalProductOptions').on('hidden.bs.modal', function(e) {
+    // do something...
+    $('#productCustons').modal('show')
+})
+
+const destroyProductOption = id => {
+    update(1, `dark`)
+    fetch(`/api/product_option/${id}`, {
+        method: 'DELETE',
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                const optionDelete = document.querySelector(`.productRemoveOption a[data-id="${id}"]`).closest('.optionProduct')
+
+                optionDelete.remove()
+                return Swal.fire({
+                    title: `Customização removida com sucesso!`,
+                    icon: 'success',
+                    showCloseButton: true,
+                })
+            }, `dark`)
+        })
+}
+
+const actionRemoveOption = link => {
+    link.addEventListener('click', e => {
+        e.preventDefault()
+
+        const linkId = link.dataset.id
+
+        destroyProductOption(linkId)
+    })
+}
+
+const linkRemoveOption = document.querySelectorAll('.productRemoveOption > a')
+
+Array.from(linkRemoveOption).forEach(link => {
+    actionRemoveOption(link)
+})
+
+const btnsDestroyProduct = document.querySelectorAll('.productDestroy')
+
+Array.from(btnsDestroyProduct).forEach(btn => {
+    return product.destroy(btn)
+})
+
+const clickOption = option => {
+    option.addEventListener('click', function(e) {
+        // body
+        const name = option.querySelector('.productOptionName').innerHTML
+        const id = option.dataset.id
+        const custom = option.dataset.custom
+        const custom_name = option.dataset.customName
+        const image = option.querySelector('.card-body img').getAttribute('src')
+
+        option.classList.add('active')
+
+        if (!document.querySelector(`.optionsSelected div[data-option="${id}"]`)) {
+            optionInsert({ name, id, custom, custom_name, image })
+
+            return optionsProduct.push(parseInt(id))
+        }
+    })
+}
+
+const optionInsert = object => {
+    const { id, name, custom, custom_name, image } = object
+
+    const div = document.createElement('div')
+
+    div.classList.add('col-3', 'optionSelect')
+    div.dataset.option = id
+
+    div.innerHTML = `<div class="card">
+      <div class="card-header text-center productCustomName" data-custom="${custom}">
+         <button type="button" class="btn btn-danger btn-sm optionSelectDel" data-id="${id}">
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+         </button>
+         ${custom_name}
+      </div>
+      <div class="card-body productOptionName text-center">
+         <p>${name}</p>
+         <div class="row">
+            <div class="col-12">
+               <img src="${image}" alt="..." width="100" class="img-thumbnail">
+            </div>
+         </div>
+      </div>
+   </div>`
+
+    //remove
+    const btnDel = div.querySelector(`.optionSelectDel`)
+
+    btnDel.addEventListener('click', e => {
+        const id = btnDel.dataset.id
+
+        optionsProduct.splice(optionsProduct.indexOf(parseInt(id)), 1)
+
+        return btnDel.closest('.optionSelect').remove()
+    })
+
+    return document.querySelector('.optionsSelected').append(div)
+}
+
+const optionsCreate = object => {
+    const { id, name, image, custom, custom_name } = object
+    const containerOptions = document.querySelector('.modalProductOptionsContainer')
+
+    const option = document.createElement('div')
+
+    option.classList.add('col-3')
+
+    option.dataset.custom = custom
+    option.dataset.customName = custom_name
+    option.dataset.id = id
+
+    option.innerHTML = `
+   <div class="card productOption">
+      <div class="card-header productOptionName">${name}</div>
+      <div class="card-body">
+      <img src="${image}" alt="..." width="150" class="img-thumbnail">
+      </div>
+   </div>
+   `
+
+    clickOption(option)
+
+    return containerOptions.append(option)
+}
+
+const getOptions = custom => {
+    document.querySelector('.modalProductOptionsContainer').innerHTML = ``
+    document.querySelector('.modalProductOptionsContainer').append(spinner())
+
+    fetch(`/api/option?custom=${custom}`, {
+        method: 'GET',
+    })
+        .then(response => response.json())
+        .then(res => {
+            update(() => {
+                const { options } = res
+
+                document.querySelector('.modalProductOptionsContainer').innerHTML = ``
+
+                return options.forEach(option => {
+                    return optionsCreate({
+                        id: option.id,
+                        custom: option.customization_id,
+                        custom_name: res.name,
+                        name: option.name,
+                        image: option.image,
+                    })
+                })
+            }, `dark`)
+        })
+}
+
+const clickCustom = option => {
+    option.addEventListener('click', function(e) {
+        e.preventDefault()
+
+        const custom = option.closest('.col-4').dataset.custom
+
+        $('#productCustons').on('hidden.bs.modal', function(e) {
+            // do something...
+            $('#modalProductOptions').modal('show')
+            $(this).off('hidden.bs.modal')
+        })
+
+        $('#modalProductOptions').on('hidden.bs.modal', function(e) {
+            // do something...
+            $('#productCustons').modal('show')
+        })
+
+        return getOptions(custom)
+    })
+}
+
+const customCreate = object => {
+    const { id, name, custom, custom_name } = object
+
+    const div = document.createElement('div')
+
+    div.classList.add('col-3')
+    div.dataset.option = id
+
+    div.innerHTML = `<div class="card">
+      <div class="card-header productCustomName" data-custom="${custom}">${custom_name}</div>
+      <div class="card-body productOptionName">
+      ${name}
+      </div>
+   </div>`
+
+    return document.querySelector('.optionsSelected').append(div)
+}
+
+//formInsertProduct
+
+const formInsertProduct = document.querySelector('.formInsertProduct')
+const productOption = document.querySelectorAll('.productOption .card')
+
+Array.from(productOption).forEach(option => {
+    clickCustom(option)
+})
+
+if (formInsertProduct) product.create(formInsertProduct)
+
+const insertUser = object => {
+    return new Promise((resolve, reject) => {
+        const { name, email, password } = object
+
+        update(1, `dark`)
+
+        fetch(`/api/user`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+            }),
+        })
+            .then(response => response.json())
+            .then(res => {
+                if (res.error) return reject(`Erro ao inserir novo usuário`)
+                update(2, `dark`)
+                return resolve(res)
+            })
+            .catch(error => {
+                return reject(error)
+            })
+    })
+}
+
+const formNewUser = button => {
+    button.addEventListener('click', e => {
+        e.preventDefault()
+
+        const inputName = document.querySelector('.newUserName')
+        const inputEmail = document.querySelector('.newUserMail')
+        const inputPassword = document.querySelector('.newUserPassword')
+
+        const name = inputName.value
+        const email = inputEmail.value
+        const password = inputPassword.value
+
+        console.log({
+            name,
+            email,
+            password,
+        })
+
+        if (!name) {
+            inputName.setCustomValidity('Informe o nome do usuário')
+            return inputName.reportValidity()
+        }
+        if (!email) {
+            inputEmail.setCustomValidity('Informe o e-mail do usuário')
+            return inputEmail.reportValidity()
+        }
+        if (!password) {
+            inputPassword.setCustomValidity('Informe uma senha para o usuário')
+            return inputPassword.reportValidity()
+        }
+
+        insertUser({
+            name,
+            email,
+            password,
+        })
+            .then(user => {
+                const { success } = user
+
+                return update(() => {
+                    //insert user and button
+                    //listUserInSistem
+                    const newUser = document.createElement('tr')
+
+                    newUser.innerHTML = `
+                <th scope="row">${success.id}</th>
+                <td>${success.name}</td>
+                <td>${success.email}</td>
+                <td class="td-actions text-right">
+                    <button type="button" class="btn btn-danger btnRemoveUser" data-id="${success.id}">
+                        <i class="far fa-trash-alt" aria-hidden="true"></i> Excluir
+                    </button>
+                </td>
+                `
+
+                    document.querySelector('.listUserInSistem').append(newUser)
+
+                    clickToDestroyUser(newUser.querySelector('.btnRemoveUser'))
+
+                    $('#newUser').modal('hide')
+
+                    return $('#newUser').on('hidden.bs.modal', function(e) {
+                        // do something...
+                        Swal.fire({
+                            title: `Usuário ${success.name} criado com sucesso!`,
+                            icon: 'success',
+                            showCloseButton: true,
+                        })
+
+                        return document.querySelector('.modal-backdrop').remove()
+                    })
+                }, `dark`)
+            })
+            .catch(error => {
+                update(() => {
+                    return Swal.fire({
+                        title: error,
+                        icon: 'error',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+    })
+}
+
+const formInsertNewUser = document.querySelector('.btnInsertNewUser')
+
+formNewUser(formInsertNewUser)
+
+//Destroy user
+const destroyUser = id => {
+    return new Promise((resolve, reject) => {
+        update(1, `dark`)
+
+        fetch(`/api/user/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(res => {
+                if (res.error) return reject(`Erro ao inserir novo usuário`)
+                update(2, `dark`)
+                return resolve(res)
+            })
+            .catch(error => {
+                return reject(error)
+            })
+    })
+}
+
+const clickToDestroyUser = btn => {
+    btn.addEventListener('click', function(e) {
+        const id = btn.dataset.id
+
+        return destroyUser(id)
+            .then(() => {
+                btn.closest('tr').remove()
+                return update(() => {
+                    Swal.fire({
+                        title: `Usuário deletado com sucesso!`,
+                        icon: 'success',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+            .catch(error => {
+                return update(() => {
+                    Swal.fire({
+                        title: `Erro ao deletar usuário!`,
+                        icon: 'error',
+                        showCloseButton: true,
+                    })
+                }, `dark`)
+            })
+    })
+}
+
+const btnsRemoveUser = document.querySelectorAll('.btnRemoveUser')
+
+Array.from(btnsRemoveUser).forEach(btn => {
+    return clickToDestroyUser(btn)
+})
+
+//Change password
+const user = (() => {
+    //private var/functions
+
+    //Change password
+    const handleFormPassword = form => {
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+
+            if (form.checkValidity()) {
+                const id = form.dataset.id
+                const password = form.querySelector('.newPassword').value
+
+                update(1, `dark`)
+                util.request({
+                    method: `PUT`,
+                    url: `/api/user/${id}`,
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    body: {
+                        password,
+                    },
+                }).then(res => {
+                    return update(() => {
+                        $('#changePasswordModal').modal('hide')
+
+                        $('#changePasswordModal').on('hidden.bs.modal', function(e) {
+                            // do something...
+
+                            if (document.querySelector('.modal-backdrop')) document.querySelector('.modal-backdrop').remove()
+
+                            return Swal.fire({
+                                title: `Senha atualizada`,
+                                icon: 'success',
+                                showCloseButton: true,
+                            })
+                        })
+                    }, `dark`)
+                })
+            }
+        })
+    }
+
+    return {
+        //public var/functions
+        changePassword: handleFormPassword,
+    }
+})()
+
+const formChangePassword = document.querySelector('.formChangePassword')
+
+if (formChangePassword) user.changePassword(formChangePassword)
+
+const typeResource = `type`
+
+let type = (() => {
+   //private vars or function
+   const request = options => {
+      return new Promise((resolve, reject) => {
+         const { url, headers, method, body } = options
+
+         const opt = { method }
+
+         if (headers) opt.headers = headers
+         if (body) opt.body = JSON.stringify(body)
+
+         fetch(url, opt)
+            .then(r => r.json())
+            .then(res => resolve(res))
+            .catch(error => reject(error))
+      })
+   }
+
+   //Create new card type and return this
+   const cardType = object => {
+      const { id, name } = object
+      const newType = document.createElement('div')
+
+      newType.classList.add('card', 'mb-3', 'card-type')
+
+      newType.id = `type-${id}`
+
+      newType.style.flex = `0 0 calc(33.333333% - 10px)`
+      newType.style.margin = `0 5px`
+      newType.innerHTML = `
+         <div class="card-body text-center">
+            <h6 class="card-title mb-0">${name}</h6>
+         </div>
+         <div class="types-hover">
+            <button type="button" class="btn btn-danger del-type" data-delete="#type-${id}">
+            <i class="fas fa-trash-alt"></i>
+            </button>
+            <button type="button" class="btn btn-success select-type" data-dismiss="modal" type-id="${id}" data-select="#type-${id}">
+            <i class="fas fa-check"></i>
+            </button>
+         </div>`
+
+      //event on click for select type
+      newType.querySelector('.select-type').addEventListener('click', e => {
+         e.preventDefault()
+         selectType(newType.querySelector('.select-type'))
+      })
+
+      //event remove type
+      const btnDelType = newType.querySelector('.del-type')
+
+      btnDelType.addEventListener('click', e => {
+         e.preventDefault()
+         destroyType(btnDelType)
+      })
+
+      return newType
+   }
+
+   //insert card in data-base and put in container
+   const insertType = input => {
+      if (!input.value) return alert('Informe o nome do tipo de customização')
+      update(1, `dark`)
+      fetch(`/api/${typeResource}`, {
+         method: 'POST',
+         headers: {
+            'content-type': 'application/json',
+         },
+         body: JSON.stringify({
+            name: input.value,
+         }),
+      })
+         .then(response => {
+            update(2, `dark`)
+            response
+               .json()
+               .then(res => {
+                  //insert card to modal
+                  const newType = cardType({ id: res.id, name: res.name })
+                  const typeContainer = document.querySelector('.typesContainer')
+
+                  input.value = ``
+
+                  return update(() => typeContainer.prepend(newType), `dark`)
+               })
+               .catch(err => console.log(err))
+         })
+         .catch(err => {
+            console.log(err)
+         })
+   }
+
+   //Destroy type in data-base and remove of container
+   const destroyType = input => {
+      const inputAction = document.querySelector('.actionConfirm')
+      const btnAceptAction = document.querySelector('.aceptAction')
+
+      inputAction.value = `TypeDestroy`
+
+      btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
+
+      $('.modal.types').on('hidden.bs.modal', function(e) {
+         // do something...
+         $('.modalActionConfirm').modal('show')
+         $(this).off('hidden.bs.modal')
+      })
+
+      $('.modal.types').modal('hide')
+
+      btnAceptAction.addEventListener('click', e => {
+         if (inputAction.value == `TypeDestroy`) {
+            const id = btnAceptAction.dataset.id
+
+            $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
+               // do something...
+               $('.modal.types').modal('show')
+               $(this).off('hidden.bs.modal')
+            })
+
+            update(1, `dark`)
+
+            fetch(`/api/${typeResource}/${id}`, {
+               method: 'DELETE',
+            })
+               .then(response => {
+                  update(2, `dark`)
+                  response
+                     .json()
+                     .then(res => {
+                        //Delete card to modal
+
+                        return update(() => {
+                           //tabTypeRemove(id)
+                           return input.closest('.card').remove()
+                        }, `dark`)
+                     })
+                     .catch(err => console.log(err))
+               })
+               .catch(err => {
+                  console.log(err)
+                  update(() => {
+                     Swal.fire({
+                        title: `Tivemos um erro de sistema`,
+                        icon: 'error',
+                        showCloseButton: true,
+                     })
+                  }, `dark`)
+               })
+         }
+      })
+   }
+
+   //select type and put in form value
+   const selectType = element => {
+      //Pegar id do type
+      const idType = element.getAttribute('type-id')
+
+      const inputTypeCustom = document.querySelector('.typeCustom')
+
+      inputTypeCustom.value = idType
+
+      const nameType = element.closest('.card-type').querySelector('.card-title')
+
+      document.querySelector('.btn-modal-types').classList.remove('btn-primary')
+
+      document.querySelector('.btn-modal-types').classList.add('btn-success')
+
+      return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
+   }
+
+   const removeAllType = input => {
+      input.addEventListener('change', async e => {
+         try {
+            if (input.checked == true) {
+               const id = input.value
+
+               await request({
+                  url: `/api/types/exclude/${id}`,
+                  method: 'POST',
+                  headers: {
+                     'content-type': 'application/json',
+                  },
+               })
+
+               input.closest('.card.border-primary').classList.add('exclude')
+            }
+         } catch (error) {}
+      })
+   }
+
+   return {
+      //public functions or vars
+      insertTab: item => {
+         //Criando a TAB
+         const newType = document.createElement('a')
+
+         const { id, name } = item
+
+         newType.classList.add('list-group-item', 'list-group-item-action')
+
+         newType.setAttribute('id', `list-type-${id}-list`)
+         //add role
+         newType.setAttribute('role', `tab`)
+         //add aria-selected
+         newType.setAttribute('aria-selected', `false`)
+         //add aria-controls
+         newType.setAttribute('aria-controls', `list-type-${id}`)
+         //add href
+         newType.setAttribute('href', `#list-type-${id}`)
+
+         newType.dataset.toggle = `list`
+
+         newType.innerHTML = name
+
+         //Criando o content
+         const pane = document.createElement('div')
+
+         //Adicionar as classes
+         pane.classList.add(`tab-pane`, `fade`)
+
+         //Adicionando id
+         pane.setAttribute('id', `list-type-${id}`)
+         //add Role
+         pane.setAttribute('role', `tabpanel`)
+         //add aria-labely
+         pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
+
+         //CRIANDO PAGINAÇÃO
+         const createPagination = () => {
+            const pagination = document.createElement('div')
+
+            pagination.classList.add('row')
+
+            pagination.innerHTML = `<div class="col-12">
+               <nav aria-label="..." class="paginate-type-${id}" data-resource="type">
+                  <ul class="pagination">
+                  <li class="page-item disabled">
+                     <span class="page-link">Previous</span>
+                  </li>
+                  <li class="page-item active" aria-current="page">
+                     <span class="page-link">
+                        1
+                        <span class="sr-only">(current)</span>
+                     </span>
+                  </li>
+                  <li class="page-item">
+                     <a class="page-link" href="#">Next</a>
+                  </li>
+                  </ul>
+               </nav>
+            </div> <!-- Paginação // -->`
+
+            return pagination
+         }
+
+         //container of content
+         const container = document.createElement('div')
+
+         container.classList.add('row', `container-type-${id}`)
+
+         document.querySelector('.tabContentTypes').append(pane)
+
+         pane.append(createPagination())
+         pane.append(container)
+         pane.append(createPagination())
+
+         return document.querySelector('.tabTypes').append(newType)
+      },
+      removeTab: id => {
+         document.querySelector(`#list-type-${id}-list`).remove()
+         document.querySelector(`#list-type-${id}`).remove()
+      },
+      create: insertType,
+      destroy: destroyType,
+      select: selectType,
+   }
+})()
+
+//Create new Type
+const btnInsertType = document.querySelector('.insertType')
+
+btnInsertType.addEventListener('click', e => {
+   e.preventDefault()
+   return type.create(document.querySelector('.typeName'))
+   //insertType(document.querySelector('.typeName'))
+})
+
+//Delete types
+const btnDeleteType = document.querySelectorAll('.del-type')
+
+Array.from(btnDeleteType).forEach(el => {
+   el.addEventListener('click', e => {
+      e.preventDefault()
+      //return console.log(el)
+      return type.destroy(el)
+   })
+})
+
+//Select type form create custom
+let btnSelect = document.querySelectorAll('.select-type')
+
+Array.from(btnSelect).forEach(el => {
+   el.addEventListener('click', function(e) {
+      return type.select(el)
+   })
+})
+
 const btnInsertCustom = document.querySelector('.btn-insert-custom')
 const custonResource = `custon`
 
@@ -1372,234 +3299,6 @@ Array.from(btnDestroyCustom).forEach(btn => {
     return custom.destroy(btn)
 })
 
-const insertUser = object => {
-    return new Promise((resolve, reject) => {
-        const { name, email, password } = object
-
-        update(1, `dark`)
-
-        fetch(`/api/user`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                password,
-            }),
-        })
-            .then(response => response.json())
-            .then(res => {
-                if (res.error) return reject(`Erro ao inserir novo usuário`)
-                update(2, `dark`)
-                return resolve(res)
-            })
-            .catch(error => {
-                return reject(error)
-            })
-    })
-}
-
-const formNewUser = button => {
-    button.addEventListener('click', e => {
-        e.preventDefault()
-
-        const inputName = document.querySelector('.newUserName')
-        const inputEmail = document.querySelector('.newUserMail')
-        const inputPassword = document.querySelector('.newUserPassword')
-
-        const name = inputName.value
-        const email = inputEmail.value
-        const password = inputPassword.value
-
-        console.log({
-            name,
-            email,
-            password,
-        })
-
-        if (!name) {
-            inputName.setCustomValidity('Informe o nome do usuário')
-            return inputName.reportValidity()
-        }
-        if (!email) {
-            inputEmail.setCustomValidity('Informe o e-mail do usuário')
-            return inputEmail.reportValidity()
-        }
-        if (!password) {
-            inputPassword.setCustomValidity('Informe uma senha para o usuário')
-            return inputPassword.reportValidity()
-        }
-
-        insertUser({
-            name,
-            email,
-            password,
-        })
-            .then(user => {
-                const { success } = user
-
-                return update(() => {
-                    //insert user and button
-                    //listUserInSistem
-                    const newUser = document.createElement('tr')
-
-                    newUser.innerHTML = `
-                <th scope="row">${success.id}</th>
-                <td>${success.name}</td>
-                <td>${success.email}</td>
-                <td class="td-actions text-right">
-                    <button type="button" class="btn btn-danger btnRemoveUser" data-id="${success.id}">
-                        <i class="far fa-trash-alt" aria-hidden="true"></i> Excluir
-                    </button>
-                </td>
-                `
-
-                    document.querySelector('.listUserInSistem').append(newUser)
-
-                    clickToDestroyUser(newUser.querySelector('.btnRemoveUser'))
-
-                    $('#newUser').modal('hide')
-
-                    return $('#newUser').on('hidden.bs.modal', function(e) {
-                        // do something...
-                        Swal.fire({
-                            title: `Usuário ${success.name} criado com sucesso!`,
-                            icon: 'success',
-                            showCloseButton: true,
-                        })
-
-                        return document.querySelector('.modal-backdrop').remove()
-                    })
-                }, `dark`)
-            })
-            .catch(error => {
-                update(() => {
-                    return Swal.fire({
-                        title: error,
-                        icon: 'error',
-                        showCloseButton: true,
-                    })
-                }, `dark`)
-            })
-    })
-}
-
-const formInsertNewUser = document.querySelector('.btnInsertNewUser')
-
-formNewUser(formInsertNewUser)
-
-//Destroy user
-const destroyUser = id => {
-    return new Promise((resolve, reject) => {
-        update(1, `dark`)
-
-        fetch(`/api/user/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'content-type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(res => {
-                if (res.error) return reject(`Erro ao inserir novo usuário`)
-                update(2, `dark`)
-                return resolve(res)
-            })
-            .catch(error => {
-                return reject(error)
-            })
-    })
-}
-
-const clickToDestroyUser = btn => {
-    btn.addEventListener('click', function(e) {
-        const id = btn.dataset.id
-
-        return destroyUser(id)
-            .then(() => {
-                btn.closest('tr').remove()
-                return update(() => {
-                    Swal.fire({
-                        title: `Usuário deletado com sucesso!`,
-                        icon: 'success',
-                        showCloseButton: true,
-                    })
-                }, `dark`)
-            })
-            .catch(error => {
-                return update(() => {
-                    Swal.fire({
-                        title: `Erro ao deletar usuário!`,
-                        icon: 'error',
-                        showCloseButton: true,
-                    })
-                }, `dark`)
-            })
-    })
-}
-
-const btnsRemoveUser = document.querySelectorAll('.btnRemoveUser')
-
-Array.from(btnsRemoveUser).forEach(btn => {
-    return clickToDestroyUser(btn)
-})
-
-//Change password
-const user = (() => {
-    //private var/functions
-
-    //Change password
-    const handleFormPassword = form => {
-        form.addEventListener('submit', e => {
-            e.preventDefault()
-
-            if (form.checkValidity()) {
-                const id = form.dataset.id
-                const password = form.querySelector('.newPassword').value
-
-                update(1, `dark`)
-                util.request({
-                    method: `PUT`,
-                    url: `/api/user/${id}`,
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    body: {
-                        password,
-                    },
-                }).then(res => {
-                    return update(() => {
-                        $('#changePasswordModal').modal('hide')
-
-                        $('#changePasswordModal').on('hidden.bs.modal', function(e) {
-                            // do something...
-
-                            if (document.querySelector('.modal-backdrop')) document.querySelector('.modal-backdrop').remove()
-
-                            return Swal.fire({
-                                title: `Senha atualizada`,
-                                icon: 'success',
-                                showCloseButton: true,
-                            })
-                        })
-                    }, `dark`)
-                })
-            }
-        })
-    }
-
-    return {
-        //public var/functions
-        changePassword: handleFormPassword,
-    }
-})()
-
-const formChangePassword = document.querySelector('.formChangePassword')
-
-if (formChangePassword) user.changePassword(formChangePassword)
-
 const optionResource = `option`
 
 const editCard = object => {
@@ -1953,1702 +3652,6 @@ btnSaveOption.addEventListener('click', e => {
     if (btnSaveOption.dataset.editId) return updateOption()
 
     InsertOption(document.querySelector('.insertOption').dataset.option)
-})
-
-const edit = (() => {
-    //private var/functions
-
-    const dataOptions = {
-        options: [],
-        custons: null,
-        childs: null,
-        exclude: [],
-        types: null,
-    }
-
-    function requestUpdate(id, data) {
-        return new Promise((resolve, reject) => {
-            const options = {
-                url: `/api/product/${id}`,
-                method: 'PUT',
-                headers: {
-                    'content-type': 'application/json',
-                },
-            }
-
-            fetch(options.url, {
-                method: options.method,
-                headers: options.headers,
-                body: JSON.stringify(data),
-            })
-                .then(res => res.json())
-                .then(resolve)
-                .catch(reject)
-        })
-    }
-
-    async function handleUpdateProduct(button) {
-        try {
-            const id = button.dataset.id
-
-            if (!id) return
-
-            const data = dataOptions
-
-            data.id = id
-
-            const update = await requestUpdate(id, data)
-
-            Swal.fire({
-                title: 'Produto Atualizado',
-                icon: 'success',
-                showCloseButton: true,
-            })
-        } catch (error) {
-            Swal.fire({
-                title: error,
-                icon: 'warning',
-                showCloseButton: true,
-            })
-        }
-    }
-
-    function updateOption(button) {
-        button.addEventListener('click', function(e) {
-            e.preventDefault()
-
-            handleUpdateProduct(button)
-        })
-    }
-
-    function checkHasOption(id, custom) {
-        const filterOptions = dataOptions.options.filter(x => {
-            if (x.id === id && x.custom === custom) return true
-        })
-
-        if (filterOptions.length) return false
-
-        return true
-    }
-
-    function handleInsertOption(id, custom) {
-        if (!custom || !id) return
-
-        if (checkHasOption(id, custom)) {
-            const exclude = dataOptions.exclude.filter(x => x.id != id)
-
-            dataOptions.exclude = exclude
-
-            return dataOptions.options.push({ id, custom })
-        }
-    }
-
-    function handleRemoveOption(id, custom) {
-        const exclude = dataOptions.options.filter(x => x.id != id)
-
-        dataOptions.options = exclude
-
-        dataOptions.exclude.push({ id, custom })
-    }
-
-    function insertOptions(modal) {
-        $(modal).on('hide.bs.modal', function(e) {
-            const itens = [...$(modal)[0].querySelectorAll('.optionItem')]
-
-            if (itens) {
-                itens.forEach(option => {
-                    if (!option.classList.contains('remove')) {
-                        const id = option.dataset.id
-                        const custom = option.dataset.custom
-
-                        return handleInsertOption(id, custom)
-                    }
-                })
-            }
-
-            $(this).off('hide.bs.modal')
-        })
-    }
-
-    function indexOptions(custom) {
-        const options = {
-            url: `/api/option?custom=${custom}`,
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-            },
-        }
-
-        const { url, method, headers } = options
-
-        return new Promise((resolve, reject) => {
-            fetch(url, {
-                method,
-                headers,
-            })
-                .then(res => res.json())
-                .then(resolve)
-                .catch(reject)
-        })
-    }
-
-    function toggleOption(e) {
-        e.preventDefault()
-
-        let target = e.target
-
-        if (!target.classList.contains('optionItem')) target = target.closest('.optionItem')
-
-        const id = target.dataset.id
-        const custom = target.dataset.custom
-
-        if (!target.classList.contains('remove')) {
-            const optionsFilter = dataOptions.options.filter(x => {
-                if (x.id != id && x.custom != custom) return true
-
-                return false
-            })
-
-            dataOptions.options = optionsFilter
-
-            dataOptions.exclude.push({ id, custom })
-        }
-
-        target.classList.toggle('remove')
-    }
-
-    async function listOptions(custom, options) {
-        const modal = document.querySelector('.modalOptionsList')
-
-        insertOptions(modal)
-
-        const container = modal.querySelector('.optionsListBySearch')
-
-        container.innerHTML = ``
-
-        const theCustom = await indexOptions(custom)
-
-        theCustom.options.forEach(option => {
-            const theOption = document.createElement('div')
-
-            theOption.classList.add('col-md-3', 'optionItem')
-
-            theOption.dataset.id = option.id
-            theOption.dataset.custom = option.customization_id
-
-            if (!hasOption(option.id, options)) theOption.classList.add('remove')
-
-            theOption.innerHTML = `<div class="card">
-                <div class="card-header">${option.name}</div>
-                <div class="card-body" style="height: 180px;">
-                    <figure>
-                        <img src="${option.image}" style='height: 100%; width: 100%; object-fit: contain'>
-                    </figure>
-                </div>
-            </div>`
-
-            theOption.addEventListener('click', toggleOption)
-
-            container.append(theOption)
-        })
-
-        $(modal).modal('show')
-    }
-
-    function getProduct(id) {
-        const options = {
-            url: `/api/product/${id}`,
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-            },
-        }
-
-        const { url, method, headers } = options
-
-        return new Promise((resolve, reject) => {
-            fetch(url, {
-                method,
-                headers,
-            })
-                .then(res => res.json())
-                .then(resolve)
-                .catch(reject)
-        })
-    }
-
-    function indexCustom(id) {
-        return new Promise((resolve, reject) => {
-            fetch(`/api/custon${id ? '/' + id : ''}`, {
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json',
-                },
-            })
-                .then(res => res.json())
-                .then(resolve)
-                .catch(reject)
-        })
-    }
-
-    function hasOption(option, list) {
-        const check = list.filter(x => x.option.id == option)
-
-        if (dataOptions.options.length || dataOptions.exclude.length) {
-            const checkInternal = dataOptions.options.filter(x => parseInt(x.id) == option)
-
-            const exclude = dataOptions.exclude.filter(x => parseInt(x.id) == option)
-
-            if (exclude.length) return false
-
-            if (checkInternal.length) return true
-        }
-
-        if (check.length) {
-            return true
-        }
-
-        return false
-    }
-
-    function checkOptions(list, custom) {
-        const check = list.filter(x => x.option.customization_id == custom)
-
-        if (check.length) return true
-
-        return false
-    }
-
-    async function handleChangeCustom(id, remove) {
-        const custom = await indexCustom(id)
-
-        const { options } = custom
-
-        options.forEach(option => {
-            if (remove) return handleRemoveOption(option.id, option.customization_id)
-            else return handleInsertOption(option.id, option.customization_id)
-        })
-
-        console.log(dataOptions)
-    }
-
-    function checkCustom(element) {
-        element.addEventListener('change', function(e) {
-            const id = element.dataset.id
-
-            if (element.checked == false) {
-                handleChangeCustom(id, true)
-            } else {
-                handleChangeCustom(id)
-            }
-        })
-    }
-
-    function handleCustons(custons, product) {
-        const structure = document.createElement('div')
-
-        structure.classList.add('listCustonsBySearch__list', 'row', 'my-5')
-
-        structure.innerHTML = `<div class="col-12"> <h1>Editar customizações</h1></div>`
-
-        custons.forEach(custom => {
-            const element = document.createElement('div')
-
-            element.classList.add('col-md-3', 'my-3', 'listCustonsBySearch__item')
-
-            element.innerHTML = `
-            <div class="card">
-                <div class="card-header">${custom.name}</div>
-                <div class="card-body text-center">
-                    <input type="checkbox" class="includeThisCustom mx-auto"
-                        ${checkOptions(product.options, custom.id) ? 'checked' : ''} 
-                        data-id="${custom.id}">
-
-                </div>
-            </div>
-            `
-
-            const input = element.querySelector('input')
-
-            checkCustom(input)
-
-            element.querySelector('.card-header').addEventListener('click', function(e) {
-                return listOptions(custom.id, product.options)
-            })
-
-            structure.append(element)
-        })
-
-        return structure
-    }
-
-    async function structure(target, productID) {
-        const custons = await indexCustom()
-
-        const product = await getProduct(productID)
-
-        const structure = handleCustons(custons, product)
-
-        const button = document.createElement('div')
-
-        button.classList.add('col-12', 'the_button_update', 'my-5', 'px-0')
-
-        button.innerHTML = `<button type="button" class="btn btn-primary" data-id="${productID}">Salvar</button>`
-
-        const btnUpdate = button.querySelector('button')
-
-        updateOption(btnUpdate)
-
-        target.append(structure)
-
-        target.append(button)
-
-        //reset
-        dataOptions.options = []
-        dataOptions.exclude = []
-    }
-
-    return {
-        //public var/functions
-        structure,
-    }
-})()
-
-const vtexAccountName = `woodprime`
-const vtexEnvironment = `vtexcommercestable`
-
-const searching = (() => {
-    //private var/functions
-    const putOnResults = products => {
-        const containerPartial = document.querySelector('.productsFound')
-
-        containerPartial.classList.add('show')
-
-        containerPartial.innerHTML = ``
-
-        products.map(prod => {
-            const produto = product(prod)
-
-            containerPartial.append(produto)
-        })
-    }
-
-    const custromDestroy = option => {
-        option.addEventListener('click', async e => {
-            try {
-                e.preventDefault()
-
-                option.closest('.col-6.col-md-3').style.display = `none`
-
-                const option_id = option.dataset.id
-
-                const product_id = option.closest('.productFind').dataset.id
-
-                //remove from product
-                await request({
-                    url: `/api/product_opt`,
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    body: { option_id, product_id },
-                })
-
-                //remove from list
-
-                option.closest('.col-6.col-md-3').remove()
-            } catch (error) {
-                option.closest('.col-6.col-md-3').style.display = `flex`
-                console.log(error)
-            }
-        })
-    }
-
-    const productDesctroy = button => {
-        button.addEventListener('click', async e => {
-            try {
-                e.preventDefault()
-
-                button.closest('.productFind').style.display = `none`
-
-                const id = button.dataset.id
-
-                await request({
-                    url: `/api/product/${id}`,
-                    method: 'DELETE',
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                })
-
-                return button.closest('.productFind').remove()
-            } catch (error) {
-                button.closest('.productFind').style.display = `flex`
-                console.log(error)
-            }
-        })
-    }
-
-    const listCustom = customList => {
-        console.log(`custons`, customList)
-        const custons = customList.map(custom => {
-            const { name, image, customization, id } = custom.option
-
-            const list = document.createElement('div')
-
-            list.classList.add('productInSearch', 'col-6', 'col-md-3', 'my-3')
-
-            list.dataset.id = id
-
-            list.innerHTML = `
-         <div class="card">
-            <img class="card-img-top" src="${image}" alt="Card image cap">
-            <div class="card-body">
-               <h5 class="card-title">${name}</h5>
-               <small>${customization ? customization.name : ``}</small>
-            </div>
-         </div>
-         `
-
-            custromDestroy(list)
-
-            return list
-        })
-
-        return custons
-    }
-
-    const productStrong = infos => {
-        console.log(`infos`, infos)
-        const { name, id, image, code, custom, options } = infos
-
-        const product = document.createElement('div')
-
-        product.classList.add('col-12', 'productFind')
-
-        product.dataset.id = id
-
-        product.innerHTML = `
-        <div class="row">
-            <div class="col-md-4">
-            <img src="${image}" alt="" class="img-thumbnail" style="width: 100%">
-            </div>
-
-            <div class="col-md">
-                <h4>${name}</h4>
-
-                <p>${code}</p>
-            </div>
-
-            <div class="col-2 text-right">
-                <button type="button" class="btn btn-danger destrProduct" data-id="${id}">Deletar</button>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="row">
-            <h1 class="text-center mx-auto mb-4">Customizações</h1>
-            <div class="col-12 productCustoms">
-                <div class="row"></div>
-            </div>
-        </div>
-        `
-        const btnDestroy = product.querySelector('.destrProduct')
-
-        if (btnDestroy) productDesctroy(btnDestroy)
-
-        const custons = [...listCustom(options)]
-
-        custons.map(custom => {
-            product.querySelector('.productCustoms > .row').append(custom)
-        })
-
-        edit.structure(product.querySelector('.productCustoms'), id)
-
-        return product
-    }
-
-    const product = infos => {
-        const { id, image, name } = infos
-        const div = document.createElement('div')
-
-        div.classList.add('col-12')
-
-        div.dataset.id = id
-
-        div.innerHTML = `
-      <div class="row">
-         <img src="${image}" alt="produto" width="40px" class="img-thumbnail">
-         <!--name of product -->
-         <span>${name}</span>
-      </div>
-      `
-
-        select(div)
-
-        return div
-    }
-
-    const request = options => {
-        return new Promise((resolve, reject) => {
-            const { url, headers, method, body } = options
-
-            const opt = { method }
-
-            if (headers) opt.headers = headers
-            if (body) opt.body = JSON.stringify(body)
-
-            fetch(url, opt)
-                .then(r => r.json())
-                .then(res => resolve(res))
-                .catch(error => reject(error))
-        })
-    }
-
-    const delay_method = (label, callback, time) => {
-        if (typeof window.delayed_methods == 'undefined') {
-            window.delayed_methods = {}
-        }
-        delayed_methods[label] = Date.now()
-        var t = delayed_methods[label]
-
-        setTimeout(function() {
-            if (delayed_methods[label] != t) {
-                return
-            } else {
-                delayed_methods[label] = ''
-                callback()
-            }
-        }, time || 500)
-    }
-
-    const search = input => {
-        input.addEventListener('keyup', e => {
-            const containerPartial = document.querySelector('.productsFound')
-
-            const containerInput = input.closest('div')
-
-            const spinnerExist = containerInput.querySelector('.spinner-border')
-
-            if (!spinnerExist) {
-                const spinner = document.createElement('div')
-
-                spinner.classList.add('spinner-border', 'text-success')
-
-                spinner.setAttribute('role', 'status')
-
-                spinner.innerHTML = `<span class="sr-only">Loading...</span>`
-
-                input.closest('div').append(spinner)
-            }
-
-            if (!input.value.length) {
-                return containerPartial.classList.remove('show')
-            }
-
-            if (input.value && input.value.length > 0) {
-                delay_method('check date parallel', async () => {
-                    try {
-                        const find = input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-
-                        const products = await request({
-                            url: `/api/product_search/${find}`,
-                            method: 'GET',
-                            headers: {
-                                'content-type': 'application/json',
-                            },
-                        })
-
-                        containerInput.querySelector('.spinner-border').remove()
-
-                        if (products.length) return putOnResults(products)
-                    } catch (error) {
-                        console.log(error)
-                    }
-                })
-            }
-        })
-    }
-
-    const select = button => {
-        const productContainer = document.querySelector('.listProduct')
-        button.addEventListener('click', async e => {
-            e.preventDefault()
-
-            const id = button.dataset.id
-
-            const product = await request({
-                url: `/api/product/${id}`,
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json',
-                },
-            })
-
-            //esconde a pesquisa
-            button.closest('.productsFound').classList.remove('show')
-
-            productContainer.innerHTML = ``
-
-            if (productContainer) productContainer.append(productStrong(product))
-        })
-    }
-
-    return {
-        //public var/functions
-        search,
-    }
-})()
-
-const inputSearch = document.querySelector('.productParamSearch')
-
-if (inputSearch) searching.search(inputSearch)
-
-const createProductBySearch = object => {
-    return new Promise((resolve, reject) => {
-        const { name, code, image, options, id } = object
-
-        const div = document.createElement('div')
-
-        let productOptions = ``
-        if (options.length) {
-            options.forEach(opt => {
-                const { id, option } = opt
-
-                const customName = option.customization ? `(${option.customization.name})` : ``
-
-                productOptions += `
-            <tr class="text-left optionProduct">
-               <th scope="row" class="px-1 productOptionName">
-                  ${option.name} ${customName}
-               </th>
-               
-               <td>${option.price}</td>
-               <td class="text-right px-1 productRemoveO\ption">
-                  <a href="#" data-id="${id}">
-                  <i class="fas fa-trash-alt"></i>
-                  </a>
-               </td>
-            </tr>
-            `
-            })
-        }
-
-        div.classList.add('col-4', 'productItem', 'my-2')
-
-        div.innerHTML = `
-      <div class="card border-primary mb-3 cardProduct item" data-id="${id}">
-         <div class="card-header text-center searchProductName">
-            ${name}
-            <button type="button" class="btn btn-danger btn-sm productDestroy" data-id="${id}">
-               <i class="fas fa-trash-alt"></i>
-            </button>
-         </div>
-   
-         <div class="card-body text-primary searchProductOptionsBody text-center px-1">
-            <table class="table table-hover searchProductOptions mb-0">
-               <thead>
-                  <tr>
-                     <th scope="col" class="text-left px-1">Option</th>
-                     <th scope="col">Preço</th>
-                     <th scope="col" class="text-right px-1">Action</th>
-                  </tr>
-               </thead>
-   
-               <tbody> ${productOptions} </tbody>
-            </table>
-            <!-- TABLE // -->
-         </div>
-      </div>
-      `
-
-        //remove option
-        const linkRemoveOption = div.querySelectorAll('.productRemoveOption > a')
-
-        Array.from(linkRemoveOption).forEach(link => {
-            actionRemoveOption(link)
-        })
-
-        //remove product
-        const btnsDestroyProduct = div.querySelector('.productDestroy')
-
-        product.destroy(btnsDestroyProduct)
-
-        return resolve(div)
-    })
-}
-
-const searchProduct = slug => {
-    update(1, `dark`)
-    fetch(`/api/product_search/${slug}`, {
-        method: 'GET',
-        headers: {
-            'content-type': 'application/json',
-        },
-    })
-        .then(response => response.json())
-        .then(res => {
-            update(() => {
-                return res.forEach(product => {
-                    document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then(res => {
-                        return document.querySelector('.listProduct').append(res)
-                    })
-                })
-            }, `dark`)
-        })
-        .catch(err => {
-            return Swal.fire({
-                title: err,
-                icon: 'error',
-                showCloseButton: true,
-            })
-        })
-}
-
-const indexProducts = () => {
-    update(1, `dark`)
-    fetch(`/api/product`, {
-        method: 'GET',
-        headers: {
-            'content-type': 'application/json',
-        },
-    })
-        .then(response => response.json())
-        .then(res => {
-            update(() => {
-                return res.forEach(product => {
-                    document.querySelector('.listProduct').innerHTML = ``
-                    return createProductBySearch(product).then(res => {
-                        return document.querySelector('.listProduct').append(res)
-                    })
-                })
-            }, `dark`)
-        })
-        .catch(err => {
-            return Swal.fire({
-                title: err,
-                icon: 'error',
-                showCloseButton: true,
-            })
-        })
-}
-
-const internalRequest = id => {
-    return new Promise((resolve, reject) => {
-        fetch(`/api/${productResource}/${id}`, {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(res => {
-                if (!res) return reject(`Não há produtos`)
-
-                const { name, code: id, image } = res
-                const retorno = {
-                    name,
-                    id,
-                    image,
-                }
-            })
-    })
-}
-
-const getVtexProduct = skuProduct => {
-    return new Promise((resolve, reject) => {
-        if (!skuProduct.value) return reject('Informe o sku do produto')
-        const sku = skuProduct.value
-        const URLSKU = `https://sistema.moveispracasa.com.br/api/admin/products/${sku}`
-
-        var myHeaders = new Headers({
-            Host: '*',
-        })
-
-        fetch(URLSKU, {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-                accept: 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                const { product } = data
-                if (!product) return reject(`Produto não encontrado`)
-
-                //check ative
-                const { isActiveOnVtex } = product
-
-                if (!isActiveOnVtex) return reject(`Este produto está inativo na Vtex`)
-
-                //vtexData.itemMetadata.items
-                const { product_name, id, productName, productId } = product.vtexData
-
-                let items
-
-                if (product.vtexData.itemMetadata) {
-                    items = product.vtexData.itemMetadata.items
-                } else {
-                    items = product.vtexData.items
-                }
-
-                if (!items.length) return reject(`Não há itens`)
-
-                const retorno = {
-                    name: product_name || productName,
-                    id: id || productId,
-                }
-
-                if (product.vtexData.items.length) {
-                    retorno.skus = product.vtexData.items
-                }
-
-                if (items[0] && items[0].MainImage) {
-                    const { MainImage } = items[0]
-                    retorno.image = MainImage
-                } else {
-                    const { images } = items[0]
-
-                    if (!images) return reject(`Não há imagem no produto`)
-
-                    retorno.image = images[0].imageUrl
-                }
-
-                return resolve(retorno)
-            })
-            .catch(err => reject(err))
-    })
-}
-
-const putValues = object => {
-    const { name, code, image } = object
-    document.querySelector('.nameProduct').value = name
-    document.querySelector('.codeProduct').value = code
-    document.querySelector('.productNameInsert').innerHTML = name
-    document.querySelector('.productCodeInsert b').innerHTML = `Código do produto: ${code}`
-    document.querySelector('.productImageInsert').setAttribute(`src`, image)
-}
-
-const btnSearchProduct = document.querySelector('.btnGetProductVtex')
-
-btnSearchProduct.addEventListener('click', e => {
-    e.preventDefault()
-    custom.handleResetForm()
-    let inputSkuProduct = document.querySelector('.skuProduct')
-    const olderText = btnSearchProduct.innerHTML
-    btnSearchProduct.innerHTML = ``
-    btnSearchProduct.append(spinner(`ligth`, 'small'))
-    getVtexProduct(inputSkuProduct)
-        .then(res => {
-            console.log(res)
-            const { name, id: code, image, skus } = res
-
-            //subitens
-            if (skus && skus.length > 1) {
-                const subProducts = document.querySelector('.subProducts')
-                if (subProducts) subProducts.innerHTML = ``
-                skus.map(sku => {
-                    const subProduct = document.createElement('div')
-
-                    subProduct.classList.add('col-md-2', 'mt-3')
-
-                    subProduct.innerHTML = `
-                     <div class="card">
-                        <img class="card-img-top" src="${sku.images[0].imageUrl}" alt="Card image cap">
-                        <div class="card-body text-center" style="border-top: 1px solid rgba(0,0,0,.125)">
-                           <h6 class="card-title">${sku.name}</h6>
-                        </div>
-                     </div>
-                     `
-
-                    document
-                        .querySelector('.informationProduct')
-                        .append(custom.handleChildForm({ id: sku.id || sku.itemId, name: sku.name, nameProduct: name }))
-
-                    if (subProducts) subProducts.append(subProduct)
-                })
-            }
-
-            document.querySelector('.resultProduct').classList.add('full')
-            btnSearchProduct.innerHTML = olderText
-            return putValues({ name, code, image })
-        })
-        .catch(res => {
-            return Swal.fire({
-                title: res,
-                icon: 'error',
-                showCloseButton: true,
-            })
-        })
-})
-
-const productResource = `product`
-let optionsProduct = []
-
-const product = (() => {
-    // declare private variables and/or functions
-
-    //Send request from create product
-    const requestProduct = object => {
-        const { name, code, description, image, options, excludes, children } = object
-        update(1, `dark`)
-        fetch(`/api/${productResource}`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({ name, code, description, image, options, excludes, children }),
-        })
-            .then(r => r.json())
-            .then(res => {
-                update(() => {
-                    if (res.error) {
-                        return Swal.fire({
-                            title: res.error,
-                            icon: 'warning',
-                            showCloseButton: true,
-                        })
-                    }
-
-                    //reset Form
-                    optionsProduct = []
-                    document.querySelector('.nameProduct').value = ``
-                    document.querySelector('.codeProduct').value = ``
-                    document.querySelector('.descriptionProduct').value = ``
-                    document.querySelector('.imageProduct').value = ``
-                    document.querySelector('.skuProduct').value = ``
-                    document.querySelector('.resultProduct').classList.remove('full')
-
-                    //remove as opcoes
-                    const formRows = document.querySelectorAll(`.formInsertProduct .form-row`)
-                    const showClass = document.querySelectorAll(`.listCustomByType .show`)
-
-                    //Limpa opções listOptionstoSelect
-                    const listOptions = document.querySelectorAll(`.listOptionstoSelect .selected`)
-
-                    if (showClass) Array.from(showClass).forEach(option => option.classList.remove('show'))
-
-                    if (listOptions) Array.from(listOptions).forEach(option => option.classList.remove('selected'))
-
-                    Array.from(formRows).forEach(div => div.remove())
-
-                    if (res[0]) {
-                        return Swal.fire({
-                            title: `Produto ${res[0].name} cadastrado`,
-                            icon: 'success',
-                            showCloseButton: true,
-                        }).then(result => {
-                            /* Read more about isConfirmed, isDenied below */
-                            if (result.isConfirmed) {
-                                document.location.reload(true)
-                            }
-                        })
-                    }
-
-                    return Swal.fire({
-                        title: `Produto ${res.name} cadastrado`,
-                        icon: 'success',
-                        showCloseButton: true,
-                    }).then(result => {
-                        /* Read more about isConfirmed, isDenied below */
-                        if (result.isConfirmed) {
-                            document.location.reload(true)
-                        }
-                    })
-                }, `dark`)
-            })
-            .catch(err => {
-                update(() => {
-                    return Swal.fire({
-                        title: `Erro ao inserir novo produto`,
-                        icon: 'error',
-                        showCloseButton: true,
-                    })
-                }, `dark`)
-            })
-    }
-
-    //Create product and put in container
-    const insertProduct = form => {
-        form.addEventListener('submit', e => {
-            e.preventDefault()
-
-            const nameProduct = document.querySelector('.nameProduct')
-            const codeProduct = document.querySelector('.codeProduct')
-            const descriptionProduct = document.querySelector('.descriptionProduct')
-            const imageProduct = document.querySelector('.imageProduct')
-
-            //validar formulário
-            if (form.checkValidity()) {
-                const inputs = [...form.elements]
-
-                const object = { children: [] }
-
-                inputs.map(input => {
-                    if (input.tagName != `BUTTON`) {
-                        const inputId = input.getAttribute('id')
-                        //Get product name
-                        if (input.classList.contains('nameProduct')) object.name = input.value
-
-                        //Get code of product
-                        if (input.classList.contains('codeProduct')) object.code = input.value
-
-                        //get description
-                        if (input.classList.contains('descriptionProduct')) object.description = input.value
-
-                        //get image
-                        if (input.classList.contains('imageProduct')) object.image = input.value
-
-                        //get children's of product
-                        if (inputId) {
-                            if (inputId.indexOf('descriptionChildren') !== -1) {
-                                object.children.push({
-                                    //get description of children
-                                    description: input.value,
-
-                                    //get name of children
-                                    name: input.closest('div').querySelector('input[id*="nameChildren"]').value,
-
-                                    //get code of children
-                                    code: input.closest('div').querySelector('input[id*="codeChildren"]').value,
-
-                                    //get image of children
-                                    image: input.closest('.form-row').querySelector('input[id*="imageChildren"]').value,
-                                })
-                            }
-                        }
-                    }
-                })
-
-                const excludes = custom.getExcludes()
-
-                const { name, description, code, image, children } = object
-
-                return requestProduct({
-                    name,
-                    code: parseFloat(code),
-                    description,
-                    image,
-                    options: excludes,
-                    excludes,
-                    children,
-                })
-            }
-        })
-    }
-
-    //Request from destroy product and remove card of container
-    const destroyProduct = id => {
-        return new Promise((resolve, reject) => {
-            update(1, `dark`)
-            fetch(`/api/product/${id}`, {
-                method: 'DELETE',
-            })
-                .then(response => {
-                    if (!response.ok) return reject(new Error('HTTP status ' + response.status))
-
-                    return resolve(`Produto excluído com sucesso!`)
-                })
-                .catch(err => {
-                    return reject(err)
-                })
-        })
-    }
-
-    //action from destroy product
-    const clickDestroyProduct = btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault()
-            const id = btn.dataset.id
-
-            return destroyProduct(id)
-                .then(res => {
-                    update(() => {
-                        const productDelete = document.querySelector(`.productDestroy[data-id="${id}"]`).closest('.productItem')
-
-                        productDelete.remove()
-                        return Swal.fire({
-                            title: res,
-                            icon: 'success',
-                            showCloseButton: true,
-                        })
-                    }, `dark`)
-                })
-                .catch(err => {
-                    update(() => {
-                        console.log(err)
-                        return Swal.fire({
-                            title: `Erro ao excluir produto!`,
-                            icon: 'warning',
-                            showCloseButton: true,
-                        })
-                    }, `dark`)
-                })
-        })
-    }
-
-    function customInsert(input) {
-        input.addEventListener('change', async function(e) {
-            e.preventDefault()
-
-            try {
-                if (input.checked !== true) {
-                    const parent = input.closest('.selected')
-
-                    if (parent) return parent.remove('selected')
-
-                    return custom.handleRemoveOption(null, input.value)
-                }
-
-                const customization = await util.request({
-                    url: `/api/custon/${input.value}`,
-                    headers: {
-                        'content-type': `application/json`,
-                    },
-                })
-
-                if (customization.options) {
-                    customization.options.map(option => {
-                        custom.insertOption({ id: option.id, custom: option.customization_id })
-                    })
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        })
-    }
-
-    return {
-        // declare public variables and/or functions
-        customInsert,
-        create: insertProduct,
-        destroy: clickDestroyProduct,
-    }
-})()
-
-const allCheckCustom = [...document.querySelectorAll('#selectAllCustom')]
-
-if (allCheckCustom) allCheckCustom.map(product.customInsert)
-
-//modal
-$('#modalProductOptions').on('hidden.bs.modal', function(e) {
-    // do something...
-    $('#productCustons').modal('show')
-})
-
-const destroyProductOption = id => {
-    update(1, `dark`)
-    fetch(`/api/product_option/${id}`, {
-        method: 'DELETE',
-    })
-        .then(response => response.json())
-        .then(res => {
-            update(() => {
-                const optionDelete = document.querySelector(`.productRemoveOption a[data-id="${id}"]`).closest('.optionProduct')
-
-                optionDelete.remove()
-                return Swal.fire({
-                    title: `Customização removida com sucesso!`,
-                    icon: 'success',
-                    showCloseButton: true,
-                })
-            }, `dark`)
-        })
-}
-
-const actionRemoveOption = link => {
-    link.addEventListener('click', e => {
-        e.preventDefault()
-
-        const linkId = link.dataset.id
-
-        destroyProductOption(linkId)
-    })
-}
-
-const linkRemoveOption = document.querySelectorAll('.productRemoveOption > a')
-
-Array.from(linkRemoveOption).forEach(link => {
-    actionRemoveOption(link)
-})
-
-const btnsDestroyProduct = document.querySelectorAll('.productDestroy')
-
-Array.from(btnsDestroyProduct).forEach(btn => {
-    return product.destroy(btn)
-})
-
-const clickOption = option => {
-    option.addEventListener('click', function(e) {
-        // body
-        const name = option.querySelector('.productOptionName').innerHTML
-        const id = option.dataset.id
-        const custom = option.dataset.custom
-        const custom_name = option.dataset.customName
-        const image = option.querySelector('.card-body img').getAttribute('src')
-
-        option.classList.add('active')
-
-        if (!document.querySelector(`.optionsSelected div[data-option="${id}"]`)) {
-            optionInsert({ name, id, custom, custom_name, image })
-
-            return optionsProduct.push(parseInt(id))
-        }
-    })
-}
-
-const optionInsert = object => {
-    const { id, name, custom, custom_name, image } = object
-
-    const div = document.createElement('div')
-
-    div.classList.add('col-3', 'optionSelect')
-    div.dataset.option = id
-
-    div.innerHTML = `<div class="card">
-      <div class="card-header text-center productCustomName" data-custom="${custom}">
-         <button type="button" class="btn btn-danger btn-sm optionSelectDel" data-id="${id}">
-            <i class="fas fa-trash-alt" aria-hidden="true"></i>
-         </button>
-         ${custom_name}
-      </div>
-      <div class="card-body productOptionName text-center">
-         <p>${name}</p>
-         <div class="row">
-            <div class="col-12">
-               <img src="${image}" alt="..." width="100" class="img-thumbnail">
-            </div>
-         </div>
-      </div>
-   </div>`
-
-    //remove
-    const btnDel = div.querySelector(`.optionSelectDel`)
-
-    btnDel.addEventListener('click', e => {
-        const id = btnDel.dataset.id
-
-        optionsProduct.splice(optionsProduct.indexOf(parseInt(id)), 1)
-
-        return btnDel.closest('.optionSelect').remove()
-    })
-
-    return document.querySelector('.optionsSelected').append(div)
-}
-
-const optionsCreate = object => {
-    const { id, name, image, custom, custom_name } = object
-    const containerOptions = document.querySelector('.modalProductOptionsContainer')
-
-    const option = document.createElement('div')
-
-    option.classList.add('col-3')
-
-    option.dataset.custom = custom
-    option.dataset.customName = custom_name
-    option.dataset.id = id
-
-    option.innerHTML = `
-   <div class="card productOption">
-      <div class="card-header productOptionName">${name}</div>
-      <div class="card-body">
-      <img src="${image}" alt="..." width="150" class="img-thumbnail">
-      </div>
-   </div>
-   `
-
-    clickOption(option)
-
-    return containerOptions.append(option)
-}
-
-const getOptions = custom => {
-    document.querySelector('.modalProductOptionsContainer').innerHTML = ``
-    document.querySelector('.modalProductOptionsContainer').append(spinner())
-
-    fetch(`/api/option?custom=${custom}`, {
-        method: 'GET',
-    })
-        .then(response => response.json())
-        .then(res => {
-            update(() => {
-                const { options } = res
-
-                document.querySelector('.modalProductOptionsContainer').innerHTML = ``
-
-                return options.forEach(option => {
-                    return optionsCreate({
-                        id: option.id,
-                        custom: option.customization_id,
-                        custom_name: res.name,
-                        name: option.name,
-                        image: option.image,
-                    })
-                })
-            }, `dark`)
-        })
-}
-
-const clickCustom = option => {
-    option.addEventListener('click', function(e) {
-        e.preventDefault()
-
-        const custom = option.closest('.col-4').dataset.custom
-
-        $('#productCustons').on('hidden.bs.modal', function(e) {
-            // do something...
-            $('#modalProductOptions').modal('show')
-            $(this).off('hidden.bs.modal')
-        })
-
-        $('#modalProductOptions').on('hidden.bs.modal', function(e) {
-            // do something...
-            $('#productCustons').modal('show')
-        })
-
-        return getOptions(custom)
-    })
-}
-
-const customCreate = object => {
-    const { id, name, custom, custom_name } = object
-
-    const div = document.createElement('div')
-
-    div.classList.add('col-3')
-    div.dataset.option = id
-
-    div.innerHTML = `<div class="card">
-      <div class="card-header productCustomName" data-custom="${custom}">${custom_name}</div>
-      <div class="card-body productOptionName">
-      ${name}
-      </div>
-   </div>`
-
-    return document.querySelector('.optionsSelected').append(div)
-}
-
-//formInsertProduct
-
-const formInsertProduct = document.querySelector('.formInsertProduct')
-const productOption = document.querySelectorAll('.productOption .card')
-
-Array.from(productOption).forEach(option => {
-    clickCustom(option)
-})
-
-if (formInsertProduct) product.create(formInsertProduct)
-
-const typeResource = `type`
-
-let type = (() => {
-   //private vars or function
-   const request = options => {
-      return new Promise((resolve, reject) => {
-         const { url, headers, method, body } = options
-
-         const opt = { method }
-
-         if (headers) opt.headers = headers
-         if (body) opt.body = JSON.stringify(body)
-
-         fetch(url, opt)
-            .then(r => r.json())
-            .then(res => resolve(res))
-            .catch(error => reject(error))
-      })
-   }
-
-   //Create new card type and return this
-   const cardType = object => {
-      const { id, name } = object
-      const newType = document.createElement('div')
-
-      newType.classList.add('card', 'mb-3', 'card-type')
-
-      newType.id = `type-${id}`
-
-      newType.style.flex = `0 0 calc(33.333333% - 10px)`
-      newType.style.margin = `0 5px`
-      newType.innerHTML = `
-         <div class="card-body text-center">
-            <h6 class="card-title mb-0">${name}</h6>
-         </div>
-         <div class="types-hover">
-            <button type="button" class="btn btn-danger del-type" data-delete="#type-${id}">
-            <i class="fas fa-trash-alt"></i>
-            </button>
-            <button type="button" class="btn btn-success select-type" data-dismiss="modal" type-id="${id}" data-select="#type-${id}">
-            <i class="fas fa-check"></i>
-            </button>
-         </div>`
-
-      //event on click for select type
-      newType.querySelector('.select-type').addEventListener('click', e => {
-         e.preventDefault()
-         selectType(newType.querySelector('.select-type'))
-      })
-
-      //event remove type
-      const btnDelType = newType.querySelector('.del-type')
-
-      btnDelType.addEventListener('click', e => {
-         e.preventDefault()
-         destroyType(btnDelType)
-      })
-
-      return newType
-   }
-
-   //insert card in data-base and put in container
-   const insertType = input => {
-      if (!input.value) return alert('Informe o nome do tipo de customização')
-      update(1, `dark`)
-      fetch(`/api/${typeResource}`, {
-         method: 'POST',
-         headers: {
-            'content-type': 'application/json',
-         },
-         body: JSON.stringify({
-            name: input.value,
-         }),
-      })
-         .then(response => {
-            update(2, `dark`)
-            response
-               .json()
-               .then(res => {
-                  //insert card to modal
-                  const newType = cardType({ id: res.id, name: res.name })
-                  const typeContainer = document.querySelector('.typesContainer')
-
-                  input.value = ``
-
-                  return update(() => typeContainer.prepend(newType), `dark`)
-               })
-               .catch(err => console.log(err))
-         })
-         .catch(err => {
-            console.log(err)
-         })
-   }
-
-   //Destroy type in data-base and remove of container
-   const destroyType = input => {
-      const inputAction = document.querySelector('.actionConfirm')
-      const btnAceptAction = document.querySelector('.aceptAction')
-
-      inputAction.value = `TypeDestroy`
-
-      btnAceptAction.dataset.id = parseInt(input.getAttribute('data-delete').replace('#type-', ''))
-
-      $('.modal.types').on('hidden.bs.modal', function(e) {
-         // do something...
-         $('.modalActionConfirm').modal('show')
-         $(this).off('hidden.bs.modal')
-      })
-
-      $('.modal.types').modal('hide')
-
-      btnAceptAction.addEventListener('click', e => {
-         if (inputAction.value == `TypeDestroy`) {
-            const id = btnAceptAction.dataset.id
-
-            $('.modalActionConfirm').on('hidden.bs.modal', function(e) {
-               // do something...
-               $('.modal.types').modal('show')
-               $(this).off('hidden.bs.modal')
-            })
-
-            update(1, `dark`)
-
-            fetch(`/api/${typeResource}/${id}`, {
-               method: 'DELETE',
-            })
-               .then(response => {
-                  update(2, `dark`)
-                  response
-                     .json()
-                     .then(res => {
-                        //Delete card to modal
-
-                        return update(() => {
-                           //tabTypeRemove(id)
-                           return input.closest('.card').remove()
-                        }, `dark`)
-                     })
-                     .catch(err => console.log(err))
-               })
-               .catch(err => {
-                  console.log(err)
-                  update(() => {
-                     Swal.fire({
-                        title: `Tivemos um erro de sistema`,
-                        icon: 'error',
-                        showCloseButton: true,
-                     })
-                  }, `dark`)
-               })
-         }
-      })
-   }
-
-   //select type and put in form value
-   const selectType = element => {
-      //Pegar id do type
-      const idType = element.getAttribute('type-id')
-
-      const inputTypeCustom = document.querySelector('.typeCustom')
-
-      inputTypeCustom.value = idType
-
-      const nameType = element.closest('.card-type').querySelector('.card-title')
-
-      document.querySelector('.btn-modal-types').classList.remove('btn-primary')
-
-      document.querySelector('.btn-modal-types').classList.add('btn-success')
-
-      return (document.querySelector('.btn-modal-types').innerHTML = nameType.innerHTML)
-   }
-
-   const removeAllType = input => {
-      input.addEventListener('change', async e => {
-         try {
-            if (input.checked == true) {
-               const id = input.value
-
-               await request({
-                  url: `/api/types/exclude/${id}`,
-                  method: 'POST',
-                  headers: {
-                     'content-type': 'application/json',
-                  },
-               })
-
-               input.closest('.card.border-primary').classList.add('exclude')
-            }
-         } catch (error) {}
-      })
-   }
-
-   return {
-      //public functions or vars
-      insertTab: item => {
-         //Criando a TAB
-         const newType = document.createElement('a')
-
-         const { id, name } = item
-
-         newType.classList.add('list-group-item', 'list-group-item-action')
-
-         newType.setAttribute('id', `list-type-${id}-list`)
-         //add role
-         newType.setAttribute('role', `tab`)
-         //add aria-selected
-         newType.setAttribute('aria-selected', `false`)
-         //add aria-controls
-         newType.setAttribute('aria-controls', `list-type-${id}`)
-         //add href
-         newType.setAttribute('href', `#list-type-${id}`)
-
-         newType.dataset.toggle = `list`
-
-         newType.innerHTML = name
-
-         //Criando o content
-         const pane = document.createElement('div')
-
-         //Adicionar as classes
-         pane.classList.add(`tab-pane`, `fade`)
-
-         //Adicionando id
-         pane.setAttribute('id', `list-type-${id}`)
-         //add Role
-         pane.setAttribute('role', `tabpanel`)
-         //add aria-labely
-         pane.setAttribute('aria-labelledby', `list-type-${id}-list`)
-
-         //CRIANDO PAGINAÇÃO
-         const createPagination = () => {
-            const pagination = document.createElement('div')
-
-            pagination.classList.add('row')
-
-            pagination.innerHTML = `<div class="col-12">
-               <nav aria-label="..." class="paginate-type-${id}" data-resource="type">
-                  <ul class="pagination">
-                  <li class="page-item disabled">
-                     <span class="page-link">Previous</span>
-                  </li>
-                  <li class="page-item active" aria-current="page">
-                     <span class="page-link">
-                        1
-                        <span class="sr-only">(current)</span>
-                     </span>
-                  </li>
-                  <li class="page-item">
-                     <a class="page-link" href="#">Next</a>
-                  </li>
-                  </ul>
-               </nav>
-            </div> <!-- Paginação // -->`
-
-            return pagination
-         }
-
-         //container of content
-         const container = document.createElement('div')
-
-         container.classList.add('row', `container-type-${id}`)
-
-         document.querySelector('.tabContentTypes').append(pane)
-
-         pane.append(createPagination())
-         pane.append(container)
-         pane.append(createPagination())
-
-         return document.querySelector('.tabTypes').append(newType)
-      },
-      removeTab: id => {
-         document.querySelector(`#list-type-${id}-list`).remove()
-         document.querySelector(`#list-type-${id}`).remove()
-      },
-      create: insertType,
-      destroy: destroyType,
-      select: selectType,
-   }
-})()
-
-//Create new Type
-const btnInsertType = document.querySelector('.insertType')
-
-btnInsertType.addEventListener('click', e => {
-   e.preventDefault()
-   return type.create(document.querySelector('.typeName'))
-   //insertType(document.querySelector('.typeName'))
-})
-
-//Delete types
-const btnDeleteType = document.querySelectorAll('.del-type')
-
-Array.from(btnDeleteType).forEach(el => {
-   el.addEventListener('click', e => {
-      e.preventDefault()
-      //return console.log(el)
-      return type.destroy(el)
-   })
-})
-
-//Select type form create custom
-let btnSelect = document.querySelectorAll('.select-type')
-
-Array.from(btnSelect).forEach(el => {
-   el.addEventListener('click', function(e) {
-      return type.select(el)
-   })
 })
 
 const customUpdate = object => {

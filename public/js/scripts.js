@@ -2260,6 +2260,8 @@ const edit = (() => {
             <div class="card">
                 <div class="card-header">${custom.name}</div>
                 <div class="card-body text-center">
+                    <small>${custom.description}</small>
+                    <hr>
                     <input type="checkbox" class="includeThisCustom mx-auto"
                         ${checkOptions(product.options, custom.id) ? 'checked' : ''} 
                         data-id="${custom.id}">
@@ -2403,14 +2405,14 @@ const searching = (() => {
             list.dataset.id = id
 
             list.innerHTML = `
-         <div class="card">
-            <img class="card-img-top" src="${image}" alt="Card image cap">
-            <div class="card-body">
-               <h5 class="card-title">${name}</h5>
-               <small>${customization ? customization.name : ``}</small>
+            <div class="card">
+                <img class="card-img-top" src="${image}" alt="Card image cap">
+                <div class="card-body">
+                <h5 class="card-title">${name}</h5>
+                <small>${customization ? customization.name : ``}</small>
+                </div>
             </div>
-         </div>
-         `
+            `
 
             custromDestroy(list)
 

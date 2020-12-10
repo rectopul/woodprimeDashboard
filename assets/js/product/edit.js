@@ -303,6 +303,8 @@ const edit = (() => {
             <div class="card">
                 <div class="card-header">${custom.name}</div>
                 <div class="card-body text-center">
+                    <small>${custom.description}</small>
+                    <hr>
                     <input type="checkbox" class="includeThisCustom mx-auto"
                         ${checkOptions(product.options, custom.id) ? 'checked' : ''} 
                         data-id="${custom.id}">

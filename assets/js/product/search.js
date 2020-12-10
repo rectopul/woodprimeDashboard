@@ -84,14 +84,14 @@ const searching = (() => {
             list.dataset.id = id
 
             list.innerHTML = `
-         <div class="card">
-            <img class="card-img-top" src="${image}" alt="Card image cap">
-            <div class="card-body">
-               <h5 class="card-title">${name}</h5>
-               <small>${customization ? customization.name : ``}</small>
+            <div class="card">
+                <img class="card-img-top" src="${image}" alt="Card image cap">
+                <div class="card-body">
+                <h5 class="card-title">${name}</h5>
+                <small>${customization ? customization.name : ``}</small>
+                </div>
             </div>
-         </div>
-         `
+            `
 
             custromDestroy(list)
 

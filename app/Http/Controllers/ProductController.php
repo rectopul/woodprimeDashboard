@@ -137,7 +137,7 @@ class ProductController extends Controller
             $image = $child['image'];
             $name = $child['name'];
 
-            $theChild = Product::where('code', '=', $code)->first();
+            $theChild = Product::where('code', '=', $code)->where('parent_id', '=', $product->id)->first();
 
             if ($theChild) {
                 ProductOption::where('product_id', '=', $theChild->id)->delete();
